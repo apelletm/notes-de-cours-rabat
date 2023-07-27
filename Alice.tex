@@ -1,16 +1,41 @@
 %!TEX root = main.tex
 \section{Algebraic lattices and cryptographic applications}
 
-La troisième partie du cours sera effectuée par Alice Pellet-Mary. Après des
-éléments de théorie algébrique des nombres, elle définira les variantes
-algébriques de LWE et SIS, ainsi que le problème NTRU,
-et présentera leurs liens avec les réseaux algébriques. Elle construira alors
-des primitives cryptographiques élémentaires à partir de ces problèmes.
-Enfin, elle abordera des aspects de cryptanalyse et présentera des attaques
-exploitant la structure algébrique sous-jacente à ces problèmes.
+%La troisième partie du cours sera effectuée par Alice Pellet-Mary. Après des
+%éléments de théorie algébrique des nombres, elle définira les variantes
+%algébriques de LWE et SIS, ainsi que le problème NTRU,
+%et présentera leurs liens avec les réseaux algébriques. Elle construira alors
+%des primitives cryptographiques élémentaires à partir de ces problèmes.
+%Enfin, elle abordera des aspects de cryptanalyse et présentera des attaques
+%exploitant la structure algébrique sous-jacente à ces problèmes.
+
+In this section, we will discuss about structured lattices, and the corresponding structured variants of the LWE and SIS problem. We will also see a new algorithmic problem, called the NTRU problem.\footnote{This problem was originally defined as a structured lattice problem, and later generalized to a less structured (and even unstructured) version of itself.}
+
+One of the main reason for introducing structure in lattices and lattice problems is to improve the efficiency of the cryptographic schemes based on lattices. Let's be clear here, schemes based on unstructured lattice problems such as (plain) LWE and SIS are \emph{not} inefficient, they are already somewhat efficient. But adding structure to the lattice can make them even more efficient, which makes everyone happier.
+In order to see why the structure can make scheme more efficient, imagine that you have a lattice which has one basis $\vec B$ which is a circulant matrix, i.e., it is of the form
+\begin{align*}
+\vec B = \begin{pmatrix}
+b_{1} & b_{2} & \dots & b_n \\
+b_n & b_1 & \dots & b_{n-1} \\
+\vdots & \ddots & \ddots & \vdots \\
+b_{2} & b_3 & \dots & b_1
+\end{pmatrix}.
+\end{align*}
+Then, storing this basis of you lattice only requires storing $n$ coefficients, instead of $n^2$ for an unstructured matrix. Also, multiplying this matrix with a vector can be done in quasi-linear time $O(n \cdot \poly( \log n) )$, instead of quadratic time $O(n^2)$.
+Let's remark here that a structured lattice only need to have a few structured bases. Not all bases need to have this special structure (and in general, not all bases will have this visible structure indeed). But as long as we can compute a nicely structured basis, then we can enjoy the benefits of the structure on the storage space, and the running time of basic operations (like matrix-vector multiplication).
+
+On the negative side, adding structure to the lattices may render the algorithmic problems based on these lattices easier to solve. From a cryptographic perspective, this would mean making the cryptographic constructions based on these problems weaker against attackers. It is then important to choose wisely the structure one adds to the lattices, and to study the impact of this structure on potential attacks.
+There have been examples of poorly chosen structure, leading to attacks on the structured schemes \cite{BLA}.
+%aller voir la thèse de Carl : https://www.esat.kuleuven.be/cosic/publications/thesis-399.pdf
+% (une attaque de Gentry sur NTRU avec les sous corps de X^n-1, et ses propres articles sur le sujet)
+On the other hand, we also have examples of good choice of structure,\footnote{Understand here that they are good \emph{so far}. They might become ``poorly chosen'' in a few months/years if someone manages to exploit the structure to find better attacks.} for which the best known attack is the same as the best known attack against unstructured lattices (i.e., for the moment, the only way we know to solve some algorithmic problems in these lattice is to forget about the structure, and use standard attacks against unstructured lattice problems).
+
+The structure we will consider in this section is a special case of what is called \emph{modules over the ring of integers of a number field}. In order to make this name shorter, we will simply call these \emph{module lattices} in the rest of these lecture notes, as is commonly done in the cryptographic community. We will see in details what those objects are in Section~\ref{sec:number-theory} below. Module lattices are, by far, the most widely used structured lattices in lattice-based cryptography at the moment. If chosen appropriately, they may fall in the category of ``good structured lattices'' defined above, in the sens that, at the moment, we don't know how to solve standard algorithmic problems in these lattices (such at SVP) more efficiently than in non structured lattices.
+Before moving to the formal definition of module lattices, let me mention the existence of other kinds of structured lattices (which won't be covered here), such as ideals over a maximal order of a cyclic algebra~\cite{CLWE}.
 
 
 \subsection{Reminders about number theory}
+\label{sec:number-theory}
 
 Alice -- Rappels de théorie des nombres -- CM: 1h30 / TD: 1h
 

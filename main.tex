@@ -10,7 +10,7 @@
 
 %opening
 \title{Lattice-based cryptography}
-\author{Adeline Roux-Langlois, Alice Pellet-Mary, Damien Stehlé}
+\author{Damien Stehlé, Adeline Roux-Langlois, Alice Pellet-Mary}
 
 %\newtheorem{theoremm}{Theorem}
 
@@ -34,6 +34,8 @@
 \newcommand{\EE}{\mathbb{E}}
 \renewcommand{\Pr}{\mathbb{P}}
 \newcommand{\Var}{\text{Var}}
+\renewcommand{\vec}{\mathbf}
+\DeclareMathOperator{\poly}{poly}
 
 
 \begin{document}
@@ -41,10 +43,19 @@
 
 \maketitle
 
+Some conventions (?)
+\begin{itemize}
+\item $n$ the dimension of the lattice
+\item bold vectors and matrices (using \texttt{$\setminus$vec})
+\end{itemize}
+
 \tableofcontents
 
 \input{Damien.tex}
 \input{Adeline.tex}
 \input{Alice.tex}
+
+\bibliographystyle{alpha}
+\bibliography{biblio}
 
 \end{document}
