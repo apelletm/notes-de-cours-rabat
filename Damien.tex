@@ -1,6 +1,9 @@
 %!TEX root = main.tex
-\section{Lattices}
+\section{Background on Lattices}
+\label{se:back}
 
+
+{\em
 Dans une partie préliminaire, Damien Stehlé donnera les définitions
 élémentaires portant sur les réseaux
 euclidiens (bases, minima, volume), qu'il illustrera avec des exemples utiles
@@ -9,3 +12,320 @@ cours avancés (notamment les réseaux $q$-aires). Il abordera les théorèmes
 de Minkowski et Minkowski-Hlawka. Ensuite, il introduira
 les distributions gaussiennes sur des réseaux,
 nécessaires pour les parties suivantes.
+}
+
+
+This first section provides some background on Euclidean lattices, with illustrations
+preparing the following sections.  
+
+
+\subsection{Definitions}
+
+We start with elementary definitions pertaining to Euclidean lattices. 
+We refer the reader to~\cite{Siegel89} for additional material, including missing proofs.
+
+
+A Euclidean lattice is the set of all integral linear combinations of a set if linearly independent vectors in a Euclidean space. 
+An illustration is provided in Figure~\ref{fig:lattice1}. The lattice is the set of intersection points in the grid. 
+The following is a more formal definition.
+
+\begin{definition}
+\label{def:lattice1}
+Let~$m\geq n >0$. Let~${\bf b}_1, \ldots, {\bf b}_n$ be linearly independent vectors in~$\mR^m$.
+The lattice that they span is
+\[
+ L\left({\bf b}_1, \ldots, {\bf b}_n\right) = \sum_{1 \leq i \leq n} \mZ \cdot {\bf b}_i = \left\{\sum_i x_i \cdot {\bf b}_i: \forall i, x_i \in \mZ\right\}. 
+\]
+If~$n=m$, then the lattice is said full-rank. If it is contained in~$\mZ^n$, then it is said integral. 
+\end{definition}
+
+The prototypical lattice is~$\mZ^n$, which can be written as the set of all integer linear combinations
+of the canonical basis vectors~${\bf b}_i = (0^{i-1}, 1, 0^{n-i})^T$ for~$i \in \{1,\ldots,n\}$.  
+
+Definition~\ref{def:lattice1} implies that a lattice is a subgroup of~$(\mR^m,+)$, i.e., for any~${\bf c}$ and~${\bf c}'$ in the lattice, the difference~${\bf c} - {\bf c}'$ also belongs to the lattice. It also implies that a lattice must be discrete, i.e., every sequence of lattice points that converges must be ultimately constant. (This can be seen by proved by considering the $i$-th coordinates of 
+the vectors in the sequence, for any $i \leq n$, and using the discreteness of~$\mZ$.)  Graphically, this means that 
+a lattice cannot have points of accumulation, i.e., that there is always a minimal distance separating any two given points of a
+considered lattice. Figure~\ref{fig:lattice2} gives a subgroup of~$(\mR^2,+)$ that is not a lattice. 
+
+In fact, being a discrete subgroup of~$(\mR^m,+)$ is an alternative definition of Euclidean lattices
+
+\begin{lemma}
+\label{def:lattice2}
+Let~$m >0$. A set~$L \subset \mR^m$ is a lattice if and only if the following two conditions hold:
+\begin{itemize}
+\item[$\bullet$] for any ${\bf b}, {\bf b}' \in L$, we have~${\bf b} - {\bf b}' \in L$,
+\item[$\bullet$] for any converging sequence~$({\bf c}_j)_{j=1,2,\ldots}$ with~${\bf c}_j \in L$ for all~$j$, there exists~$j^\star$ such that~${\bf c}_j = {\bf c}_{j^\star}$ for all~$j \geq j^\star$. 
+\end{itemize}
+\end{lemma}
+
+For example, the set~$S= \mZ \cdot 1 + \mZ \cdot \sqrt{2}$ is not a lattice. Consider the continued fraction convergent~$p_k/q_k \in \mathbb{Q}$ of~$\sqrt{2}$, for~$k \geq 0$. Then it holds that~$|\sqrt{2} - p_k /q_k| \leq 1/q_k^2$ and $q_k \rightarrow_k +\infty$. Now, note that the element~$c_k := -p_k + q_k \cdot  \sqrt{2}$ belongs to~$S$ and satisfies~$|c_k| \rightarrow_k 0$. However, as~$\sqrt{2}$ is not rational, none of the $c_k$'s is $0$ and the sequence cannot be ultimately constant.
+
+We now introduce two families of lattices playing a central role in lattice-based cryptography.
+
+\begin{definition}
+\label{def:qary}
+Let~$m \geq n >0$ and~$q \geq 2$ be integers. Let~${\bf A} \in (\mZ/q\mZ)^{m \times n}$. 
+\begin{itemize} 
+\item[$\bullet$] The image lattice associated to~${\bf A}$ is defined as
+\[
+\Lambda({\bf A}) = {\bf A} \cdot (\mZ/q\mZ)^n + q \cdot \mZ^m = \{ {\bf y} \in \mZ^m: \exists {\bf s} \in (\mZ/q\mZ)^n, {\bf y} = {\bf A}\cdot {\bf s} \bmod q\};
+\]
+\item[$\bullet$] The image lattice associated to~${\bf A}$ is defined as
+\[
+\Lambda^\perp({\bf A}) = \{ {\bf x} \in \mZ^m: {\bf x}^T \cdot {\bf A} = {\bf 0} \bmod q\}.
+\]
+\end{itemize}
+\end{definition}
+
+In the following, for the sake of compactness, the notation~$\mZ_q$ will refer to $\mZ/q\mZ$ (note that this does not refer 
+to $q$-adic integers, which do not play any role in these lecture notes). 
+
+By using Lemma~\ref{def:lattice2}, it can be checked that the sets $\Lambda({\bf A})$ and~$\Lambda^\perp({\bf A})$ are indeed lattices. As they are defined modulo~$q$, they are sometimes called~$q$-ary lattices. Also, due to their relevance in lattice-based cryptography, the lattice $\Lambda({\bf A})$ is often called the LWE lattice related to~${\bf A}$ and the lattice $\Lambda^\perp({\bf A})$ is often called the SIS lattice related to~${\bf A}$. The LWE and SIS problems are defined in Section~\ref{se:LBC}. The $\Lambda({\bf A})$ lattice is also known as the construction~A lattice 
+applied to the linear code~${\bf A} \cdot \mZ_q^n$. The~``A'' in ``construction~A'' is unrelated to the choice of notation for matrix~${\bf A}$: construction~A refers to the first construction out of several, to obtain lattices from linear codes~\cite[Chapter~7]{CS99}. 
+The following result shows that the two constructions are equivalent. 
+
+
+\begin{lemma}
+\label{le:qary_eq}
+Let~$m \geq n >0$ and~$q \geq 2$ be integers, and~${\bf A} \in \mZ_q^{m \times n}$.
+Let~${\bf H} \in \mZ_q^{m \times k}$ be such that~${\bf H} \cdot \mZ_q^k = \{ {\bf x} \in  \mZ_q^m : {\bf x}^T \cdot {\bf A} = {\bf 0} \bmod q\}$. Then:
+\[
+\Lambda^\perp({\bf A}) = \Lambda({\bf H}) \ \ \mbox{ and } \ \ \Lambda({\bf A}) =  \Lambda^\perp({\bf H}).
+\]
+\end{lemma}
+
+\begin{proof}
+Note  that the matrix~${\bf H}$ is well-defined and that its column span ${\bf H} \cdot \mZ_q^k$ is  the kernel of the 
+map~$\phi_{\bf A}: {\bf x} \mapsto {\bf A}\cdot {\bf x} \bmod q$. This provides the first equality. Now, note that~${\bf A} \cdot \mZ_q^n$
+is  the kernel of the map~$\phi_{\bf H}$. It is indeed contained in it by definition of~${\bf H}$ and equality follows by a cardinality argument
+based on the isomorphism~$\im(\phi) \simeq \mZ_q^m / \ker (\phi)$ which holds for any linear map~$\phi$ whose domain is~$\mZ_q^m$:
+\[
+|\ker(\phi_{\bf H})| = \frac{q^m}{|\im(\phi_{\bf H})|} = \frac{q^m}{|\ker(\phi_{\bf A})|} = |\im( \phi_{\bf A})|.
+\]
+This gives the second equality.
+\end{proof}
+
+The statement of the lemma and its proof above are a little cumbersome, because we considered a modulus~$q$ of arbitrary arithmetic shape. If $q$ is assumed to be prime, then~$\mZ_q$ is a field and we are reduced to studying vector spaces over a finite field. For statements involving these lattices, we will often assume that~$q$ is prime. Most often, the results also hold up to minor modifications for more general moduli, but their proofs tend to be more technical.
+
+
+We now introduce the notion of lattice duality. 
+
+\begin{definition}
+\label{def:dual}
+Let $L$ be a lattice. We define the dual of $L$ as 
+\[
+\widehat{L} = \left\{ \widehat{\bf b} \in \mbox{span}_\mR (L): \forall {\bf b} \in L, \ps{{\bf b}}{\widehat{\bf b}} \in \mZ \right\}.
+\]
+\end{definition}
+
+This can be seen as a generalization of the inverse over~$\mR \setminus \{0\}$, as $\widehat{x \cdot \mZ} = \frac{1}{x} \cdot \mZ$ for any~$x \in \mR \setminus \{0\}$. We have the following elementary properties on lattice duals. 
+
+\begin{lemma}
+\label{le:dual_props}
+Let~$L$ be a lattice. Then~$\widehat{L}$ is a lattice and~$\widehat{\widehat{L}} = L$.
+\end{lemma}
+
+We now come back to our running example of construction A lattices.
+
+\begin{lemma}
+\label{le:constA_dual}
+Let~$q\geq 2$ prime, $m>n>0$ and~${\bf A} \in \mZ_q^{m \times n}$. Then we have:
+\[\widehat{\Lambda({\bf A})} = \frac{1}{q} \cdot \Lambda^\perp({\bf A}).\] 
+\end{lemma}
+
+\begin{proof}
+We start with the inclusion $\widehat{\Lambda({\bf A})} \subseteq  (1/q) \cdot \Lambda^\perp({\bf A})$. 
+Let $\widehat{\bf b} \in \widehat{\Lambda({\bf A})}$. By definition, for 
+all~${\bf s} \in \mZ_q^n$ and all ${\bf y} \in \mZ^m$ such that~${\bf y} = {\bf A}\cdot {\bf s} \bmod q$, 
+we have~$\ps{\widehat{\bf b}}{{\bf y}} \in \mZ$. Taking~${\bf s}= 0$ and setting~${\bf y} = (0^{i-1},q,0^{m-i})^T$ for all~$i \leq m$, we obtain that $\widehat{\bf b} \in (1/q) \cdot \mZ^m$. Let us write $\widehat{\bf b} = (1/q) \cdot {\bf k}$ for~${\bf k} \in \mZ^m$. 
+By definition of~$\widehat{\Lambda({\bf A})}$, for 
+all~${\bf s} \in \mZ_q^n$ and all ${\bf y} \in \mZ^m$ such that~${\bf y} = {\bf A}\cdot {\bf s} \bmod q$, 
+we have~$\ps{{\bf k}}{{\bf y}} \in q \cdot \mZ$ and hence~${\bf k}^T \cdot {\bf A} \cdot {\bf s} = 0 \bmod q$. By setting~${\bf s} = (0^{i-1},1,0^{n-i})^T$ for all~$i \leq n$, we finally obtain that~${\bf k}^T \cdot {\bf A}= {\bf 0} \bmod q$.
+
+We now prove the reverse inclusion. For this purpose, take~${\bf k} \in \mZ^m$ such that ${\bf k}^T \cdot {\bf A}= {\bf 0} \bmod q$.
+We would like to show that for all~${\bf s} \in \mZ_q^n$ and all~${\bf y} \in \mZ^m$ such that~${\bf y} = {\bf A} \cdot {\bf s} \bmod q$, we have~$\ps{(1/q) \cdot {\bf k}}{{\bf y} } \in \mZ$. Note that the latter is equivalent to~${\bf k}^T \cdot {\bf A} \cdot {\bf s} = 0 \bmod q$: it is implied by the assumption that  ${\bf k}^T \cdot {\bf A}= {\bf 0} \bmod q$.
+\end{proof}
+
+
+
+\subsection{Bases and invariants}
+
+Definition~\ref{def:lattice1} states that for any lattice~$L \subset \mR^m$, there exist ${\bf b}_1, \ldots, {\bf b}_n$  
+linearly independent in~$\mR^m$ such that~$L= \sum_{i \leq n} \mZ\cdot {\bf b}_i$. The vectors~${\bf b}_1, \ldots, {\bf b}_n$  
+are said to form a \emph{basis} of~$L$. If~${\bf B} \in \mR^{m \times n}$ is the matrix whose columns are the~${\bf b}_i$'s (in any order), then~${\bf B}$ has rank~$n$, $L = {\bf B} \cdot \mZ^n$ and~${\bf B}$ is called a \emph{basis matrix} of~$L$.
+
+Bases are not unique (one can always replace a basis vector by its opposite), but they all share the same cardinality~$n$, called the \emph{dimension} of~$L$. Recall that~$n$ can be lower than the embedding dimension~$m$.  
+
+\begin{lemma}
+\label{le:dim}
+If ${\bf b}_1, \ldots, {\bf b}_n$ and ${\bf c}_1, \ldots, {\bf c}_{n'}$ are two bases of the same lattice~$L$, then we have that~$n=n'$. 
+Further, there exists~${\bf U} \in \mZ^{n \times n}$ with~$\det ({\bf U}) = \pm 1$ such that 
+\[
+\left({\bf c}_1|\ldots |{\bf c}_n \right) = \left({\bf b}_1|\ldots |{\bf b}_n \right) \cdot {\bf U}.
+\]
+\end{lemma}
+
+Note that~${\bf U}$ is multiplied from the right, as we consider column vectors. 
+A matrix~${\bf U} \in \mZ^{n \times n}$ with~$\det ({\bf U}) = \pm 1$ is called \emph{unimodular}. Such matrices are exactly
+the integer matrices whose inverses are integer matrices, i.e., the elements of~$\mbox{GL}_n(\mZ)$. Examples of unimodular matrices include permutation matrices, diagonal matrices with entries equal to~$\pm 1$ and upper triangular integer matrices with~$1$'s on the diagonal. In fact, it can be proved that any unimodular matrix can be written as a product of such matrices. 
+
+Lemma~\ref{le:dim} implies
+that a 1-dimensional lattice~$L = x \cdot \mZ$ with~$x \in \mR\setminus \{0\}$ has exactly  two bases: $x$ and~$-x$. When~$n \geq 2$, 
+Lemma~\ref{le:dim} implies that a given lattice~$L$ admits infinitely many lattice bases: indeed, unimodular matrices include integer upper-triangular matrices with $1$'s on the diagonal, and all of these give different bases.  
+
+As the dimension~$n$ is shared across all bases of a given lattice, it is called a \emph{lattice invariant}. 
+In the rest of this subsection, we will introduce a few other such lattice invariants. 
+
+\begin{definition}
+\label{def:vol}
+Let~$L$ be a lattice with a basis matrix~${\bf B}$. The determinant of~$L$ is defined as
+\[
+\det(L) = \sqrt{\det( {\bf B}^T \cdot {\bf B})}.
+\]
+\end{definition}
+
+The determinant of a lattice is sometimes called the volume or co-volume. Note that when~$L$ is full-rank, the definition can 
+be simplified to~$\det(L) = |\det ({\bf B})|$. The determinant is indeed a lattice invariant, as formally stated in the 
+following lemma. 
+
+\begin{lemma}
+Let~${\bf B}$ and~${\bf C}$ be two matrix bases of the same lattice~$L$. Then we have
+ \[
+ \sqrt{\det( {\bf B}^T \cdot {\bf B})} =  \sqrt{\det( {\bf C}^T \cdot {\bf C})}.
+\]
+\end{lemma}
+
+The proof follows by considering a unimodular matrix~${\bf U}$ such that ${\bf C} = {\bf B} \cdot {\bf U}$. 
+Geometrically, and as illustrated in Figure~\ref{fig:det}, the determinant is the volume of the parallelepiped~${\bf B} \cdot [0,1]^n$. 
+
+The following result focuses on dual lattices. 
+
+\begin{lemma}
+\label{le:dual_det}
+Let~$L$ be a lattice with a basis matrix~${\bf B}$. Then~$\widehat{{\bf B}} = {\bf B} \cdot ( {\bf B}^T \cdot {\bf B})^{-T}$ 
+is a basis of~$\widehat{L}$, and~$\det(\widehat{L}) = 1/\det(L)$.  
+\end{lemma}
+ 
+Note that when the lattice is full-rank, the definition of~$\widehat{{\bf B}}$ simplifies to~$\widehat{{\bf B}} =  {\bf B}^{-T}$. 
+
+We now return to our running example of construction~A lattices. 
+
+\begin{lemma}
+\label{le:consA_dimdet}
+Let~$q\geq 2$ prime, $m>n>0$ and~${\bf A} \in \mZ_q^{m \times n}$. 
+We have 
+\begin{eqnarray*}
+\dim (\Lambda({\bf A})) = m \ \ &\mbox{ and }& \ \ \det(\Lambda({\bf A})) = q^{m - r}, \\
+\dim (\Lambda^{\perp}({\bf A})) = m \ \ &\mbox{ and }& \ \ \det(\Lambda^{\perp}({\bf A})) = q^{r},
+\end{eqnarray*}
+where~$r$ is the rank of~${\bf A}$. Further, if~${\bf A}$ is sampled uniformly, then its 
+rank is~$n$ with probability~$\geq 1 - q^{-m+n}$. 
+\end{lemma}
+
+\begin{proof}
+The dimension equalities follow from the fact that~$q \mZ^m$ is contained in 
+both~$\Lambda({\bf A})$ and~$\Lambda^{\perp}({\bf A})$. By Lemmas~\ref{le:constA_dual} and~\ref{le:dual_det},
+the determinant equality for~$\Lambda({\bf A})$ and~$\Lambda^{\perp}({\bf A})$ are equivalent. We prove the first one
+by explicitly constructing a basis for~$\Lambda({\bf A})$. 
+
+As the rank of~${\bf A}$ is~$r$, there exist rank-$r$ matrices~${\bf A}' \in \mZ_q^{m \times r}$ and~${\bf T} \in \mZ_q^{r \times n}$ such  that~${\bf A} = {\bf A}' \cdot {\bf T} \bmod q$. Up to reordering the rows of~${\bf A}'$, we may assume that its first~$r$ rows form 
+an invertible matrix. By left-multiplying~${\bf T}$ (resp.\ right-multiplying~${\bf A}'$) by this matrix (resp.\ its inverse), we can assume that the first~$r$ rows of~${\bf A}'$ form the identity matrix. Let us write~${\bf A}' = ({\bf Id} | {\bf A}''^T)^T$ for~${\bf A}'' \in \mZ_q^{(m-r) \times r}$. By using the definition of~$\Lambda({\bf A})$, we can write:
+\[
+\Lambda({\bf A}) = {\bf A} \cdot \mZ_q^n + q\cdot \mZ^m = \left[ \begin{array}{c|c|c} 
+{\bf Id} & q \cdot {\bf Id} & {\bf 0} \\ \hline
+{\bf A}'' & {\bf 0} &  q \cdot {\bf Id}
+\end{array}\right] \cdot \mZ^{m+r},
+\]
+where the first block-row has~$r$ rows and $r+r+(m-r)$ columns and the coefficients of~${\bf A}''$ are viewed as integers. 
+Note that this matrix has linearly dependent columns and hence
+cannot be a basis of~$\Lambda({\bf A})$. However, the second block-column (i.e., columns $r+1$ to~$2r$) can be seen to be linearly 
+dependent with the others. For example, the $(r+1)$-th column is $q$ times the first column to which one has subtracted the  columns of the third block  mutiplied by the first column of~${\bf A}''$. The second block is hence superfluous and we can write:
+  \[
+\Lambda({\bf A}) =  \left[ \begin{array}{c|c} 
+{\bf Id} &  {\bf 0} \\ \hline
+{\bf A}'' &   q \cdot {\bf Id}
+\end{array}\right] \cdot \mZ^{m}.
+\]
+As the matrix is lower triangular with non-zero diagonal coefficients, its columns are linearly independent. They hence form a basis of~$\Lambda({\bf A})$, and we can compute the lattice determinant by counting the number of occurrences of~$q$ on the diagonal. 
+
+Now, assume that~${\bf A}$ is sampled uniformly in~$\mZ_q^{m \times n}$. It is of rank~$n$ if and only if the $i$-th column is linearly independent from the previous ones, for each~$i \leq n$. The probability~$p$ that this occurs satisfies:
+\[
+1- p \leq \sum_{i=1}^n q^{-m+i-1}  = q^{-m} \frac{q^n-1}{q-1} \leq q^{-m+n}.
+\]
+Re-arranging terms allows to complete the proof.
+\end{proof}
+
+We now focus on another lattice invariant, namely the lattice minimum. 
+
+\begin{definition}
+Let~$L$ be a lattice. Its minimum~$\lambda_1(L)$ is the (Euclidean) norm of any shortest non-zero vector of~$L$. 
+\end{definition}
+
+The existence of a shortest non-zero vector in~$L$ is guaranteed by the discreteness of the lattice (Lemma~\ref{def:lattice2}). This implies that~$\lambda_1(L) >0$ for any non-zero lattice~$L$. 
+
+
+
+
+\begin{comment}
+
+
+
+Definition : The first minimum of a lattice L is the (Euclidean) norm of a shortest non-zero vector of L.  lambda_1(L). (its existence is implied by the discreteness of L).
+
+It is always reached at least twice, and may be reached more than that (the smallest known upper bound is exponential in the lattice dimension)
+
+Remark: This is exactly twice the packing radius: r_pack = largest r s.t. balls of radii r_pack and centers the lattice points do not overlap. This is not the covering radius, which is the smallest r s.t. lattice balls of radius r cover the whole span. 
+
+Minkowski thm: For every lattice L of rank n, we have lambda_1 ( L ) leq sqrt(n) det(L)^(1/n).
+
+Theorem (simplified variant of Minkowski Hlawka): Let q prime and m >=n. Let A sampled uniformly in Z_q^(m x n). With probability >= 1-q^{-(m-n)}, it has rank n. When this is the case, Lambda_q(A) has determinant q^{m-n}. 
+With probability >= 1 - 2^-m, it satisfies 
+            lambda_1 (Lambda_q(A)) >= min (q, sqrt(m)*q^{1-n/m}/12). 
+
+Proof. 
+Now, the interesting part. lambda_1< B iff there exists s in Z_q^n \ 0 s.t. 0<||A*s mod q||<B 
+                                                                                  or q < B (for s=0 mod q).
+For non-zero s, does there exist t in Ball_m(B) non-zero s.t. A*s = t mod q? 
+For B<=q, the probability that lambda_1 is < B is: 
+Pr_A[exists b with non-zero s and norm <=B]
+= Pr_A[exists s non-zero and t in Ball_m(B) : As=t mod q]
+                              <= sum_s sum_t Pr_A [ A*s = t mod q ]    // union bound
+                                = sum_s sum_t  Prod_i Pr_{a_i} [ <a_i,s> = t_i mod q]  // stat indep
+                                = sum_s sum_t  q^{-m}  //  s non-zero, q prime
+                                <= q^{n-m} * vol(ball_m(B+sqrt(m/2))   // inclusion of boxes
+vol(ball_m(C)) <= (2pi e/m)^m/2 * C^m
+=> vol(ball_m(B+sqrt(m/2)) <= (ctt/m)^m/2 * B^m    (using B>= sqrt(m))
+Pr_A[lambda1<=B]  <= q^{n-m} * (6 * B/sqrt(m)) ^m 
+QED
+\end{comment}
+
+
+
+\begin{comment}
+
+
+
+
+
+
+Lemma/Definition [Construction A lattices]. 
+  Let C be a linear code over Z/qZ, for a prime q. Dimension m, rank n.
+  I.e., C = A * Z_q ^n, for some matrix A in Z_q^{m x n} of rank n. 
+  Then L_C = C + q Z^m = A * Zq^n + Z^m = Lambda_q(A) is a lattice.    
+  Similarly, 
+  L^perp_C = C^perp + qZ^m  = {x in Z^m: x^T * A = 0 mod q} = Lambda_q^perp(A) 
+is also a lattice.       
+
+Proof (for the L_C lattice): 
+ Use the canonical form => get a basis.  
+QED
+\end{comment}
+
+
+
+
+\subsection{Lattice Gaussians}
+
+
+\subsection{Selected Hard Lattice Problems}
+

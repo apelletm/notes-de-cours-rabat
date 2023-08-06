@@ -1,8 +1,9 @@
 \documentclass[a4paper,11pt]{article}
-\usepackage[french]{babel}
+\usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
-\usepackage{amsfonts}
-\usepackage{amsmath,amssymb, amsthm}
+\usepackage{amsmath,amssymb,amsthm,amsfonts}
+\usepackage{comment}
+\usepackage{fullpage}
 
 %\usepackage[a4paper, total={5in, 8in}]{geometry}
 
@@ -18,13 +19,16 @@
 \newtheorem{definition}{Definition}
 \newtheorem{example}{Example}
 \newtheorem{exercise}{Exercise}
+\newtheorem{lemma}{Lemma}
 \newtheorem{notations}{Notations}
 \newtheorem*{remark}{Remark}
 
 
 \def\labelitemi{$\bullet$}
 
-
+\newcommand{\mZ}{\mathbb{Z}}
+\newcommand{\mR}{\mathbb{R}}
+\newcommand{\mQ}{\mathbb{Q}}
 \newcommand{\eps}{\varepsilon}
 \newcommand{\NN}{\mathbb{N}}
 \newcommand{\ZZ}{\mathbb{Z}}
@@ -37,6 +41,10 @@
 \renewcommand{\vec}{\mathbf}
 \DeclareMathOperator{\poly}{poly}
 
+\newcommand{\im}{\mathrm{im}}
+\renewcommand{\ker}{\mathrm{ker}}
+
+\newcommand{\ps}[2]{\langle#1,#2\rangle}
 
 \begin{document}
 
@@ -47,6 +55,7 @@ Some conventions (?)
 \begin{itemize}
 \item $n$ the dimension of the lattice
 \item bold vectors and matrices (using \texttt{$\setminus$vec})
+\item column vectors
 \end{itemize}
 
 \tableofcontents
