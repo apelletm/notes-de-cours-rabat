@@ -8,7 +8,9 @@ Dans une partie préliminaire, Damien Stehlé donnera les définitions
 élémentaires portant sur les réseaux
 euclidiens (bases, minima, volume), qu'il illustrera avec des exemples utiles
 pour les
-cours avancés (notamment les réseaux $q$-aires). Il abordera les théorèmes
+cours avancés (notamment les réseaux $q$-aires). 
+
+Il abordera les théorèmes
 de Minkowski et Minkowski-Hlawka. Ensuite, il introduira
 les distributions gaussiennes sur des réseaux,
 nécessaires pour les parties suivantes.
@@ -148,7 +150,7 @@ We would like to show that for all~${\bf s} \in \mZ_q^n$ and all~${\bf y} \in \m
 
 
 
-\subsection{Bases and invariants}
+\subsection{Bases and volume}
 
 Definition~\ref{def:lattice1} states that for any lattice~$L \subset \mR^m$, there exist ${\bf b}_1, \ldots, {\bf b}_n$  
 linearly independent in~$\mR^m$ such that~$L= \sum_{i \leq n} \mZ\cdot {\bf b}_i$. The vectors~${\bf b}_1, \ldots, {\bf b}_n$  
@@ -208,7 +210,7 @@ is a basis of~$\widehat{L}$, and~$\det(\widehat{L}) = 1/\det(L)$.
  
 Note that when the lattice is full-rank, the definition of~$\widehat{{\bf B}}$ simplifies to~$\widehat{{\bf B}} =  {\bf B}^{-T}$. 
 
-We now return to our running example of construction~A lattices. 
+We now return to our running example of Construction~A lattices. 
 
 \begin{lemma}
 \label{le:consA_dimdet}
@@ -221,6 +223,10 @@ We have
 where~$r$ is the rank of~${\bf A}$. Further, if~${\bf A}$ is sampled uniformly, then its 
 rank is~$n$ with probability~$\geq 1 - q^{-m+n}$. 
 \end{lemma}
+
+We stress that the dimension of these lattices is indeed~$m$ (even though in the rest of this section, the lattice dimension is denoted
+by~$n$).\footnote{DS: les notations sont sous-optimales ici} 
+
 
 \begin{proof}
 The dimension equalities follow from the fact that~$q \mZ^m$ is contained in 
@@ -255,77 +261,206 @@ Now, assume that~${\bf A}$ is sampled uniformly in~$\mZ_q^{m \times n}$. It is o
 Re-arranging terms allows to complete the proof.
 \end{proof}
 
+\textcolor{red}{Damien: Do we need the HNF? How to get a short basis from short vectors?}
+
+\subsection{Lattice minimum}
+
 We now focus on another lattice invariant, namely the lattice minimum. 
 
 \begin{definition}
 Let~$L$ be a lattice. Its minimum~$\lambda_1(L)$ is the (Euclidean) norm of any shortest non-zero vector of~$L$. 
 \end{definition}
 
-The existence of a shortest non-zero vector in~$L$ is guaranteed by the discreteness of the lattice (Lemma~\ref{def:lattice2}). This implies that~$\lambda_1(L) >0$ for any non-zero lattice~$L$. 
+The existence of a shortest non-zero vector in~$L$ is guaranteed by the discreteness of the lattice (Lemma~\ref{def:lattice2}). 
+This implies that~$\lambda_1(L)$ is well-defined. Note that the minimum is always reached at least twice: if a vector is in a lattice 
+and has a given norm, so does its opposite. It may be reached more times. The choice of the Euclidean norm is somewhat arbitrary:
+it is mostly justified by technical convenience.  
+
+The litterature sometimes considers the packing radius of a lattice, defined as the largest real~$r>0$ such that any two balls of radius~$r$ centered in lattice points do not overlap more than on a single point. This is exactly half the lattice minimum.  
+
+Minkowski's theorem gives a relationship between the minimum and the determinant of a lattice. 
+
+\begin{theorem}
+\label{th:Minko}
+For every lattice~$L$ of dimension~$n$, we have~$\lambda_1(L) \leq \sqrt{n} \cdot \det(L)^{1/n}$.
+\end{theorem}
+
+Note that the minimum can be arbitrarily small compared to the $n$-th root of the determinant, as can be seen from the lattice
+spanned by the columns of the diagonal matrix~$\mbox{diag}(\eps, 1/\eps)$ for~$\eps>0$ going to~$0$. We will prove Minkowski's theorem for the Construction~A lattices, up to a loss of a factor~2. (Recall that their determinants were computed in Lemma~\ref{le:consA_dimdet}.)
+
+\begin{lemma}
+\label{le:Minko_constA}
+Let~$q\geq 2$ prime, $m>n>0$ and~${\bf A} \in \mZ_q^{m \times n}$. Let~$r$ 
+denote the rank of~${\bf A}$. 
+We have 
+\[
+\lambda_1( \Lambda({\bf A}))  \leq 
+ 2\sqrt{m}  \cdot  q^{1-r/m} \ \  \mbox{ and } \ \ 
+\lambda_1 (\Lambda^{\perp}({\bf A})) \leq  2 \sqrt{m} \cdot  q^{r/m}.
+\]
+\end{lemma}
 
 
+\begin{proof}
+ Let us consider all the vectors~${\bf x} \in \mZ^m$ with~$\|{\bf x}\|_\infty \leq \rho$, for some~$\rho$ to be determined later. If there are more than~$q^r$ such vectors, then, by the pigeon hole principle,  
+there exist ${\bf x}, {\bf x}' \in \mZ^m$ distinct such that~${\bf x}^T \cdot {\bf A} =  {\bf x'}^T \cdot {\bf A} \bmod q$ and~$\|{\bf x}\|_\infty,\|{\bf x}'\|_\infty \leq \rho$. The vector~${\bf x} - {\bf x}'$ is hence non-zero, belongs to $\Lambda^{\perp}({\bf A})$ and has infinity norm~$\leq 2 \sqrt{m} \cdot \rho$. This implies that  $\lambda_1(\Lambda^{\perp}({\bf A})) \leq 2 \sqrt{m} \cdot  \rho$. 
+Setting~$\rho = q^{r/m}$ gives the result. 
 
+Lemma~\ref{le:qary_eq} allows to obtain the desired bound for~$\Lambda({\bf A})$.
+\end{proof}
+
+By using the specificities of the Construction~A lattices, we can obtain bounds that can be lower for some ranges of parameters. 
+
+\begin{lemma}
+\label{le:Minko_constA}
+Let~$q\geq 2$ prime, $m>n>0$ and~${\bf A} \in \mZ_q^{m \times n}$. Let~$r$ 
+denote the rank of~${\bf A}$. 
+We have 
+\[
+\lambda_1( \Lambda({\bf A}))  \leq 
+ \min \left( 2\sqrt{m}  \cdot  q^{(m-r)/m}, q \right) \ \  \mbox{ and } \ \ 
+\lambda_1 (\Lambda^{\perp}({\bf A})) \leq  \min\left( \min_{1 \leq  \mu \leq m} 2 \sqrt{\mu} \cdot  q^{r/\mu}, q\right).
+\]
+\end{lemma}
+
+Note that the function $\mu \mapsto 2 \sqrt{\mu} \cdot  q^{r/\mu}$ first decreases but then increases with~$\mu$. As a result, 
+for~$m < 2 r \log q$, the second bound is $\min(2 \sqrt{m} \cdot  q^{r/m}, q)$ and for $m \geq 2 r \log q$ and~$q \geq 3$, 
+it is $\leq \min(4\sqrt{r \log q}, q)$.
+
+\begin{proof}
+These lattices always contain~$\mZ_q^m$, which explains why their minimum is no greater than~$q$. 
+For the $\Lambda^{\perp}({\bf A})$ lattice, one may further observe that $\Lambda^{\perp}({\bf A}') \subseteq \Lambda^{\perp}({\bf A})$  for any~${\bf A}' \in \mZ_q^{\mu \times n}$ made of $\mu$ out of the~$m$ rows of~${\bf A}$, and further that the rank of~${\bf A}'$ is no larger than the rank of~${\bf A}$. 
+\end{proof}
 
 \begin{comment}
-
-
-
-Definition : The first minimum of a lattice L is the (Euclidean) norm of a shortest non-zero vector of L.  lambda_1(L). (its existence is implied by the discreteness of L).
-
-It is always reached at least twice, and may be reached more than that (the smallest known upper bound is exponential in the lattice dimension)
-
-Remark: This is exactly twice the packing radius: r_pack = largest r s.t. balls of radii r_pack and centers the lattice points do not overlap. This is not the covering radius, which is the smallest r s.t. lattice balls of radius r cover the whole span. 
-
-Minkowski thm: For every lattice L of rank n, we have lambda_1 ( L ) leq sqrt(n) det(L)^(1/n).
-
-Theorem (simplified variant of Minkowski Hlawka): Let q prime and m >=n. Let A sampled uniformly in Z_q^(m x n). With probability >= 1-q^{-(m-n)}, it has rank n. When this is the case, Lambda_q(A) has determinant q^{m-n}. 
-With probability >= 1 - 2^-m, it satisfies 
-            lambda_1 (Lambda_q(A)) >= min (q, sqrt(m)*q^{1-n/m}/12). 
-
-Proof. 
-Now, the interesting part. lambda_1< B iff there exists s in Z_q^n \ 0 s.t. 0<||A*s mod q||<B 
-                                                                                  or q < B (for s=0 mod q).
-For non-zero s, does there exist t in Ball_m(B) non-zero s.t. A*s = t mod q? 
-For B<=q, the probability that lambda_1 is < B is: 
-Pr_A[exists b with non-zero s and norm <=B]
-= Pr_A[exists s non-zero and t in Ball_m(B) : As=t mod q]
-                              <= sum_s sum_t Pr_A [ A*s = t mod q ]    // union bound
-                                = sum_s sum_t  Prod_i Pr_{a_i} [ <a_i,s> = t_i mod q]  // stat indep
-                                = sum_s sum_t  q^{-m}  //  s non-zero, q prime
-                                <= q^{n-m} * vol(ball_m(B+sqrt(m/2))   // inclusion of boxes
-vol(ball_m(C)) <= (2pi e/m)^m/2 * C^m
-=> vol(ball_m(B+sqrt(m/2)) <= (ctt/m)^m/2 * B^m    (using B>= sqrt(m))
-Pr_A[lambda1<=B]  <= q^{n-m} * (6 * B/sqrt(m)) ^m 
-QED
+2 (1/2sqr(x) q^r/x + sqrt(x)*r*logq*q^r/x*(-1/x^2))
+= q^(r/x) x^(-3/2)  ( x - 2r*logq )
+=> decreasing up to x = floor (2r log q)
+2sqrt(2rlogq) * exp(rlog q / floor (2r log q))
 \end{comment}
 
+It turns out that Minkowski's theorem is essentially sharp if we consider random lattices for an appropriate distribution over the 
+set of lattices. This is known as the Minkowski-Hlawka theorem. We prove a variant for Construction~A lattices.
 
+\begin{theorem}
+Let $q\geq 2$ prime, $m  > n>0$ and~${\bf A}$ sampled uniformly in~$\mZ_q^{m \times n}$. Then we have
+\begin{eqnarray*}
+            \lambda_1( \Lambda({\bf A})) & \geq  & \min \left(\sqrt{m} \cdot q^{1-n/m}/10 -\sqrt{m/2}, q \right), \\
+            \lambda_1( \Lambda^{\perp}({\bf A})) & \geq & \min \left(\sqrt{m} \cdot q^{n/m}/10 -\sqrt{m/2}, q \right),
+\end{eqnarray*}
+where each bound holds with probability~$\geq 1-2^{-m}$.
+\end{theorem}
+Note that for some values of the parameters, notably $m$ very large in the second case, 
+the lower bound on the lattice minimum may be negative. In such a case, the statement is vacuous. 
+For many parameters, the lower bounds are within a factor~10 of the upper bounds given by Minkowski's theorem.
+
+\begin{proof}
+For~$\rho < q$, the event~$\lambda_1(\Lambda({\bf A})) \leq \rho$ occurs exactly if there exists~${\bf s} \in \mZ_q^n \setminus \{\bf 0\}$ 
+such that $0 < \|{\bf A} \cdot {\bf s} \bmod q \|< \rho$. Here the reduction modulo~$q$ takes values in~$[-q/2,q/2)$. 
+By the union bound, we have:
+\begin{eqnarray*}
+\Pr_{\bf A} \left[\lambda_1(\Lambda({\bf A})) \leq \rho \right] & = & \Pr_{\bf A} \left[\exists {\bf y} \in \mathcal{B}({\bf 0},\rho) \cap \mZ^m, \exists {\bf s} \in \mZ_q^n \setminus \{\bf 0\}: {\bf A} \cdot {\bf s} = {\bf y} \bmod q \right] \\
+&\leq& 
+\sum_{\substack{{\bf y} \in \mathcal{B}({\bf 0},\rho) \cap \mZ^m\\ {\bf s} \in \mZ_q^n \setminus \{\bf 0\}}} 
+ \Pr_{\bf A} \left[{\bf A} \cdot {\bf s} = {\bf y} \bmod q \right].
+\end{eqnarray*}
+As the rows of~${\bf A}$ are statistically independent, ${\bf s}$ is non-zero and~$q$ is prime, we have that $\Pr_{\bf A} [{\bf A} \cdot {\bf s} = {\bf y} \bmod q ] = q^{-m}$. This implies the following upper bound:
+\[
+\Pr_{\bf A} \left[\lambda_1(\Lambda({\bf A})) \leq \rho \right] \leq \left|\mathcal{B}({\bf 0},\rho) \cap \mZ^m\right| \cdot q^{n-m}.
+\]
+By enlarging the radius by $\sqrt{m/2}$, the zero-centered ball contains all the unit hypercubes centered in the points of $\mathcal{B}({\bf 0},\rho) \cap \mZ^m$. This gives that 
+\[
+|\mathcal{B}_m({\bf 0}, \rho) \cap \mZ^m| \ \leq  \ \mbox{vol}(\mathcal{B}_m({\bf 0}, \rho +\sqrt{m/2}))
+\ \leq \  (\rho +\sqrt{m/2})^m \cdot \left(\frac{2\pi e}{m}\right)^{m/2},
+\]
+from which the proof can be completed.
+
+We now focus on the~$\lambda_1(\Lambda^{\perp}({\bf A}))$ lattice. For~$\rho < q$, we have:
+\begin{eqnarray*}
+\Pr_{\bf A} \left[\lambda_1(\Lambda^{\perp}({\bf A})) \leq \rho \right] & = & \Pr_{\bf A} \left[\exists {\bf x} \in \mathcal{B}({\bf 0},\rho) \cap \mZ^m \setminus \{{\bf 0}\}: {\bf x}^T \cdot {\bf A} = {\bf 0} \bmod q \right] \\
+&\leq& 
+\sum_{{\bf x} \in \mathcal{B}({\bf 0},\rho) \cap \mZ^m \setminus \{\bf 0\}}  \Pr_{\bf A} \left[{\bf x}^T \cdot {\bf A} = {\bf 0} \bmod q \right].
+\end{eqnarray*}
+Now, as~$q$ is prime and~${\bf x}$ is non-zero modulo~$q$, we have that $ \Pr_{\bf A} [{\bf x}^T \cdot {\bf A} = {\bf 0} \bmod q] = q^{-n}$. This gives:
+\[
+\Pr_{\bf A} \left[\lambda_1(\Lambda^{\perp}({\bf A})) \leq \rho \right] \leq  \left|\mathcal{B}({\bf 0},\rho) \cap \mZ^m\right| \cdot q^{-n}.
+\]
+We can conclude by using the above bound on $|\mathcal{B}_m({\bf 0}, \rho) \cap \mZ^m|$.
+\end{proof}
 
 \begin{comment}
-
-
-
-
-
-
-Lemma/Definition [Construction A lattices]. 
-  Let C be a linear code over Z/qZ, for a prime q. Dimension m, rank n.
-  I.e., C = A * Z_q ^n, for some matrix A in Z_q^{m x n} of rank n. 
-  Then L_C = C + q Z^m = A * Zq^n + Z^m = Lambda_q(A) is a lattice.    
-  Similarly, 
-  L^perp_C = C^perp + qZ^m  = {x in Z^m: x^T * A = 0 mod q} = Lambda_q^perp(A) 
-is also a lattice.       
-
-Proof (for the L_C lattice): 
- Use the canonical form => get a basis.  
-QED
+r^{m} (2pie/m)^(m/2) (1+sqrt(m/2)/r)^m q^(n-m) \leq 2^(-m)
+r +sqrt(m/2) <= q^(1-n/m) * sqrt(m/8pie)
 \end{comment}
 
+\subsection{Other lattice invariants}
 
+Other lattice invariants may be considered, depending on the context. An important example is the covering radius~$\rho(L)$, 
+defined as the smallest~$r$ such that the balls of radius~$r$ centered in the points of~$L$ cover~$\mbox{span}_\mR(L)$.
+The successive minima, defined below, are also frequently considered. The measure the lattice 'discreteness' in all possibly dimensions
+rather than only one, as does the lattice minimum. 
 
+\begin{definition}
+Let~$L \subset \mR^m$ be a lattice of dimension~$n$. For any~$i \leq n$, we define the~$i$-th minimum of~$L$ by:
+\[
+\lambda_i(L) = \min \left( r: \dim(\mbox{span}_\mR( L \cap \mathcal{B}_m ({\bf 0}, r))) \geq i \right). 
+\]
+\end{definition}
+
+Note that the minima are always reached. 
+
+\begin{lemma}
+For any lattice~$L \subset \mR^m$ of dimension~$n$, there exist~${\bf s}_1, \ldots, {\bf s}_n \in L$ linearly independent such that~$\|{\bf s}_i\| = \lambda_i(L)$, for all~$i \leq n$. 
+\end{lemma}
+
+We stress that the ${\bf s}_i$'s may not form a basis of the lattice~$L$. Indeed, there exist lattices for which no basis reaches 
+the minima. 
+
+We have the following transferance bounds. The lower bound can be proved using elementary manipulations of bases, 
+whereas the upper bound was proven by Banaszcyk in~\cite{Bana93}. 
+
+\begin{theorem}
+Let~$L \subset \mR^m$ be a lattice of dimension~$n$, and $\widehat{L}$ be its dual. We have
+\[ 
+1 \leq \lambda_1(L) \cdot  \lambda_n(\widehat{L}) \leq n. 
+\]
+\end{theorem}
 
 \subsection{Lattice Gaussians}
 
+\textcolor{red}{
+Damien: What do we need here? Only def and tail bound, and a statement for Klein/GPV? \\
+Which normalization? I tend to prefer Vadim's, for convenience \\
+A proof of Klein/GPV? The definition of the smoothing parameter?
+}
 
-\subsection{Selected Hard Lattice Problems}
+\subsection{Selected hard lattice problems}
+
+Many computational problems on lattices can be defined and studied. We refer to~\cite{NSD15} for a partial landscape. 
+Here we will introduce just a few problems, which play a more direct role in lattice-based cryptography.
+
+\begin{definition}
+Let~$\gamma \geq 1$. 
+The bounded distance decoding problem (BDD) is as follows: given as input a lattice~$L$ and a vector~${\bf t} \in \mbox{span}_\mR(L)$ such that~$\mbox{dist}({\bf t}, L) \leq \lambda_1(L) / \gamma$, the goal is to find~${\bf b} \in L$ such that~$\|{\bf b} - {\bf t}\| \leq \lambda_1(L) / \gamma$. 
+\end{definition}
+
+In the definition above, the distance $\mbox{dist}({\bf t}, L)$ from~${\bf t}$ to~$L$ is the minimum over all~${\bf b}$'s in~$L$ of the distance between~${\bf t}$ and~${\bf b}$. This minimum is well-defined, by discreteness of the lattice.
+Note that when~$\gamma > 2$, there exists only one solution to the problem. We stress that some references use different normalizations: 
+the input may be promised to satisfy $\mbox{dist}({\bf t}, L) \leq \lambda_1(L) / (2 \cdot \gamma)$. 
+
+\begin{definition}
+Let~$\gamma \geq 1$. 
+The shortest vector problem (SVP) is as follows: given as input a lattice~$L$, the goal is to find~${\bf s} \in L$ such that~$0 < \|{\bf s}\| \leq \gamma \cdot \lambda_1(L)$. 
+\end{definition}
+
+\begin{definition}
+Let~$\gamma \geq 1$. 
+The shortest independent vectors problem (SIVP) is as follows: given as input a lattice~$L$ of dimension~$n$, the goal is to 
+find~${\bf s}_1,\ldots,{\bf s}_n \in L$ such that~$\max_i \|{\bf s}_i \|  \leq \gamma \cdot \lambda_n(L)$. 
+\end{definition}
+
+These three problems become no easier when the parameter~$\gamma$ decreases or the lattice dimension~$n$ increases. 
+The parameter~$\gamma$ is typically referred to as the \emph{approximation factor}. 
+
+
 
