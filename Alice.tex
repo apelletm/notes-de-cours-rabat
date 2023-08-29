@@ -31,25 +31,148 @@ There have been examples of poorly chosen structure, leading to attacks on the s
 On the other hand, we also have examples of good choice of structure,\footnote{Understand here that they are good \emph{so far}. They might become ``poorly chosen'' in a few months/years if someone manages to exploit the structure to find better attacks.} for which the best known attack is the same as the best known attack against unstructured lattices (i.e., for the moment, the only way we know to solve some algorithmic problems in these lattice is to forget about the structure, and use standard attacks against unstructured lattice problems).
 
 The structure we will consider in this section is a special case of what is called \emph{modules over the ring of integers of a number field}. In order to make this name shorter, we will simply call these \emph{module lattices} in the rest of these lecture notes, as is commonly done in the cryptographic community. We will see in details what those objects are in Section~\ref{sec:number-theory} below. Module lattices are, by far, the most widely used structured lattices in lattice-based cryptography at the moment. If chosen appropriately, they may fall in the category of ``good structured lattices'' defined above, in the sens that, at the moment, we don't know how to solve standard algorithmic problems in these lattices (such at SVP) more efficiently than in non structured lattices.
-Before moving to the formal definition of module lattices, let me mention the existence of other kinds of structured lattices (which won't be covered here), such as ideals over a maximal order of a cyclic algebra~\cite{CLWE}.
+Before moving to the formal definition of module lattices, let us mention the existence of other kinds of structured lattices (which won't be covered here), such as ideals over a maximal order of a cyclic algebra~\cite{CLWE}.
 
 
-\subsection{Reminders about number theory}
+\subsection{Background on Number Theory}
 \label{sec:number-theory}
+In this section, we review some definitions and results of number theory that will be useful for the rest of the course. The last subsections are a little bit more advanced, and will be used only for the cryptanalysis part (Section~\ref{sec:cryptanalysis}). Most of the results that are recalled in this section and their proofs can be found in~\cite{Marcus}.
+\subsubsection{Number fields}
 
-Alice -- Rappels de théorie des nombres -- CM: 1h30 / TD: 1h
+A number field $K$ is a field, containing $\QQ$, and which has \emph{finite dimension} when seen as a vector space over $\QQ$.\footnote{Any field containing $\QQ$ can be seen as a vector space over $\QQ$, but not all of them have finite dimension as a $\QQ$-vector space. For instance, $\RR$ and $\CC$ are $\QQ$-vector spaces of infinite dimension.} The dimension of $K$ over $\QQ$ is called the \emph{degree} of the number field $K$, and denoted by $[K:\QQ]$. In these lecture notes, by convention, we will use the letter $d$ to denote the degree of a number field (when there is no conflict of notation).
 
-L'objectif de ce cours est de rappeler certains concepts de théorie algorithmique des nombres, qui seront utiles à la fois pour le cours d'isogénies et le cours sur les réseaux algébriques. Nous parlerons principalement de corps de nombres et d'idéaux (décomposition en idéaux premiers, groupe de classes, comportement des idéaux premiers dans des extensions de corps, etc), et de différents problèmes algorithmiques en lien avec ces objets, qui nous intéressent en cryptographie (manipulation des idéaux, calcul du groupe des classes, problème de l'idéal principal, etc).
+There are multiple ways to represent number fields. The most frequent ones are seeing them as subsets of $\CC$, or as polynomial rings. In these lecture notes, we will adopt the polynomial ring representation, which will be more convenient.
 
+\begin{lemma}
+\label{le:nb-field-eq-def}
+Let $P \in \QQ[X]$ be an irreducible polynomial of degree $d$. Then the polynomial ring $\QQ[X]/P(X)$ is a number field of degree $d$.
+Conversely, if $K$ is a number field of degree $d$, then there exists an irreducible polynomial $P$ of degree $d$ such that $K$ is isomorphic (as a field) to $\QQ[X]/P(X)$.
+\end{lemma}
 
-\subsection{Ring and Module variants of LWE, and the NTRU problem}
+In the rest of these lecture notes, let us fix an irreducible monic polynomial $P$ of degree $d$, and define $K = \QQ[X]/P(X)$. Note that for any polynomial $f(X) \in \QQ[X]$, there is a unique polynomial $g(X) \in \QQ[X]$ with degree $< d$ and such that $f(X) = g(X) \bmod P$. We will represent elements of $K$ by the unique representative of their class which has degree $< d$. In other words, we see $K$ as the set $\{\sum_{i = 0}^{d-1} x_i X^i\,|\, x_i \in \QQ\}$ (where operations are performed modulo $P$). With this representation, we see that $\QQ$ is indeed contained in $K$, as the set of all polynomials of degree $0$.
 
-Alice -- Réseaux algébriques en cryptographie -- CM: 3h / TD: 1h30
+\begin{example}\ 
+\begin{enumerate}
+\item Taking $P = 1$ leads to $K = \QQ$, the simplest of all number field. This is not a very interesting one, but keeping it in mind can be useful sometimes, to gain some intuition about what is happening.
+\item A very common choice of polynomial $P$ in cryptography is $P = X^d+1$, where $d$ is a power-of-two. This polynomial is a cyclotomic polynomial (its roots are the primitive $(2d)$-th roots of unity), and the field $K$ associated to it is called a cyclotomic field. Cyclotomic fields have been extensively studied and they enjoy nice properties, that can be useful in cryptography, both for constructing cryptographic primitives, and for cryptanalysis. Most of the schemes using structured lattices today rely on power-of-two cyclotomic fields.
+\item An other famous choice of polynomial is $P = X^p-X-1$, with $p$ a prime number. These polynomials are used in the NTRU Prime construction~\cite{NTRUPrime}, and we will call the associated field $K$ an NTRU Prime field. An interesting property of these fields is that they have no subfields, i.e., there exist no field $L$ such that $\QQ \varsubsetneq L \varsubsetneq K$.
+\end{enumerate}
+\end{example}
 
-Ce cours sera consacré au variantes algébriques des problèmes LWE et SIS (définis dans le cours de Adeline Roux-Langlois). En plus des variantes algébriques de LWE et SIS, nous parlerons aussi du problème NTRU, qui n'a pas d'équivalent non-algébrique.
-Le cours sera divisé en trois parties:
-- nous commencerons par définir les variantes algébriques de LWE/SIS et le problème NTRU, et nous parlerons du lien entre ces problèmes et les réseaux (algébriques);
-- nous verrons ensuite comment construire des primitives cryptographiques simples à partir de ces problèmes algorithmiques;
-- enfin, nous parlerons de cryptanalyse et nous présenterons quelques attaques qui exploitent la structure algébrique de ces problèmes.
+\paragraph{Ring of integers.} A number field $K$ contains a special sub-ring, called the \emph{ring of integers} of the number field (also called sometimes the maximal order of the number field). It is defined as follows.
 
-\subsection{Cryptographic applications}
+\begin{definition}
+\label{def:ring-of-integers}
+Let $K$ be a number field. The ring of integers $\O_K$ of $K$ is the subset of $K$ formed by all the elements that are integral over $\ZZ$, i.e., all elements $x$ of $K$ such that there exists a monic irreducible polynomial $P_x \in \ZZ[X]$ satisfying $P_x(x) = 0$.
+\end{definition}
+
+It can be proven that this set $\O_K$ is indeed a ring (but not a field). Moreover, $\O_K$ is a $\ZZ$-module of rank $d$, i.e., there exists $d$ elements $\alpha_1, \dots, \alpha_d \in \O_K$ such that any element $x \in \O_K$ can be uniquely written as $x = \sum_i x_i \alpha_i$, with $x_i \in \ZZ$. Such elements $(\alpha_1, \dots, \alpha_d)$ also form a $\QQ$-basis of the $\QQ$-vector space $K$. They are called an \emph{integral basis} of $K$.
+
+\begin{example}\ 
+\begin{enumerate}
+\item If $K = \QQ$, then $\O_K = \ZZ$, and $(1)$ is an integral basis of $K$.
+\item If $K = \QQ[X]/(X^d+1)$ with $d$ a power-of-two, then $\O_K = \ZZ[X]/(X^d+1)$. Moreover, $(1,X, \dots, X^{d-1})$ is an integral basis of $K$.
+\item In full generality, if $K = \QQ[X]/P(X)$ with $P$ irreducible, then $\ZZ[X]/P(X) \subseteq \O_K$, but we might not have equality.
+\end{enumerate}
+\end{example}
+
+One of the consequence of the existence of integral bases is that elements of $K$ can be seen as fractions, with numerators in $\O_K$ and denominators in $\ZZ$ (by default, the denominators would have been in $\O_K$ too), as stated in the following lemma.
+\begin{lemma}
+Any $x \in K$ can be written as $x = \frac{z}{n}$ with $z \in \O_K$ and $n \in \ZZ_{>0}$.
+\end{lemma}
+\begin{proof}
+Take an integral basis $(\alpha_1, \dots, \alpha_d)$ of $K$ and let $x_i \in \QQ$ be such that $x = \sum_i x_i \alpha_i$. Then taking $n$ to be the least common multiple of all the denominators of the $x_i$'s gives the desired result.
+\end{proof}
+
+\paragraph{Complex embeddings.} There exists always $d$ fields homomorphisms from $K$ to $\CC$,\footnote{We impose here that the field homomorphism sends $1$ to $1$, which avoids the trivial function sending every element of $K$ to $0$.} called the \emph{complex embeddings} of $K$. Note that field homomorphisms are always injective, and that they fix $\QQ$ point-wise. Let us write $\sigma_1, \dots, \sigma_d$ these complex embeddings. Some of them may have their image lying fully in $\RR \subset \CC$. We call those real embeddings, and we will write $d_\RR$ their number. If $\sigma$ is a complex embedding whose image is not fully contained in $\RR$, then $\overline{\sigma}$ (defined by $\overline{\sigma}(x) = \overline{\sigma(x)}$) is also a complex embedding. We say that $\sigma$ and $\overline{\sigma}$ are conjugate. Let $d_{\CC}$ be the number of such pairs of conjugate complex embeddings. Then we have $d = d_\RR + 2 d_\CC$. In the rest of this course, we order the complex embeddings such that $\sigma_1, \dots, \sigma_{d_\RR}$ are real embeddings, and $(\sigma_i, \sigma_{i+d_\CC})$ are pairs of conjugate embeddings for $d_\RR < i \leq d_\RR+d_\CC$.
+
+\begin{lemma}
+Let $K = \QQ[X]/P(X)$ with $P$ irreducible, and let $\alpha_1, \dots, \alpha_d$ be the $d$ roots of $P$ in~$\CC$. Then, the complex embeddings of $K$ are exactly the functions
+\begin{align*}
+\sigma_i: \ \ \ K & \rightarrow \CC \\
+                f(X) & \mapsto f(\alpha_i)
+\end{align*}
+for $i \in \{1, \dots, d\}$.\footnote{Here, $f$ is a polynomial in $\QQ[X]$ of degree $< d$. We use the fact that $P(\alpha_i) = 0$, which implies that reduction modulo $P$ does not change the output of the function, and so the function is well defined over $\QQ[X]/P(X)$.}
+\end{lemma}
+
+\begin{proof}
+First of all, one can check that the functions $\sigma_i$ defined in the lemma are indeed field homomorphisms, with image in $\CC$, as desired. Moreover, since $P$ is irreducible, then all the roots $\alpha_i$ are distinct, and so the functions $\sigma_i$ are distinct too (since they have distinct evaluations at~$X$).
+
+If we admit that there are only $d$ complex embeddings for $K$, then we are done. However, since the proof is instructive, we will also prove that any complex embedding of $K$ is one of the~$\sigma_i$. This will also prove that there are exactly $d$ complex embeddings (which we have admitted above).
+
+Let $\sigma$ be a complex embedding. Since it is a field homomorphism and since it fixes $\QQ$, then the knowledge of $\sigma(X)$ uniquely determines $\sigma$. Indeed, if $\beta = \sigma(X) \in \CC$, then for any $f(X) = \sum_i f_i X^i \in K$ (with $f_i \in \QQ$), we have $\sigma(\sum_i f_i X^i) = \sum_i f_i \beta^i = f(\beta)$.
+Moreover, since $P(X) = 0$, then we should have $P(\beta) = P(\sigma(X)) = \sigma(P(X)) = \sigma(0) = 0$. So $\beta$ is a complex root of $P$, i.e., it is one of the $\alpha_i$'s. This proves that $\sigma$ is equal to one of the $\sigma_i$'s.
+\end{proof}
+
+\begin{example}
+If $K = \QQ[X]/(X^d+1)$ with $d$ a power-of-two, then $d_\RR = 0$, $d_\CC = d/2$ and the $d$ complex embeddings of $K$ are obtained by sending $X$ to all the primitive $(2d)$-th roots of unity in $\CC$ (there are $\varphi(2d) = d$ such primitive roots, which are exactly the roots of $X^d+1$).
+\end{example}
+
+\paragraph{Trace and norm.} The trace $\Tr$ and algebraic norm $\N$ are functions from $K$ to $\CC$ defined as follows. For any $x \in K$
+\begin{align*}
+\Tr(x) &= \sum_{i = 1}^d \sigma_i(x) \\
+\N(x) &= \prod_{i = 1}^d \sigma_i(x)
+\end{align*}
+\begin{lemma}
+For any $x \in K$, the trace and the norm of $x$ are in $\QQ$ (and not only in $\CC$). Moreover, if $x \in \O_K$, then $\Tr(x)$ and $\N(x)$ are in $\ZZ$.
+\end{lemma}
+
+\begin{example}
+If $K = \QQ[X]/(X^2+1)$ and $x = a+bX$, then
+\begin{align*}
+\Tr(x) &= (a+ib) + (a-ib) = 2a \\
+\N(x) &= (a+ib) \cdot (a-ib) = a^2+b^2
+\end{align*}
+\end{example}
+
+\begin{lemma}
+The trace is additive and the algebraic norm is multiplicative. I.e., for any $x, y \in K$, it holds that
+\begin{align*}
+\Tr(x+y) &= \Tr(x) + \Tr(y) \\
+\N(xy) &= \N(x) \cdot \N(y)
+\end{align*}
+\end{lemma}
+
+\subsubsection{Ideals}
+
+\subsubsection{Modules}
+
+\subsubsection{Embeddings}
+
+\subsubsection{Ideal and module lattices}
+\begin{itemize}
+\item definition
+\item properties of ideal lattices (lower bound on $\lambda_1$ and upper bound on $\lambda_d$)
+\item some comments on cryptanalysis of ideal-SVP vs module-SVP for rank > 1
+\end{itemize}
+
+From now on, the results we review will be used only for the cryptanalysis part of the course (Section~\ref{sec:cryptanalysis}).
+
+\subsubsection{Ideals and subfields}
+split, ramify, inter
+
+\subsubsection{Units}
+log unit lattice, cyclotomic units
+
+%Alice -- Rappels de théorie des nombres -- CM: 1h30 / TD: 1h
+
+%L'objectif de ce cours est de rappeler certains concepts de théorie algorithmique des nombres, qui seront utiles à la fois pour le cours d'isogénies et le cours sur les réseaux algébriques. Nous parlerons principalement de corps de nombres et d'idéaux (décomposition en idéaux premiers, groupe de classes, comportement des idéaux premiers dans des extensions de corps, etc), et de différents problèmes algorithmiques en lien avec ces objets, qui nous intéressent en cryptographie (manipulation des idéaux, calcul du groupe des classes, problème de l'idéal principal, etc).
+
+\subsection{RLWE, module-LWE and NTRU}
+\label{sec:rlwe-mlwe-ntru}
+
+\subsection{Cryptographic constructions}
+\label{sec:constructions}
+
+\subsection{Cryptanalysis}
+\label{sec:cryptanalysis}
+
+%\subsection{Ring and Module variants of LWE, and the NTRU problem}
+
+%Alice -- Réseaux algébriques en cryptographie -- CM: 3h / TD: 1h30
+
+%Ce cours sera consacré au variantes algébriques des problèmes LWE et SIS (définis dans le cours de Adeline Roux-Langlois). En plus des variantes algébriques de LWE et SIS, nous parlerons aussi du problème NTRU, qui n'a pas d'équivalent non-algébrique.
+%Le cours sera divisé en trois parties:
+%- nous commencerons par définir les variantes algébriques de LWE/SIS et le problème NTRU, et nous parlerons du lien entre ces problèmes et les réseaux (algébriques);
+%- nous verrons ensuite comment construire des primitives cryptographiques simples à partir de ces problèmes algorithmiques;
+%- enfin, nous parlerons de cryptanalyse et nous présenterons quelques attaques qui exploitent la structure algébrique de ces problèmes.

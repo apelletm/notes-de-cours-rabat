@@ -17,14 +17,14 @@
 
 %% Theorems environment
 %% Only one counter for all, and depending on the section number
-\theoremstyle{definition}
 \newtheorem{theorem}{Theorem}[section]
-\newtheorem{definition}[theorem]{Definition} %% the [theorem] says to use the same counter as for theorem
+\newtheorem{lemma}[theorem]{Lemma} %% the [theorem] says to use the same counter as for theorem
+\newtheorem*{remark}{Remark}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition} 
 \newtheorem{example}[theorem]{Example}
 \newtheorem{exercise}[theorem]{Exercise}
-\newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{notations}[theorem]{Notations}
-\newtheorem*{remark}{Remark}
 
 %% To have the table of content appearing on the left
 \usepackage{hyperref} 
@@ -47,6 +47,9 @@
 \newcommand{\Var}{\text{Var}}
 \renewcommand{\vec}{\mathbf}
 \DeclareMathOperator{\poly}{poly}
+\renewcommand{\O}{\mathcal{O}}
+\newcommand{\Tr}{\mathrm{Tr}}
+\newcommand{\N}{\mathcal{N}}
 
 \newcommand{\im}{\mathrm{im}}
 \renewcommand{\ker}{\mathrm{ker}}
