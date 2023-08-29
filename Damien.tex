@@ -250,6 +250,7 @@ Re-arranging terms allows to complete the proof.
 \end{proof}
 
 \textcolor{red}{Damien: Do we need the HNF? How to get a short basis from short vectors?}
+\textcolor{red}{Alice: I don't think I will need it}
 
 
 
@@ -306,7 +307,8 @@ be its R-factor. Then we have:
 \end{lemma} 
 
 
-\textcolor{red}{Damien: Do we need the R-factor of the dual?}
+\textcolor{red}{Damien: Do we need the R-factor of the dual?}\\
+\textcolor{red}{Alice: I don't.}
 
 
 
@@ -333,7 +335,7 @@ The QR-factorisation provides an efficiently computable lower bound for the latt
 
 \begin{lemma}
 \label{le:lambda_lower_bound}
-et~$L \subset \mR^m$ be an $n$-dimensional lattice. Let~${\bf B}$ be the matrix representation of a basis of~$L$, and~${\bf R}$ 
+Let~$L \subset \mR^m$ be an $n$-dimensional lattice. Let~${\bf B}$ be the matrix representation of a basis of~$L$, and~${\bf R}$ 
 be its R-factor. Then we have:
 \[ \lambda_1(L) \geq  \min_{i \leq n} r_{ii}.\]
 \end{lemma}
@@ -394,7 +396,7 @@ Lemma~\ref{le:qary_eq} allows to obtain the desired bound for~$\Lambda({\bf A})$
 By using the specificities of the Construction~A lattices, we can obtain bounds that can be lower for some ranges of parameters. 
 
 \begin{lemma}
-\label{le:Minko_constA}
+\label{le:Minko_constA_optimized}
 Let~$q\geq 2$ prime, $m>n>0$ and~${\bf A} \in \mZ_q^{m \times n}$. Let~$r$ 
 denote the rank of~${\bf A}$. 
 We have 
@@ -438,7 +440,7 @@ For many parameters, the lower bounds are within a factor~10 of the upper bounds
 
 \begin{proof}
 For~$\rho < q$, the event~$\lambda_1(\Lambda({\bf A})) \leq \rho$ occurs exactly if there exists~${\bf s} \in \mZ_q^n \setminus \{\bf 0\}$ 
-such that $0 < \|{\bf A} \cdot {\bf s} \bmod q \|< \rho$. Here the reduction modulo~$q$ takes values in~$[-q/2,q/2)$. 
+such that $0 < \|{\bf A} \cdot {\bf s} \bmod q \|\leq \rho$. Here the reduction modulo~$q$ takes values in~$[-q/2,q/2)$. 
 By the union bound, we have:
 \begin{eqnarray*}
 \Pr_{\bf A} \left[\lambda_1(\Lambda({\bf A})) \leq \rho \right] & = & \Pr_{\bf A} \left[\exists {\bf y} \in \mathcal{B}({\bf 0},\rho) \cap \mZ^m, \exists {\bf s} \in \mZ_q^n \setminus \{\bf 0\}: {\bf A} \cdot {\bf s} = {\bf y} \bmod q \right] \\
@@ -479,7 +481,7 @@ r +sqrt(m/2) <= q^(1-n/m) * sqrt(m/8pie)
 
 Other lattice invariants may be considered, depending on the context. An important example is the covering radius~$\rho(L)$, 
 defined as the smallest~$r$ such that the balls of radius~$r$ centered in the points of~$L$ cover~$\mbox{span}_\mR(L)$.
-The successive minima, defined below, are also frequently considered. The measure the lattice 'discreteness' in all possibly dimensions
+The successive minima, defined below, are also frequently considered. The measure the lattice `discreteness' in all possible dimensions
 rather than only one, as does the lattice minimum. 
 
 \begin{definition}
