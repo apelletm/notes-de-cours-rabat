@@ -229,6 +229,7 @@ An integral ideal $\mathfrak{a}$ is prime if and only if the quotient space $\O_
 \paragraph{Computational aspects.} $\ZZ$-basis of ideals. The fact that we can go from $2$-elements representation to basis in polynomial time and conversely. The fact that we can add and multiply efficiently, and factor ideals if we can factor integers.
 
 \subsubsection{Modules}
+\label{sec:modules}
 Let $m \geq 1$ be an integer and let $M \subset K^m$. We say that $M$ is a finitely generated $\O_K$-module if and only if there exists vectors $\vec b_1, \cdots, \vec b_t \in K^m$ such that
 \[ M = \{ \sum_{i = 1}^t x_i \vec b_i \,|\, x_1, \dots, x_t \in \O_K\}. \]
 We say that such elements $(\vec b_1, \dots, \vec b_t)$ are a generating set of $M$ (they are not unique).
@@ -409,8 +410,6 @@ On the other hand, when the rank $r$ of the module becomes larger than $2$, we c
 The conclusion is that, at the moment, it seems that there might be a gap in hardness between ideal-SVP and $r$-module-SVP for $r \geq 2$, and there do not seem to be a gap in hardness between $r$-module-SVP and standard SVP. Note that the discussion here is only based on the currently known best algorithms, which only provide us with upper bounds on the hardness of the problems. This does not allow us to conclude that some problems are equivalent, nor that some problems are strictly harder than others. It only gives us some intuition on what might be happening, but this intuition may be proven false by future cryptanalysis development.
 
 
-
-
 From now on, the results we review will be used only for the cryptanalysis part of the course (Section~\ref{sec:cryptanalysis}).
 
 \subsubsection{Ideals and subfields}
@@ -425,6 +424,171 @@ log unit lattice, cyclotomic units
 
 \subsection{RLWE, module-LWE and NTRU}
 \label{sec:rlwe-mlwe-ntru}
+
+\subsubsection{RLWE and module-LWE}
+In all this section, we assume that we have fixed a number field $K$ of degree $d$. In order to simplify notations, we will write $R := \O_K$ the ring of integers of $K$, and use the notation $R_q := R/qR$ for any non-zero integer $q$.
+
+The module-LWE problem is an analogue of the LWE problem, in the module setting. It was introduced by Brakerski et al.~\cite{MLWE1} and analyzed by Roux-Langlois and Stehlé in~\cite{MLWE2}. The Ring-LWE problem (or RLWE) is a special case of module-LWE, where the dimension of the secret is $1$. Historically, this special case was introduced before module-LWE, in two concurrent works~\cite{RLWE1, RLWE2}.
+
+\begin{definition}[Module-LWE distribution]
+Let $m \geq n \geq 1$ and $q > 1$ be integers and let $\chi$ be a distribution over $R$. For a secret vector $\vec s \in R_q^n$, the module-LWE distribution $A^{\vec s}_{n,m,q,\chi}$ is the distribution obtained by sampling $\vec A \leftarrow \mathcal{U}\Big(R_q^{m \times n}\Big)$ and $\vec e \leftarrow \chi^m$ and outputting $(\vec A, \vec b := \vec A \cdot \vec s + \vec e \bmod q) \in R_q^{m \times n} \times R_q^m$.
+\end{definition}
+
+\footnote{Alice: do we really need to define the LWE distribution? Maybe define the problems directly...}
+
+As in the standard LWE case, one should think of the distribution $\chi$ as outputting ``short'' elements of $R$ (e.g., elements following a discrete Gaussian distribution with small standard deviation). Since our elements are not integers anymore, but element of $\O_K$, a natural question arising is how to define shortness of an element? This is exactly what we discussed in Section~\ref{sec:embeddings}: we define the size of the elements of $K$ (and $\O_K$) via the coefficient or the canonical embedding, mapping $K$ into $\CC^d$. Depending on the context, either one of the two embeddings may be more convenient than the other. In these lecture notes, because we are more interested into the mathematical properties of the problems (and avoid practical questions), we will only consider the canonical embedding.
+
+Hence, from now on, one could think of the distribution $\chi$ as outputting elements of $\O_K$ with a small canonical embedding, typically significantly smaller than $q$.
+
+\begin{definition}[Search module-LWE]
+Let $m \geq n \geq 1$ be integers, $q >1$ be an integer and $\chi$ be a distribution over $R$. The search module-LWE problem MLWE$_{n,m,q,\chi}$ asks, given as input a sample from the module-LWE distribution $A^{\vec s}_{n,m,q,\chi}$ for some $\vec s \leftarrow \mathcal{U}(R_q^n)$, to recover the secret vector $\vec s$.
+
+The advantage of an adversary $\mathcal{A}$ against the module-LWE problem is defined as
+\[ \adv(\A) := \Pr\Big(\A(\vec A, \vec b) = \vec s\,|\, \vec s \leftarrow \mathcal{U}(R_q^n),\, (\vec A, \vec b) \leftarrow A^{\vec s}_{n,m,q,\chi} \text{ for all }i\Big), \]
+where the probability is taken over the random choices of $\A$, the random choice of $\vec s$, and the random distribution $A^{\vec s}_{n,m,q,\chi}$.
+\end{definition}
+
+There is also a decisional version of the module-LWE problem.
+
+\begin{definition}[Decision module-LWE]
+Let $m \geq n \geq 1$ be integers, $q >1$ be an integer and $\chi$ be a distribution over $R$. The decision module-LWE problem dec-MLWE$_{n,m,q,\chi}$ asks to distinguish between $m$ samples from $A^{\vec s}_{n,q,\chi}$ (for some $\vec s \leftarrow \mathcal{U}(R_q^n)$) and $m$ samples from the distribution $\mathcal{U}(R_q^n \times R_q)$.
+
+The advantage of an adversary $\mathcal{A}$ against the decision module-LWE problem is defined as
+\begin{align*} \adv(\A) := \Big| &\Pr\Big(\A(\vec A, \vec b) = 1\,\big|\, \vec s \leftarrow \mathcal{U}(R_q^n),\, (\vec A, \vec b) \leftarrow A^{\vec s}_{n,m,q,\chi}\Big) \\
+&- \Pr\Big(\A(\vec A, \vec b) = 1\,\big|\, \vec A \leftarrow \mathcal{U}(R_q^{m \times n}), \, \vec b \leftarrow \mathcal{U}(R_q^n)\Big) \Big|,
+\end{align*}
+where the probabilities are taken over the random choices of $\A$, the random choice of $\vec s$, and the random distribution $A^{\vec s}_{n,m,q,\chi}$.
+\end{definition}
+
+When $n = 1$, the (dec-)module-LWE$_{n,m,q,\chi}$ is usually called Ring LWE, and denoted RLWE$_{m,q,\chi}$.
+This is somehow reminiscent of the terminology used for $r$-module-SVP, where we give a special name to the case $r = 1$, namely ideal-SVP.
+We will see below however that the situation is different between the module-LWE and module-SVP cases. For module-SVP, we argued that there exists better algorithms in the case $r = 1$, which justifies giving it a different name. In the case of module-LWE, there is no such (known) difference between the case $n = 1$ and the case $n \geq 2$. In the rest of these lecture notes, will only use the terminology module-LWE and will not make a distinction between the case $n = 1$ and the case $n \geq 2$.
+
+\paragraph{Module-LWE as a module-lattice problem.} We will see that, as in the case of standard LWE, the module-LWE problem can be seen as an instance of module-BDD in modules of rank $m$ (provided the LWE parameters are well chosen).
+Let us start by defining construction A module-lattices, in a similar way as what was done for standard lattices.
+
+\begin{definition}
+Let $m \geq n \neq 1$ and $q > 1$ be integers. Let $\vec A \in R_q^{m \times n}$ be a matrix. The image module-lattice associated to $\vec A$ is defined as
+\[ \Lambda(\vec A) := \{ \vec y \in R^m: \exists {\bf s} \in R_q^n, {\bf y} = {\bf A}\cdot {\bf s} \bmod q\}.\]
+\end{definition}
+
+\begin{lemma}
+The set $\Lambda(\vec A) \subset R^m$ is a module of rank $m$.
+\end{lemma}
+
+\begin{proof}
+One can check that $\Lambda(\vec A)$ is generated over $R$ by the column vectors of $\vec A$ and by the $q$-vectors $q \cdot \vec e_i$ (where $\vec e_i \in R^m$ is the vector with a $1$ at position $i$ and zeros everywhere else). Hence, it is a module for our definition from Section~\ref{sec:modules}.
+Moreover, the $m$ vectors $q \cdot \vec e_i$ are $K$-linearly independent, hence their $K$-span is the full space $K^m$. This implies that the rank of $\Lambda(\vec A)$ is maximal and equal to $m$.
+\end{proof}
+
+We will now prove that recovering the secret $\vec s$ from a module-LWE sample $(\vec A, \vec b)$ can be done by solving a BDD instance in the module lattice $\Lambda(\vec A)$. This implies the following result.
+
+\begin{theorem}
+Let $m \geq n \geq 1$ and $q > 1$ be integers. Let $B >0$ be a real number and $\chi$ be a distribution over $R$ such that any element $x$ output by $\chi$ satisfies $\|\mink(x)\| \leq B$.
+There is a polynomial time reduction from solving MLWE$_{m,n,q,\chi}$ to solving $m$-module-BDD$_{\gamma}$ where
+\[ \gamma = BLA.\]
+The reduction preserves the success probability of the adversary.
+\end{theorem}
+
+\begin{proof}
+Let $(\vec A, \vec b)$ be an instance of MLWE$_{n,m,q,\chi}$, and $\vec s$ (resp. $\vec e$) be the secret (resp. noise term) associated. That is, $\vec b = \vec A \cdot \vec s + \vec e$. By assumption on $\chi$, we know that $\|\mink(e_i)\| \leq B$ for all $i$, hence $\|\mink(\vec e)\| \leq \sqrt{m} \cdot B$.
+
+Let $M := \Lambda(\vec A)$ be the image module-lattice associated to $\vec A$. By definition of $M$, the vector $\vec b - \vec e$ belongs to $M$. Hence, if we let $\vec y = \mink(\vec b) \in \CC^{dm}$ and $\vec x = \mink(\vec b - \vec e) \in \CC^{dm}$, we see that $\vec x$ belongs to the module lattice $\mink(M)$ and that $\|\vec y - \vec x\| = \| \mink(\vec e)\| \leq \sqrt{m} \cdot B$.
+The vector $\vec y$ is then a BDD instance in the lattice $\mink(M)$. Our reduction hence does the following:
+\begin{itemize}
+\item compute the BDD instance $(\mink(M), \vec y)$ from the MLWE instance (as described above), 
+\item solve it using the BDD oracle to recover $\vec x$, 
+\item recover $\vec A \cdot \vec s$ from $\vec x = \mink(\vec A \cdot \vec s)$,
+\item solve the linear system $\vec A \cdot \vec s$ over $R_q$ to recover $\vec s$.
+\end{itemize}
+Note that both computing the canonical embedding $\mink$ and its inverse can be done efficiently. Hence, all steps of this reduction can be done in polynomial time.
+
+It only remains to estimate the approximation factor $\gamma$ of the created BDD instance. We have seen that $\dist(\vec y, \mink(M)) \leq \sqrt{m} \cdot B$. 
+
+\color{red}{Alice: finish the proof. Requires a lower bound on $\lambda_1$, this is going to be annoying... Maybe we can reduce directly to $(m+1)$-module-SVP? (it's not tight, but easier and no need to introduce module-BDD.
+Or I just remove the theorem and proof, and say informally that in can be reduced to module-BDD.}
+\end{proof}
+
+
+\subsubsection{NTRU}
+The NTRU cryptosystem is one of the oldest lattice-based public key encryption scheme, which dates back to 1998~\cite{NTRU}. One of the hardness assumption underlying the security of this cryptosystem is now called the NTRU assumption. In these lecture notes, we will focus on the hardness assumption (and the associated algorithmic problem). Since the first cryptosystem from 1998, this assumption has been used to construct more primitives (public key encryption schemes but also signatures and more). We will see an example of such a construction in Section~\ref{sec:constructions}.
+
+\begin{definition}[NTRU instances]
+Let $q >1$ be an integer and $B >0$ be a real number. A NTRU$_{q,B}$ instance is an element $h \in R$ such that there exists $(f,g) \in R^2\setminus \{(0,0)\}$ with $\|\mink(f)\|, \|\mink(g)\| \leq B$ satisfying $g \cdot h = f \bmod q$. The pair $(f,g) \in R^2$ is called a trapdoor for $h$.
+\end{definition}
+
+It is common when defining NTRU to rewrite the equation $g \cdot h = f \bmod q$ into $h = f/g \bmod q$. This requires $g$ to be invertible, and may add some technicalities for some of the results. In these lecture notes, we do not impose that $g$ is invertible modulo $q$, which is why we write the equation $g \cdot h = f \bmod q$.
+
+One should think of the constant $B$ to be significantly smaller than $\sqrt{q}$. In this case, only a small proportion of elements of $R$ are NTRU instances (most elements of $R$ cannot be written as $g \cdot h = f \bmod q$ for small $g$ and $f$).
+
+\begin{lemma}
+Let $q$ be a prime integer not dividing $\Delta_K$, then the proportion of elements of $R$ that are an NTRU$_{q,B}$ instance is $\leq \left( \frac{2^5 \cdot B^2}{q}\right)^d$.
+\end{lemma}
+
+\begin{proof}[Partial proof]
+Note that since the equations are modulo $q$, then $h \in R$ is an NTRU instance if and only if $h + qr$ is an NTRU instance for any $r \in R$. Hence, we can simply compute the probability, when $h$ is sampled uniformly in $R_q$, that $h$ is an NTRU instance.
+To do so, we use a strategy similar to the Minkowski-Hlawka theorem.
+\begin{align*}
+&\Pr_{h \leftarrow \mathcal{U}(R_q)} \Big(\exists (f,g) \in R^2\setminus\{(0,0)\} \; : \; gh = f \bmod q \text{ and } \|f\|, \|g\| \leq B \Big) \\
+&\leq \sum_{\substack{(f,g) \in R^2\setminus\{(0,0)\} \\ \|f\|, \|g\| \leq B}} \Pr_{h \leftarrow \mathcal{U}(R_q)}(gh = f \bmod q)
+\end{align*}
+
+Estimating the probability $\Pr_{h \leftarrow \mathcal{U}(R_q)}(gh = f \bmod q)$ is a bit technical, especially when the ideal $qR$ is not prime (note that even if $q$ is prime, the ideal $qR$ might not be prime). This is done in~\cite[Lemma B.1]{PS21}, and gives the bound stated in the lemma.
+
+%Assume for the moment that the ideal $qR$ is prime. Then, $g$ should be invertible modulo $q$. Indeed, non-invertible elements modulo $q$ have to be divisible by $q$ (because $q$ is prime) and so they are either $0$ or they have an euclidean norm larger than $q > B$. Since $\|g\| \leq B$, this would imply $g = 0$, but then $f$ has to be $0$ modulo $q$, and a similar argument shows that $f = 0$ too. This is impossible because we required $(f,g) \neq (0,0) \bmod q$.
+
+%Now that it is established that $g$ is invertible modulo $q$, we can rewrite $gh = f \bmod q$ into $h = f/g \bmod q$, and we see that the probability that such an event happen is $1/q^d$. Hence, the probability that $h$ is an NTRU instance is at most $(2 \cdot (2B+1))^d \cdot 1/q^d \leq 
+\end{proof}
+
+\begin{definition}[search NTRU]
+Let $q >1$ be an integer, $B >0$ be a real number and $\psi$ be a distribution over NTRU$_{q,B}$ instances (which is a subset of $R$).
+%$R$ such that for all $x$ in the domain of $\chi$, $x$ is invertible modulo $q$ and $\|\mink(x)\| \leq B$. 
+The search-NTRU$_{q, B, \chi}$ problem asks, given as input $h \psi$ to recover $(f, g) \in R^2$ such that $g \cdot h = f \bmod q$ and $\|\mink(f)\|, \|\mink(g)\| \leq B$.
+\end{definition}
+
+Note that there are usually many trapdoors $(f,g)$ for a given $h$, and the NTRU problem only asks to recover one such trapdoor.
+%Note that in the definition of the search NTRU problem, we are not required to recover the exact same elements $f$ and $g$ that were used to generate $h$. Any sufficiently short solution is accepted. In practice, there will usually be many possible pairs $(f,g)$ in the support of $\chi$ that satisfy $h = f/g \bmod q$, and there is no way to determine which one was used to generate $h$.
+For example, in $K = \QQ[X]/(X^d+1)$ a power-of-two cyclotomic field, for any $a \in K$, it holds that $\|\mink(a)\| = \|\mink(aX)\|$. Hence, if $(f,g)$ is a trapdoor for some $h$, then $(fX, gX)$ is also a trapdoor for the same $h$.
+%$h = f/g \bmod q$, we can also write it $h = f'/g' \bmod q$ with $f' = fX$ and $h' = hX$ and $f'$ and $h'$ have the same euclidean norm of $f$ and $g$.
+%If $\chi$ is the distribution sampling elements uniformly at random among elements of $R$ invertible modulo $q$ and smaller than $B$, then the probability that $\chi$ outputs $f$ is the same as the probability that it outputs $fX$. In this case there is no way to know if the ``true'' solution was the pair $(f,g)$ of the pair $(fX, gX)$.
+
+In practice, the distribution $\psi$ over NTRU instances can be obtained by sampling $f$ and $g$ from some distribution $\chi$ outputting small elements of $R$, and returning $h = f/g \bmod q$. When using this approach, one needs to keep resampling $g$ until it is invertible modulo $q$.
+
+%As for module-LWE, the NTRU problem is mostly interesting when the distribution $\chi$ outputs small elements (for the canonical embedding) of $R$. One can prove that, if the elements are small enough, then the secret pair $(f,g)$ is unique (i.e., there is a unique pair $(f,g)$ in the support of $\chi$ such that $h = f/g \bmod q$).
+
+%\begin{lemma}
+%Let $f,f',g, g' \in R$ be such that $\|\mink(f)\|, \|\mink(f')\|, \|\mink(g)\|, \|\mink(g')\| \leq BLA$ and such that $g$ and $g'$ are invertible modulo $q$. If $f/g = f'/g' \bmod q$, then $f/g = f'/g'$ where the division is performed in $K$.
+%\end{lemma}
+
+\begin{definition}[Decision NTRU]
+Let $q >1$ be an integer, $B >0$ be a real number and $\psi$ be a distribution over NTRU$_{q,B}$ instances (which is a subset of $R$). The dec-NTRU$_{q, B, \chi}$ problem asks to distinguish between samples from $\psi$ and samples from $\mathcal{U}(R_q)$.
+\end{definition}
+
+%\begin{remark}
+%In these lecture notes, we decided to restrict the distribution $\chi$ so that it outputs only elements that are invertible modulo $q$ and $f/g \bmod q$ is well defined. This is not the most frequently used convention. Usually, the NTRU problem is defined using one of the following two approach:
+%\begin{itemize}
+%\item Do not restrict $\chi$ to be invertible modulo $q$, but resample $g$ until it is invertible modulo $q$;
+%\item Do not impose that $g$ is invertible modulo $q$, and replace the equation $h = f/g \bmod q$ by $gh = f \bmod q$. In order to do this properly, one needs to define a distribution $\psi$ over the elements $h$ of $R_q$ that satisfy an equation $gh = f \bmod q$ for some small $f$ and $g$.
+%\end{itemize}
+%\end{remark}
+
+\paragraph{NTRU as a module-lattice problem.} We will now see that the NTRU problem can be seen as a special case of module-SVP in modules of rank $2$. Below, we define a notion of NTRU module, which will play a similar role as the image module-lattice for module-LWE. Note that NTRU modules are defined for any $h \in R$, even for those that are not NTRU instances.
+
+\begin{definition}[NTRU module lattices]
+Let $q > 1$ be an integer and $h \in R$. The NTRU module associated to $h$ is the free rank-$2$ module in $R^2$ spanned by the columns of the matrix
+$\vec B_h := \begin{pmatrix}
+1 & 0 \\
+h & q
+\end{pmatrix} \in R^{2 \times 2}$.
+We will write $M_h$ this module.
+\end{definition}
+
+
+
+\subsubsection{Reductions between problems}
+
+picture
+
 
 \subsection{Cryptographic constructions}
 \label{sec:constructions}
