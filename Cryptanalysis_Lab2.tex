@@ -1,0 +1,223 @@
+\documentclass[11pt]{exam}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\noprintanswers % pour enlever les réponses
+%\printanswers
+
+\unframedsolutions
+\SolutionEmphasis{\itshape\small}
+\renewcommand{\solutiontitle}{\noindent\textbf{A: }}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+
+\usepackage[margin=0.73in]{geometry}
+%\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
+
+%\usepackage{fullpage}
+
+
+\usepackage{hyperref}
+\usepackage{appendix}
+\usepackage{enumerate}
+
+
+\usepackage{times,graphicx,epsfig,amsmath,latexsym,amssymb,verbatim}%,revsymb}
+\usepackage{algorithmicx, enumitem, algpseudocode, algorithm, caption}
+
+
+%%%%%%%%%%%%%%%%%%%%%
+% Handling comments and versions %%%
+%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\extra}[1]{}
+
+\renewcommand{\comment}[1]{\texttt{[#1]}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% THEOREMS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{amsthm}
+
+% Landau 
+\newcommand{\bigO}{\mathcal{O}}
+\newcommand*{\OLandau}{\bigO}
+\newcommand*{\WLandau}{\Omega}
+\newcommand*{\xOLandau}{\widetilde{\OLandau}}
+\newcommand*{\xWLandau}{\widetilde{\WLandau}}
+\newcommand*{\TLandau}{\Theta}
+\newcommand*{\xTLandau}{\widetilde{\TLandau}}
+\newcommand{\smallo}{o} %technically, an omicron
+\newcommand{\softO}{\widetilde{\bigO}}
+\newcommand{\wLandau}{\omega}
+\newcommand{\negl}{\mathrm{negl}} 
+
+
+\newtheorem{theorem}{Теорема}
+\newtheorem{corollary}[theorem]{Следствие}
+\newtheorem{lemma}[theorem]{Лемма}
+\newtheorem{observation}[theorem]{Observation}
+\newtheorem{proposition}[theorem]{Предложение}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+
+
+\newcommand{\nc}{\newcommand}
+\nc{\eps}{\varepsilon}
+\nc{\RR}{{{\mathbb R}}}
+\nc{\CC}{{{\mathbb C}}}
+\nc{\FF}{{{\mathbb F}}}
+\nc{\NN}{{{\mathbb N}}}
+\nc{\ZZ}{{{\mathbb Z}}}
+\nc{\PP}{{{\mathbb P}}}
+\nc{\QQ}{{{\mathbb Q}}}
+\nc{\UU}{{{\mathbb U}}}
+\nc{\OO}{{{\mathbb O}}}
+\nc{\EE}{{{\mathbb E}}}
+
+\let\vec\mathbf
+
+\pretolerance=1000
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% DOCUMENT STARTS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{tikz}
+\usetikzlibrary{automata}
+
+
+
+% Custom colors
+\usepackage{color}
+\definecolor{deepblue}{rgb}{0,0,0.5}
+\definecolor{deepred}{rgb}{0.6,0,0}
+\definecolor{deepgreen}{rgb}{0,0.5,0}
+
+\usepackage{pythonhighlight}
+
+\begin{document}
+	{\noindent
+		\textsc{CIMPA School}
+		\hfill {E.Kirshanova, D. Stehl{\' e // 2023\\}
+	\hrule
+	\begin{center}
+		{\Large\textbf{
+				\textsc{Lab 1: Breaking Merkle-Hellman Cryptosystem} \\[5pt]
+		} } 
+	\end{center}
+	}
+	\hrule \vspace{5mm}
+	
+	\thispagestyle{empty}
+	
+	\vspace{0.2cm}
+	
+
+An encryption scheme proposed proposed by Merkle-Hellman in 1978~\cite{} was shortly after broken by Adi Shamir~\cite{}.
+Your task will be to implement the attack and break concrete instances. Let us start with a description of the encryption scheme.
+
+\begin{definition}[Superincreasing sequence]
+	Superincreasing sequence is a tuple $\vec{r} = (r_1, \ldots, r_n)$ of positive numbers such that
+	\[
+	r_i > 2r_{i-1}, \quad 2\leq i < n.
+	\] 
+\end{definition}
+
+From the definition it follows that $r_k > r_{k-1} + \ldots r_1$ for all $2 \leq k \leq n$. For a superincreasing sequence, the following knapsack problem has an efficient solution: given $S \in \ZZ$ such that there exists $\vec b \in \{0,1\}^n$ with the property
+\[
+	S = \sum_{i=1}^n b_i r_i,
+\]
+find $\vec b$. Such $\vec b$ can be found via the following algorithm
+\begin{algorithm}[H] \caption{Superincreasing knapsack}
+	\begin{tabular}{l l}
+		\textbf{Input:} 
+		& $\vec{r} = (r_1, \ldots, r_n), S \in \ZZ$ \\
+		\textbf{Output:} 
+		& $\vec b$ s.t.\ $S = \sum_{i=1}^n b_i r_i$ \\
+\end{tabular}
+	\begin{algorithmic}[1]
+		\State $\vec b = \vec 0$
+		\For{$i$ from $n$ to $1$}
+			\If{$S>r_i$}
+				\State $b_i = 1$
+				\State $S = S-r_1$
+			\EndIf
+		\EndFor \\
+		\Return $\vec b$
+	\end{algorithmic}
+\label{alg:knapsack_superenc}
+\caption{Solving superincreasing knapsack}
+\end{algorithm}
+
+Let $n$ be a public parameter. Key generation function $\mathsf{KeyGen}$, encryption function  $\mathsf{Enc}$, and decryption function $ \mathsf{Dec}$ are defined as follows.
+
+\medskip
+
+$\mathsf{KeyGen}(n)$.
+\begin{enumerate}
+	\item Generate a random superincreasing sequence $\vec r$ (the precise method of `random' is irrelevant for this discussion).
+	\item Choose $A, q$ such that $q>r_n$ and $\gcd(A,g) = 1$.
+	\item Compute the sequence $M_i = Ar_i~\bmod q$
+	\item Set $\mathrm{pk} = M, \mathrm{sk} = (A^{-1}\bmod~q, q, \vec r)$.
+\end{enumerate}
+
+\medskip
+
+$\mathsf{Enc}(\mathrm{pk}, \vec m \in \{ 0,1\}^n)$.
+\begin{enumerate}
+	\item Return ciphertext $c = \sum_{i=1}^n M_i m_i \in \ZZ$
+\end{enumerate}
+
+\medskip
+$\mathsf{Dec}(\mathrm{sk}, c)$.
+\begin{enumerate}
+	\item Compute $c' = c A^{-1}\bmod~q$
+	\item Using Algorithm~\ref{alg:knapsack_superenc} with input $c', \vec r$ find $\vec m' \in \{0,1\}^n$.
+\end{enumerate}
+
+You can convince yourself in the correctness of the scheme. There is no need to convince yourself in its security since now you'll see an efficient attack on it.
+
+\medskip
+
+\paragraph{Shamir's attack} recovers message $\vec m$ from the knowledge of the corresponding ciphertext and the public key. Consider the lattice generated by the \emph{rows} of the following $(n+1) \times (n+1)$ matrix
+\[
+	B = 
+	\begin{pmatrix}
+		2 & 0 & 0 & \ldots & 0 & M_1 \\
+		0 & 2 & 0 & \ldots & 0 & M_2 \\
+		0 & 0 & 2 & \ldots & 0 & M_3 \\
+		\vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+		1 & 1 & 1 & \ldots & 1 & c 
+	\end{pmatrix}
+\]
+
+Note that if $\vec m$ is the message for the ciphertext $c$, i.e., $c =\sum_{i=1}^n M_i m_i $, then $L(B)$ contains $\vec t = (2m_1 -1, 2m_2-1, 2m_3 - 1, \ldots, 0) \in \ZZ^{n+1}$. For a binary $\vec m$, this vector is the shortest of $L(B)$ with high probability and, for many interesting parameters, can be efficiently found via LLL.
+
+\medskip 
+\paragraph{Task}
+
+\begin{enumerate}
+	\item Download script $\mathsf{merkle-hllman.sage}$. There you'll find implementations of $\mathsf{KeyGen}$,   $\mathsf{Enc}$, $ \mathsf{Dec}$. You do not need to modify them.
+	\item Implement the function $\mathsf{attack()}$.
+	\item Check the correctness of your implementation by running
+	\[
+		\textsf{sage -t merkle\_hellman.sage}
+	\]
+	All three tests should pass.
+\end{enumerate}
+
+
+\begin{thebibliography}{9}
+	\bibitem{fpylll} Ralph Merkle and Martin Hellman,
+	\textit{Hiding Information and Signatures in Trapdoor Knapsacks}. IEEE Trans. Information Theory. 1978
+	
+\end{thebibliography}
+
+
+\end{document}
