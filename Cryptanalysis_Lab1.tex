@@ -1,0 +1,313 @@
+\documentclass[11pt]{exam}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\noprintanswers % pour enlever les réponses
+%\printanswers
+
+\unframedsolutions
+\SolutionEmphasis{\itshape\small}
+\renewcommand{\solutiontitle}{\noindent\textbf{A: }}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english, russian]{babel}
+
+
+\usepackage[margin=0.73in]{geometry}
+%\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
+
+%\usepackage{fullpage}
+
+
+\usepackage{hyperref}
+\usepackage{appendix}
+\usepackage{enumerate}
+
+
+\usepackage{times,graphicx,epsfig,amsmath,latexsym,amssymb,verbatim}%,revsymb}
+\usepackage{algorithmicx, enumitem, algpseudocode, algorithm, caption}
+
+
+%%%%%%%%%%%%%%%%%%%%%
+% Handling comments and versions %%%
+%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\extra}[1]{}
+
+\renewcommand{\comment}[1]{\texttt{[#1]}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% THEOREMS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{amsthm}
+
+% Landau 
+\newcommand{\bigO}{\mathcal{O}}
+\newcommand*{\OLandau}{\bigO}
+\newcommand*{\WLandau}{\Omega}
+\newcommand*{\xOLandau}{\widetilde{\OLandau}}
+\newcommand*{\xWLandau}{\widetilde{\WLandau}}
+\newcommand*{\TLandau}{\Theta}
+\newcommand*{\xTLandau}{\widetilde{\TLandau}}
+\newcommand{\smallo}{o} %technically, an omicron
+\newcommand{\softO}{\widetilde{\bigO}}
+\newcommand{\wLandau}{\omega}
+\newcommand{\negl}{\mathrm{negl}} 
+
+
+\newtheorem{theorem}{Теорема}
+\newtheorem{corollary}[theorem]{Следствие}
+\newtheorem{lemma}[theorem]{Лемма}
+\newtheorem{observation}[theorem]{Observation}
+\newtheorem{proposition}[theorem]{Предложение}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Определение}
+
+
+\newcommand{\nc}{\newcommand}
+\nc{\eps}{\varepsilon}
+\nc{\RR}{{{\mathbb R}}}
+\nc{\CC}{{{\mathbb C}}}
+\nc{\FF}{{{\mathbb F}}}
+\nc{\NN}{{{\mathbb N}}}
+\nc{\ZZ}{{{\mathbb Z}}}
+\nc{\PP}{{{\mathbb P}}}
+\nc{\QQ}{{{\mathbb Q}}}
+\nc{\UU}{{{\mathbb U}}}
+\nc{\OO}{{{\mathbb O}}}
+\nc{\EE}{{{\mathbb E}}}
+
+\newcommand{\val}{\operatorname{val}}
+
+\newcommand{\wt}{\ensuremath{\mathit{wt}}}
+\newcommand{\Id}{\ensuremath{I}}
+\newcommand{\transpose}{\mkern0.7mu^{\mathsf{ t}}}
+\newcommand*{\ScProd}[2]{\ensuremath{\langle#1\mathbin{,}#2\rangle}} %Scalar Product
+%\newcommand*{\eps}{\ensuremath{\varepsilon}}
+\newcommand*{\Sphere}[1]{\ensuremath{\mathsf{S}^{#1}}}
+
+\pretolerance=1000
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% DOCUMENT STARTS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{tikz}
+\usetikzlibrary{automata}
+
+
+
+% Custom colors
+\usepackage{color}
+\definecolor{deepblue}{rgb}{0,0,0.5}
+\definecolor{deepred}{rgb}{0.6,0,0}
+\definecolor{deepgreen}{rgb}{0,0.5,0}
+
+\usepackage{pythonhighlight}
+
+\begin{document}
+	{\noindent
+		\textsc{CIMPA School}
+		\hfill {E.Kirshanova, D. Stehl{\' e} //2023\\}
+	\hrule
+	\begin{center}
+		{\Large\textbf{
+				\textsc{Practice 1: Getting familiar with FpyLLL} \\[5pt]
+		} } 
+	\end{center}
+	}
+	\hrule \vspace{5mm}
+	
+	\thispagestyle{empty}
+	
+	\vspace{0.2cm}
+	
+
+	
+The goal of this lab is to familiarize yourself  with basic routines implemented in the FPyLLL library~\cite{fpylll}. Documentation is available at \url{https://readthedocs.org/projects/fpylll/downloads/pdf/latest/} \\
+\section{LLL}
+
+\begin{enumerate}
+
+\item Generating a random $q$-ary matrix.
+\begin{python}
+	from fpylll import *
+	import copy
+	A = IntegerMatrix.random(30, "qary", k=15, bits=30)
+	print(A)
+	dim = A.nrows
+	print('dimension:', dim)
+\end{python}
+
+\item  GSO object, norm computation, and LLL reduction
+
+\begin{python}
+	M = GSO.Mat(A, float_type="d") #float_type \in {'d', 'dd', 'qd','mpfr'}
+	print(M.get_r(0,0))
+	print(M.d) # lattice dimension
+	print(M.B) # input basis
+	M.update_gso() # compute all interesting matrices (R-factor, mu, ...)
+	print(M.get_r(1,1))
+	print(A[0].norm()**2) # first basis norm
+	print('before:', [M.get_r(i,i) for i in range(dim)]) # all r_ii
+	
+	L = LLL.Reduction(M, delta=0.99, eta=0.501) # creating an LLL object
+	L() # run LLL
+	print('after:', [M.get_r(i,i) for i in range(dim)])
+	print(A)
+\end{python}
+
+\item Transformation matrix
+\begin{python}
+	A = IntegerMatrix.random(100, "qary", k=50, bits=30)
+	dim = A.nrows
+	Ac = copy.deepcopy(A) # copy of A
+	U = IntegerMatrix.identity(dim)
+	UinvT = IntegerMatrix.identity(dim)
+	
+	M_transf = GSO.Mat(Ac, float_type="qd", U = U, UinvT = UinvT) #U --  transformation matrix mapping A to LLL-reduced Ac
+	print(M_transf.inverse_transform_enabled) # LLL computes U
+	
+	L = LLL.Reduction(M_transf, delta=0.99, eta=0.501)
+	L()
+	print(Ac[1])
+	print((U*A)[1])
+\end{python}
+
+\end{enumerate}
+
+\section{Enumeration}
+
+\begin{python}
+	A = IntegerMatrix.random(45, "qary", k=25, bits=30)
+	M = GSO.Mat(A)
+	L = LLL.Reduction(M, delta=0.99, eta=0.501)
+	L()
+	M.update_gso()
+	
+	enum = Enumeration(M, strategy=EvaluatorStrategy.BEST_N_SOLUTIONS, sub_solutions=True) #initiate the object Enumeration
+	res = enum.enumerate(0, 45, 0.9*M.get_r(0, 0), 0) # launch enumeration
+	print(([int(res[0][1][i]) for i in range(len(res[0][1]))]))
+	#for a,b in enum.sub_solutions:
+	#    print(a, b)
+	
+	print(enum.get_nodes()) # number of visited nodes
+\end{python}
+
+\section{BKZ}
+
+Main source of the code: \url{https://www.maths.ox.ac.uk/system/files/attachments/lab-02.pdf}
+
+\begin{enumerate}
+	\item Part 1: Launching BKZ 
+	
+	\begin{python}
+		from fpylll import *
+		from fpylll.algorithms.bkz import BKZReduction
+		from math import log
+		
+		from fpylll.algorithms.bkz2 import BKZReduction as BKZ2
+		import matplotlib.pyplot as plt
+
+		A = IntegerMatrix.random(60, "qary", k=30, bits=30)
+		
+		bkz = BKZReduction(A) #instantiation class BKZReduction
+		print('before BKZ:', log(A[0].norm(),2))
+		bkz(BKZ.EasyParam(20, max_loops=8)) #block size  15 ; maxloops = number of bkz tours
+		print('after BKZ:', log(A[0].norm(),2))
+		bkz(BKZ.EasyParam(15, max_loops=8), tracer=True)
+		print(bkz.trace.get(("tour", 1)).report()) #for tracer=True
+		
+		
+		
+		k = 40
+		flags = BKZ.AUTO_ABORT
+		#print('flags:', flags, BKZ.AUTO_ABORT, BKZ.MAX_LOOPS,BKZ.VERBOSE)
+		par = BKZ.Param(k, strategies=BKZ.DEFAULT_STRATEGY, max_loops=8, flags=flags) # instantiation class of BKZ parameters
+		#bkz = BKZ2(A) #one way to instantiate BKZ # or
+		#bkz = BKZ2(GSO.Mat(A)) # another way to instantiate BKZ
+		bkz = BKZ2(LLL.Reduction(GSO.Mat(A))) #third way to instantiate BKZ
+		_ = bkz(par) # run BKZ with flags
+		print(log(A[0].norm(),2))
+	\end{python}
+	\item Part II: tracing how $r_{i,i}$'s change during BKZ
+	\begin{python}
+	A = IntegerMatrix.random(80, "qary", k=40, bits=45)
+	k = 42
+	tours = 3
+	
+	LLL.reduction(A)
+	M = GSO.Mat(A)
+	M.update_gso()
+	d = A.nrows
+	
+	colours = ["#4D4D4D", "#5DA5DA", "#FAA43A", "#60BD68", "#F17CB0", "#B2912F", "#B276B2", "#DECF3F", "#F15854"]
+	norms = [[log(M.get_r(i,i)) for i in range(d)]]
+	plt.plot(norms[0],label="lll", color=colours[0])
+	
+	par = BKZ.Param(block_size=k,strategies=BKZ.DEFAULT_STRATEGY)
+	bkz = BKZ2(M)
+	
+	for i in range(tours):
+	bkz.tour(par)
+	norms += [[log(M.get_r(j,j)) for j in range(d)]]
+	plt.plot(norms[i+1],label="tour %d"%i, color=colours[i+1])
+	
+	legend = plt.legend(loc='upper center')
+	plt.show()
+	\end{python}
+\end{enumerate}
+
+\section{G6K}
+
+\begin{enumerate}
+	\item Launch SVP with sieving
+	\begin{python}
+		from fpylll import *
+		from g6k import *
+		from g6k.utils.stats import SieveTreeTracer
+		from g6k.algorithms.bkz import pump_n_jump_bkz_tour
+		from fpylll.util import gaussian_heuristic
+		from math import sqrt
+
+		n = 60
+		A = IntegerMatrix.random(n, "qary", k=30, bits=30)
+		g6k = Siever(A, seed=0x1337) # g6k has its own seed
+		
+		g6k.initialize_local(0, 0, n) # sieve the entire basis
+		g6k(alg="bgj1") #alg \in {"nv", "gauss", "hk3"}
+		v = g6k.best_lifts()[0][2]
+		print('best lifts', g6k.best_lifts())
+		w = A.multiply_left(v)  # w = v*A
+		print('norms:', sum(w_**2 for w_ in w), A[0].norm()**2)
+	\end{python}
+\item Simulate BKZ with sieving
+\begin{python}
+n = 60
+A = IntegerMatrix.random(n, "qary", k=30, bits=30)
+
+g6k = Siever(A, seed=0x1337) # g6k has its own seed
+g6k.initialize_local(0, 0, n)
+sp = g6k.params.new()
+sp.threads = 1
+#g6k(alg="bgj1")
+
+tracer = SieveTreeTracer(g6k, root_label=("bgj1"), start_clocks=True)
+for b in (20, 30, 40, 50, 60): # progressive BKZ
+	pump_n_jump_bkz_tour(g6k, tracer, b, pump_params={"down_sieve": True})
+print(b, A[0].norm()**2)
+\end{python}
+\end{enumerate}
+
+\begin{thebibliography}{9}
+	\bibitem{fpylll} The {FPLLL} development team.
+	\textit{{fpylll}, a {Python} wrapper for the {fplll} lattice reduction library, {Version}: 0.5.9}, 2023. Available at \url{https://github.com/fplll/fpylll}
+	
+\end{thebibliography}
+
+
+\end{document}
