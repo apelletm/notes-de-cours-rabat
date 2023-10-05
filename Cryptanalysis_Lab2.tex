@@ -56,12 +56,7 @@
 \newcommand{\negl}{\mathrm{negl}} 
 
 
-\newtheorem{theorem}{Теорема}
-\newtheorem{corollary}[theorem]{Следствие}
-\newtheorem{lemma}[theorem]{Лемма}
-\newtheorem{observation}[theorem]{Observation}
-\newtheorem{proposition}[theorem]{Предложение}
-
+\newtheorem{theorem}{Theorem}
 \theoremstyle{definition}
 \newtheorem{definition}[theorem]{Definition}
 
@@ -104,11 +99,11 @@
 \begin{document}
 	{\noindent
 		\textsc{CIMPA School}
-		\hfill {E.Kirshanova, D. Stehl{\' e // 2023\\}
+		\hfill {October 23 -- November 4, 2023\\}
 	\hrule
 	\begin{center}
 		{\Large\textbf{
-				\textsc{Lab 1: Breaking Merkle-Hellman Cryptosystem} \\[5pt]
+				\textsc{Lab 2: Breaking Merkle-Hellman Cryptosystem} \\[5pt]
 		} } 
 	\end{center}
 	}
@@ -203,7 +198,7 @@ Note that if $\vec m$ is the message for the ciphertext $c$, i.e., $c =\sum_{i=1
 \paragraph{Task}
 
 \begin{enumerate}
-	\item Download script $\mathsf{merkle-hllman.sage}$. There you'll find implementations of $\mathsf{KeyGen}$,   $\mathsf{Enc}$, $ \mathsf{Dec}$. You do not need to modify them.
+	\item Download script $\mathsf{merkle-hellman.sage}$. There you'll find implementations of $\mathsf{KeyGen}$,   $\mathsf{Enc}$, $ \mathsf{Dec}$. You do not need to modify them.
 	\item Implement the function $\mathsf{attack()}$.
 	\item Check the correctness of your implementation by running
 	\[

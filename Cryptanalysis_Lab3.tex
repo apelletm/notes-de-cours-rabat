@@ -1,0 +1,225 @@
+\documentclass[11pt]{exam}
+
+%---enable russian----
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+
+
+
+\usepackage[margin=0.73in]{geometry}
+%\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
+\usepackage{kbordermatrix} % to label matrix rows and columns
+
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{latexsym}
+\usepackage{amscd,amsmath,amsthm}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{hyperref}
+
+\usepackage{algorithmicx, enumitem, algpseudocode, algorithm, caption}
+\usepackage{tikz}
+\usetikzlibrary{automata}
+
+\usepackage{textcomp}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% THEOREMS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{amsthm}
+
+%\newtheorem{theorem}{Теорерма}
+%\newtheorem{corollary}[theorem]{Следствие}
+%\newtheorem{lemma}[theorem]{Лемма}
+%\newtheorem{observation}[theorem]{Observation}
+%\newtheorem{proposition}[theorem]{Предложение}
+%\newtheorem{definition}[theorem]{Определение}
+%\newtheorem{claim}[theorem]{Утверждение}
+%\newtheorem{fact}[theorem]{Факт}
+%\newtheorem{assumption}[theorem]{Предположение}
+
+
+\newtheorem{theorem}{Theorem}
+\theoremstyle{definition}
+\newtheorem{problem}{Problem}
+\newtheorem{lemma}[theorem]{Lemma}
+
+
+\newcommand{\nc}{\newcommand}
+\nc{\eps}{\varepsilon}
+\nc{\RR}{{{\mathbb R}}}
+\nc{\CC}{{{\mathbb C}}}
+\nc{\FF}{{{\mathbb F}}}
+\nc{\NN}{{{\mathbb N}}}
+\nc{\ZZ}{{{\mathbb Z}}}
+\nc{\PP}{{{\mathbb P}}}
+\nc{\QQ}{{{\mathbb Q}}}
+\nc{\UU}{{{\mathbb U}}}
+\nc{\OO}{{{\mathbb O}}}
+\nc{\EE}{{{\mathbb E}}}
+
+\newcommand{\bigO}{\mathcal{O}}
+
+\newcommand{\val}{\operatorname{val}}
+
+\newcommand{\wt}{\ensuremath{\mathit{wt}}}
+\newcommand{\Id}{\ensuremath{I}}
+\newcommand{\transpose}{\mkern0.7mu^{\mathsf{ t}}}
+\newcommand*{\ScProd}[2]{\ensuremath{\langle#1\mathbin{,}#2\rangle}} %Scalar Product
+\newcommand*\abs[1]{\left\lvert#1\right\rvert}
+\newcommand*\norm[1]{\left\lVert#1\right\rVert}
+
+\pretolerance=1000
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% DOCUMENT STARTS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{tikz}
+\usetikzlibrary{automata}
+\DeclareMathOperator{\Vol}{Vol}
+
+\begin{document}
+	{\noindent
+		\textsc{CIMPA School}
+		\hfill {October 23 -- November 4, 2023\\}
+		\hrule
+		\begin{center}
+			{\Large\textbf{
+					\textsc{Lab 3: Coppersmith's attack on Low RSA exponent} \\[5pt]
+			} } 
+		\end{center}
+	}
+	\hrule \vspace{5mm}
+	
+	\thispagestyle{empty}
+	
+	\vspace{0.2cm}
+	
+	\thispagestyle{empty}
+	
+	\vspace{0.2cm}
+	\section{ Coppersmith's algorithm for small root finding}
+	Coppersmith's attack on the one-way RSA function relies on the following theorem shown in~\cite{Coppersmith}.
+	\begin{theorem}\label{thm:Coppersmith}
+		Let $N\in \NN_+$, $f\in \ZZ[x]$ be a monic polynomial of degree $n$. Let further $X = N^{\frac{1}{n}-\varepsilon}$ for $\varepsilon>0$. Then there exists an algorithm that finds all $|x_0| < X$ satisfying $f(x_0) =0 \bmod N$, in time equal to the running time of the LLL algorithm on a lattice of dimension $\bigO(\min\{ \frac{1}{\varepsilon}, \log_2 N \})$.
+	\end{theorem}
+
+	A nice feature of this theorem is that the modulus $N$ can be composite with unknown factorization (for prime moduli there is no need in this theorem because we know more efficient algorithms to factor polynomials in such cases).
+	
+	In order to prove Coppersmith's theorem, we start with the result due to Howgrave-Graham~\cite{HG}. In what follows, with a polynomial $h(x) = \sum_{i=0}^{n} a_i x^i \in \ZZ[x]$ we associate the coefficient vector $(a_i)_i\in \ZZ^{n_1}$ and define its squared norm as $\norm{h}^2 = \sum_i \abs{a_i}^2$.
+ 
+	\begin{lemma}\label{lem:HG}
+		Let $h(x) \in \ZZ[x]$ be a polynomial of degree $n$ and $X>0$ be integer. Assume,$\norm{h(xX)} < N / \sqrt{n}$. If $\abs{x_0} < X$ satisfies $h(x_0) = 0 \bmod N$, then $h(x_0) = 0$ holds over the integers.
+	\end{lemma}
+	\begin{proof}
+		Consider
+	\begin{align*}
+		\abs{h(x_0)} &=\abs{\sum_i a_i x^i_0} = \abs{ \sum_i a_i X^i \left( \frac{x_0}{X} \right)^i} \leq \sum_i \abs{a_i X^i \left( \frac{x_0}{X} \right)^i} \\
+		& < \sum_i \abs{a_i X^i} \leq \sqrt{n} \norm{h(xX)} < N. 
+	\end{align*}
+	From this inequality and the condition $h(x_0) = 0 \bmod N$, it follows that $h(x_0) \equiv 0$.  
+	\end{proof}
+
+Lemma~\ref{lem:HG} states that if $h$ is a polynomial of small norm, then all its roots $\bmod~N$ that are small in the absolute value, are also its roots over $\ZZ$. Therefore, the idea is, for a polynomial $f(x)$ not necessarily of small norm, we will be searching for a polynomial $h(x)$ of \emph{small norm} whose roots coincide with the roots of $f(x)$. 
+
+We could have started with linear combinations of the polynomials  $f, xf, x^2f, \ldots$, but they are unlikely to give the desired norm. Coppersmith suggested to add to the above list of polynomials powers of $f(x)$ noting that if $f(x) = 0 \bmod N$, then $f(x)^i = 0 \bmod N^i$ for any $i > 1$. Overall, define, for some integer $m$,\footnote{A thorough analysis shows that $m = \lceil \frac{1}{n\varepsilon} \rceil$ suffices, in practice we shall choose $m$ to be a small constant.} the following polynomials
+\[
+		g_{i,j}(x) = N^{m-i}x^jf(x)^i, \quad \text{ for } i = 0, \ldots, m-1, j = 0, \ldots n-1.
+	\]
+Then an $x_0$ -- a root of $f(x)$ -- is a root of  $g_{i,j}(x) \bmod~N^m$ for all $i \geq 0$. Now we are ready to search for $h(x)$ -- a linear combination of $g_{i,j}(x)$'s such that the norm of $h(xX)$  does not exceed $N^m$ (such a choice of polynomials $g_{i,j}(xX)$ allows to increase the bound from $N$ to $N^m$).
+
+
+Now let us dive into the solving the problem of finding a small-norm linear combination of polynomials. Identifying $g_{i,j}(xX)$ with its coefficient vector, the task of finding $h(x)$ boils down to the task of finding a short vector in the lattice $L$ generated by the matrix, which contains in its $\ell$-th column the coefficients of $x^i$ monomial of $g_{i,j}(x)$'s. We obtain a lattice of dimension  $w = nm$ with a lower-triangular basis matrix (we first order $g_{i,j}(x)$'s by $i$ and then by $j$). For example, for $n=2, m=3$ the matrix will be of the form
+	
+	\renewcommand{\kbldelim}{(}% Left delimiter
+	\renewcommand{\kbrdelim}{)}% Right delimiter
+	\[
+		\kbordermatrix{
+					& x^0 & x^1 & x^2 & x^3 & x^4 & x^5 \\
+		g_{0,0}(xX) & N^3 &  &  &  &  & \\
+		g_{0,1}(xX) & \star & N^3X &  &  &  & \\
+		g_{1,0}(xX) & \star & \star & N^2X^2 &  &  & \\
+		g_{1,1}(xX) & \star & \star & \star & N^2X^3 &  & \\
+		g_{2,0}(xX) & \star & \star & \star & \star & NX^4 &  \\
+		g_{2,1}(xX) & \star & \star & \star & \star & \star & NX^5
+	}
+	\]
+%	
+The $\star$ entries the coefficients of $g_{i,j}(xX)$, the empty entries are zeros. If we run LLL reduction on this basis (this basis is already give by the \emph{rows!} just like in FPyLLL/Sage), we obtain a lattice vector $v$ such that $\norm{v} \leq 2^{w} \det(L)^{1/w}$. The determinant of $L$ can be approximated as\footnote{the factors that not explicitly mentioned, are moved into $\varepsilon$}:
+	\begin{align*}
+			\det(L) &= \prod_{i=0}^{m-1} N^{(m-i)n} \prod_{j=0}^{n-1} \prod_{i=0}^{m-1} X^j X^{ni} = \prod_{i=1}^{m} N^{in} \prod_{i=0}^{nm-1} X^i = \\
+			&= N^{\frac{m(m+1)n}{2}} X^{\frac{mn(mn-1)}{2}} \approx N^{\frac{m^2n}{2}}X^{\frac{m^2n^2}{2}}.
+	\end{align*}
+
+For the vector $v$ (that corresponds to the polynomial  $h(xX)$) returned by LLL to satisfy the bound from Lemma~\ref{lem:HG}, the following inequality should hold
+	\begin{align*}
+			2^{w} \det(L)^{1/w} < \frac{N^m}{\sqrt{w}}.
+	\end{align*}
+Substituting the approximation for $\det(L)$ and ignoring small terms, the above inequality can be rewritten as	 \begin{align*}
+	\det(L) \leq N^{mw} \iff X \leq N^{1/n},
+\end{align*}
+that corresponds to the bound stated in Theorem~\ref{thm:Coppersmith} up to $\varepsilon$ that appears due to simplifications.
+
+\section{What does it have to do with RSA?}
+
+\subsection{Stereotypical messages}
+RSA encryption is based on the ``one-way function with trapdoor'' of the form $x \mapsto x^e \bmod N$ for some $e \in \ZZ_N^\star$: knowing $d = e^{-1} \bmod \phi(N)$, one can easily invert it. School-book RSA (which is, on its own, not secure)  computes, for a message $m$, the corresponding ciphertext as $c=m^e \bmod N$. 
+
+One of the ways to make the exponentiation efficient is to choose small $e$ (such a choice is insecure and is not used in modern implementations), e.g., $e=3$. In this exercise you are going to convince yourself that $e=3$ is a bad idea.
+For example, consider what is called ``stereotypical messages'' such as "your OTP is XXXX". An encryption for such message is  $(S+x)^e \bmod N$, where $S$ is the known part of the message (``your OTP is'' in our example), and $x$ is unknown. Then the ciphertext can be viewed as the polynomial $f(x) = (S+x)^e - c \bmod N$, where $x$ is a root. If the public exponent $e$ is small, then Coppersmith's algorithm efficiently recovers $x$ since the dimension of the lattice $L$ constructed as above, will be small.
+
+
+\subsection{Random padding}
+
+An attack on RSA encryption of related messages was proposed by Franklin and Reiter in 1996~\cite{FR96}. Assume two messages $m,m'$ are related as  $m = m'+r$, where $r$ is small (for example, if for the encryption of the $i$th message a so-called padding $R_i = i < 2^k$ is used in order to randomize the messages, then $c_i = (m\cdot 2^k + i \bmod N)$; such a randomization method is not secure). Then for $e=$, we have 
+	\begin{align*}
+			c &= m^3 \bmod N \\
+			c' &=(m+r)^3 \bmod N.
+	\end{align*}
+
+From $c, c', r$, one can easily obtain $m$ (think how, you'll need it later). What if we do not know $r$, but we know that it is small? Then the two ciphertexts $c, c'$ give the following system 
+	\begin{align*}
+		m^3 - c = 0 \bmod N \\
+		(m+r)^3 - c' = 0\bmod N,
+	\end{align*}
+where the unknowns are $m,r$. Using the method of resultants (classical approach to eliminate unknowns from a system\footnote{in the concrete exercise you'll need only the value of the resultant}), we obtain a univariate polynomial in $r$:
+	\begin{align*}
+			\text{res}_m(m^3 - c, (m+r)^3 - c' ) = r^9 + (3c - 3c')r^6 + 3r^3(c^2 + 7cc'+c'^2) + (c-c')^3 \bmod N.
+	\end{align*}
+
+The obtained polynomial $f(r)=r^9 + (3c - 3c')r^6 + 3r^3(c^2 + 7cc'+c'^2) + (c-c')^3 $  of degree 9 has $r$ as its root. If $r < N^{1/9}$, we can efficiently find it using Theorem~\ref{thm:Coppersmith}.
+
+\section{Task}
+
+In the file \texttt{Lab3Input.txt}, you are given an RSA public key $(N,e=3)$  and two ciphertexts $(c,c')$  encrypting  $(m,m')$ that are related via small $r$. You should find $r$ and $m, m'$. In your implementation you can use $X=\lfloor 0.5 \cdot N^{1/9} \rfloor$, and when defining the polynomials $g_{i,j}$, you can take $m=5$.
+
+	
+	\begin{thebibliography}{9}
+		\bibitem{Coppersmith} 
+		Don Coppersmith.
+		\textit{Small solutions to polynomial equations, and low exponent RSA vulnerabilities}. 
+		Journal of Cryptology, 10:233--260, 1997
+		
+		\bibitem{HG} 
+		Nick Howgrave-Graham
+		\textit{Finding small roots of univariate modular equations revisited.}. 
+		Cryptography and Coding, volume 1355 of Lecture Notes in Computer Science,  131--142.
+		Springer-Verlag, 1997.
+		
+		\bibitem{FR96}
+		Don Coppersmith, Matthew Franklin, Jacques Patarin, Michael Reiter.
+		\textit{Low-Exponent RSA with Related Messages}
+		Eurocrypt'96. 
+	\end{thebibliography}	
+		
+\end{document}
