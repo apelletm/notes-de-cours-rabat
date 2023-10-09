@@ -484,14 +484,10 @@ One can check that $\Lambda(\vec A)$ is generated over $R$ by the column vectors
 Moreover, the $m$ vectors $q \cdot \vec e_i$ are $K$-linearly independent, hence their $K$-span is the full space $K^m$. This implies that the rank of $\Lambda(\vec A)$ is maximal and equal to $m$.
 \end{proof}
 
-Let $(\vec A, \vec b)$ be an instance of MLWE$_{n,m,q,\chi}$, with $\vec b = \vec A \cdot \vec s + \vec e$ and $\|\mink(e_i)\| \leq B$ for all coordinates $e_i \in R$ of $\vec e$. If we let $M = \Lambda(\vec A)$, we see that $\vec v = \vec b - \vec e$ belongs to $M$. Moreover, $\|\tau(\vec b - \vec v)\| =  \| \mink(\vec e)\| \leq \sqrt{m} \cdot B$. So $\vec v$ is a close point to $\vec b$ in the module $M$. If the distance between $\vec v$ and $\vec b$ were significantly smaller than the first minimum $\lambda_1(M)$, then we could conclude that $\vec b$ is a module-BDD instance in the module $M$, with solution $\vec v$. We already have an upper bound on the distance between $\vec v$ and $\vec b$, hence it ``suffices'' to obtain a lower bound on $\lambda_1(M)$, for instance using a variant of the Minkowski-Hlawka theorem for module lattices, similar to Theorem~\ref{thm:Minkowski-Hlawka}. Unfortunately, I do not know any place where this variant has been formally stated and proven, and we will not prove it in these lecture notes. So, for now, we will have to assume that $\lambda_1(M) \geq \gamma \cdot \sqrt{m} \cdot B $ for some $\gamma >2$. If this is the case, then $\vec b$ is a module-BDD$_\gamma$ instance in the module $M = \Lambda(\vec A)$. Moreover, solving this instance allows one to recover $\vec v = \vec A \cdot \vec s \bmod q$, and then to recover $\vec s$ by solving the linear system.
+Let $(\vec A, \vec b)$ be an instance of MLWE$_{n,m,q,\chi}$, with $\vec b = \vec A \cdot \vec s + \vec e$ and $\|\mink(e_i)\| \leq B$ for all coordinates $e_i \in R$ of $\vec e$. If we let $M = \Lambda(\vec A)$, we see that $\vec v = \vec b - \vec e$ belongs to $M$. Moreover, $\|\mink(\vec b - \vec v)\| =  \| \mink(\vec e)\| \leq \sqrt{m} \cdot B$. So $\vec v$ is a close point to $\vec b$ in the module $M$. If the distance between $\vec v$ and $\vec b$ were significantly smaller than the first minimum $\lambda_1(M)$, then we could conclude that $\vec b$ is a module-BDD instance in the module $M$, with solution $\vec v$. We already have an upper bound on the distance between $\vec v$ and $\vec b$, hence it ``suffices'' to obtain a lower bound on $\lambda_1(M)$, for instance using a variant of the Minkowski-Hlawka theorem for module lattices, similar to Theorem~\ref{thm:Minkowski-Hlawka}. Unfortunately, I do not know any place where this variant has been formally stated and proven, and we will not prove it in these lecture notes. So, for now, we will have to assume that $\lambda_1(M) \geq \gamma \cdot \sqrt{m} \cdot B $ for some $\gamma >2$. If this is the case, then $\vec b$ is a module-BDD$_\gamma$ instance in the module $M = \Lambda(\vec A)$. Moreover, solving this instance allows one to recover $\vec v = \vec A \cdot \vec s \bmod q$, and then to recover $\vec s$ by solving the linear system.
 
 The take-away message from this discussion is that recovering the secret $\vec s$ of an MLWE instance $(\vec A, \vec b)$ can likely be done by solving a module-BDD instance in the module $\Lambda(\vec A)$.
 
-%$\vec y = \mink(\vec b) \in \CC^{dm}$, $\vec x = \mink(\vec b - \vec e) \in \CC^{dm}$, and $M = \Lambda(\vec A)$, we see that $\vec x$ belongs to the module lattice $\mink(M)$ and that $\|\vec y - \vec x\| = \| \mink(\vec e)\| \leq \sqrt{m} \cdot B$.
-%If $\sqrt{m} \cdot B$ were significantly smaller than $\lambda_1(\mink(M))$, then $\vec y$ would be a BDD instance in the module $\mink(M)$. To show that this is the case with high probability, one would need a variant of the Minkowski-Hlawka theorem for module lattices, analogue to Theorem~\ref{thm:Minkowski-Hlawka}. We will not prove this in these lecture notes, and we are not aware of a reference where such a statement is made and proven.
-
-%Even though we do not have a formal proof that $\vec y$ is a BDD instance in $\mink(M)$, we still know that it is quite close to the lattice $\mink(M)$ (closer than what one would expect for $\lambda_1(\mink(M))$ for a sufficiently uniform lattice). And finding the close point $\vec x \in \mink(M)$ of $\vec y$ allows to recover the secret $\vec s$ of the MLWE instance. Hence, in a sense, MLWE can be seen as a module-BDD instance, in the module lattice $\mink( \Lambda(\vec A))$ where $\vec A$ is sampled uniformly at random.
 
 %TODO Minkowski-Hlawka for modules
 %We will now prove that recovering the secret $\vec s$ from a module-LWE sample $(\vec A, \vec b)$ can be done by solving a BDD instance in the module lattice $\Lambda(\vec A)$. This implies the following result.
@@ -547,16 +543,18 @@ To do so, we use a strategy similar to the Minkowski-Hlawka theorem.
 \end{align*}
 
 Estimating the probability $\Pr_{h \leftarrow \mathcal{U}(R_q)}(gh = f \bmod q)$ is a bit technical, especially when the ideal $qR$ is not prime (note that even if $q$ is prime, the ideal $qR$ might not be prime). This is done in~\cite[Lemma B.1]{PS21}, and gives the bound stated in the lemma.
-
+%
 %Assume for the moment that the ideal $qR$ is prime. Then, $g$ should be invertible modulo $q$. Indeed, non-invertible elements modulo $q$ have to be divisible by $q$ (because $q$ is prime) and so they are either $0$ or they have an euclidean norm larger than $q > B$. Since $\|g\| \leq B$, this would imply $g = 0$, but then $f$ has to be $0$ modulo $q$, and a similar argument shows that $f = 0$ too. This is impossible because we required $(f,g) \neq (0,0) \bmod q$.
-
+%
 %Now that it is established that $g$ is invertible modulo $q$, we can rewrite $gh = f \bmod q$ into $h = f/g \bmod q$, and we see that the probability that such an event happen is $1/q^d$. Hence, the probability that $h$ is an NTRU instance is at most $(2 \cdot (2B+1))^d \cdot 1/q^d \leq 
 \end{proof}
+
+%TODO NTRU with large f and g's
 
 \begin{definition}[search NTRU]
 Let $q >1$ be an integer, $B >0$ be a real number and $\psi$ be a distribution over NTRU$_{q,B}$ instances (which is a subset of $R$).
 %$R$ such that for all $x$ in the domain of $\chi$, $x$ is invertible modulo $q$ and $\|\mink(x)\| \leq B$. 
-The search-NTRU$_{q, B, \chi}$ problem asks, given as input $h \psi$ to recover $(f, g) \in R^2$ such that $g \cdot h = f \bmod q$ and $\|\mink(f)\|, \|\mink(g)\| \leq B$.
+The search-NTRU$_{q, B, \psi}$ problem asks, given as input $h \leftarrow \psi$ to recover $(f, g) \in R^2\setminus\{(0,0)\}$ such that $g \cdot h = f \bmod q$ and $\|\mink(f)\|, \|\mink(g)\| \leq B$.
 \end{definition}
 
 Note that there are usually many trapdoors $(f,g)$ for a given $h$, and the NTRU problem only asks to recover one such trapdoor.
@@ -574,7 +572,7 @@ In practice, the distribution $\psi$ over NTRU instances can be obtained by samp
 %\end{lemma}
 
 \begin{definition}[Decision NTRU]
-Let $q >1$ be an integer, $B >0$ be a real number and $\psi$ be a distribution over NTRU$_{q,B}$ instances (which is a subset of $R$). The dec-NTRU$_{q, B, \chi}$ problem asks to distinguish between samples from $\psi$ and samples from $\mathcal{U}(R_q)$.
+Let $q >1$ be an integer, $B >0$ be a real number and $\psi$ be a distribution over NTRU$_{q,B}$ instances (which is a subset of $R$). The dec-NTRU$_{q, B, \psi}$ problem asks to distinguish between samples from $\psi$ and samples from $\mathcal{U}(R_q)$.
 \end{definition}
 
 %\begin{remark}
@@ -596,11 +594,42 @@ h & q
 We will write $M_h$ this module.
 \end{definition}
 
+We will now prove that the search NTRU problem can be reduced to module-$SVP$ in the module $M_h$ associated to the NTRU instance $h$.
+
+\begin{lemma}
+Let $q >1$ be an integer and $B >0$ be a real number. Let $h \in R_q$ be an NTRU$_{q,B}$ instance. There is a polynomial time reduction from solving NTRU$_{q,2B}$ on input $h$ to solving module-SVP on input $M_h$.
+\end{lemma}
+
+Note that even though $h$ is an NTRU$_{q,B}$, i.e., it has a trapdoor $(f,g)$ with both $\|\mink(f)\|, \|\mink(g)\| \leq B$, our reduction is only guaranteed to solve NTRU$_{q,2B}$ on $h$, that is to find $(f',g')$ such that $\|\mink(f')\|, \|\mink(g')\| \leq 2B$. If we had defined NTRU instances by giving an upper bound on the euclidean norm of the vector $\mink((f,g))$ instead of  on $\mink(f)$ and $\mink(g)$ separately, we would not have this small loss here (you can check this claim by looking at the details of the proof below).
+
+
+\begin{proof}
+Let $(f,g) \in R^2$ be a solution to the NTRU problem on input $h$, i.e., $g \cdot h = f \bmod q$ and $\|\mink(g)\|, \|\mink(f)\| \leq B$. The vector $\vec v = (g,f)^T$ belongs to the module $M_h$. Indeed, let $r \in R$ be such that $g \cdot h = f + qr$. Then $\vec v = g \cdot (1, h)^T - r \cdot (0, q)^T$ is in the $R$-span of the columns of $\vec B_h$, i.e., it is in $M_h$.
+This vector satisfies $\|\mink(\vec v)\| \leq \|\mink(g)\| + \| \mink(f)\| \leq 2B$ and is non-zero (since $(f,g) \neq (0,0)$). Hence, it must be be that $\lambda_1(M_h) \leq 2B$.
+
+Let $\vec w := (g',f') \in M_h$ be a solution to module-SVP in $M_h$, i.e., $\vec w \neq (0,0)$ and $\|\vec w \| \leq \lambda_1(M_h)$. Since we have seen that $\lambda_1(M_h) \leq 2B$, it holds in particular that $\|\mink(f')\|, \|\mink(g')\| \leq 2B$. Moreover, since $M_h \subseteq R^2$, then we have $f', g' \in R$. To prove that $(f',g')$ is a solution to NTRU$_{q,2B}$, it hence only remain to prove that $g' H = f' \bmod q$. Recall that $M_h$ has basis $\vec B_h$, hence it must exists $x_1, x_2 \in R$ such that $\vec w = x_1 \cdot (1, h)^T + x_2 (0, q)^T = (x_1, x_1 h + x_2 q)^T$. Identifying the coefficients shows that $x_1 = g$ and $f = g \cdot h + x_2 q = g \cdot h \bmod q$ as desired. This concludes the proof.
+\end{proof}
+
 
 
 \subsubsection{Reductions between problems}
 
+Now that we have defined many algorithmic problems, it is natural to wonder how these problems compare to each others. Are some problems provably harder or easier than the others? In other words, we would like to prove reductions between the different problems. Many articles have considered these questions, and we summarize some of them on Figure~\ref{fig:reductions} below. Beware that, to keep the figure simple, we do not specify all the parameters of the problems:
+\begin{itemize}
+\item[$\bullet$] ideal-SVP means ideal-SVP$_\gamma$ for some $\gamma$;
+\item[$\bullet$] $r$-module-SIVP means $r$-module-SIVP$_\gamma$ for some $\gamma$;
+\item[$\bullet$] MLWE$_{n}$ means MLWE$_{n,m,q,\chi}$ for some $m,q,\chi$;
+\item[$\bullet$] NTRU means NTRU$_{q,B,\psi}$ for some $q, B, \psi$.
+\end{itemize}
+This implies in particular that the reductions presented on the Figure may \emph{not} compose. Indeed, some reduction may require specific choice of parameters $m$, $q$, $\chi$, etc, and the other may require other choices for the same parameters, making them incompatible. The figure is here to help you get a better idea of how the problems compare to one another, but it should not be used as a formal statement since some information is (voluntarily) missing.
+
+This being said, let us make two more disclaimers on the figure. First, some of the reductions shown on the figure may be \emph{quantum}. Quantum reductions are usually not a problem for us, since all the problem are supposed to be post-quantum (so a quantum attack against one of the problems would already be surprising).
+Second, the references on the figure points to the first article proving such a reduction. Better reductions might have been proven since then (with smaller loss in the parameters for instance), but this is invisible on the figure since we do not specify most of the parameters anyway. Also, the figure only reflects the state of knowledge at the time where I wrote these lecture notes (October 2023). New reductions may be proven in the future.
+
+
 picture
+
+
 
 
 \subsection{Cryptographic constructions}
