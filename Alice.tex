@@ -388,11 +388,11 @@ Using the upper bound $\lambda_d^{(\infty)}(\mink(\O_K)) \leq \Delta_K^{1/d}$ fr
 \end{proof}
 
 
-\begin{itemize}
+%\begin{itemize}
 %\item definition
 %\item properties of ideal lattices (lower bound on $\lambda_1$ and upper bound on $\lambda_d$)
-\item {\color{red} TODO} some comments on cryptanalysis of ideal-SVP vs module-SVP for rank $> 1$
-\end{itemize}
+%\item {\color{red} TODO} some comments on cryptanalysis of ideal-SVP vs module-SVP for rank $> 1$
+%\end{itemize}
 
 \paragraph{Algorithmic problems.} Since ideal and module lattices are, in particular, lattices, we can restrict the algorithmic problems seen in the first part of the lecture notes to these lattices.
 
@@ -552,6 +552,7 @@ Estimating the probability $\Pr_{h \leftarrow \mathcal{U}(R_q)}(gh = f \bmod q)$
 %TODO NTRU with large f and g's
 
 \begin{definition}[search NTRU]
+\label{def:NTRU}
 Let $q >1$ be an integer, $B >0$ be a real number and $\psi$ be a distribution over NTRU$_{q,B}$ instances (which is a subset of $R$).
 %$R$ such that for all $x$ in the domain of $\chi$, $x$ is invertible modulo $q$ and $\|\mink(x)\| \leq B$. 
 The search-NTRU$_{q, B, \psi}$ problem asks, given as input $h \leftarrow \psi$ to recover $(f, g) \in R^2\setminus\{(0,0)\}$ such that $g \cdot h = f \bmod q$ and $\|\mink(f)\|, \|\mink(g)\| \leq B$.
@@ -626,8 +627,177 @@ This implies in particular that the reductions presented on the Figure may \emph
 This being said, let us make two more disclaimers on the figure. First, some of the reductions shown on the figure may be \emph{quantum}. Quantum reductions are usually not a problem for us, since all the problem are supposed to be post-quantum (so a quantum attack against one of the problems would already be surprising).
 Second, the references on the figure points to the first article proving such a reduction. Better reductions might have been proven since then (with smaller loss in the parameters for instance), but this is invisible on the figure since we do not specify most of the parameters anyway. Also, the figure only reflects the state of knowledge at the time where I wrote these lecture notes (October 2023). New reductions may be proven in the future.
 
+\begin{figure}
+\begin{center}
+\scalebox{0.85}{
+\begin{tikzpicture}[scale = 0.35]
 
-picture
+%\begin{scope} %% to crop the picture with a rectangle!
+%    \clip(-12,-13) rectangle (30,10);
+
+%% rank 1
+\draw[rounded corners] (0, 6) rectangle (6, 9) node[pos=.5,text width=4cm,align=center] {ideal-SIVP};
+\draw[rounded corners] (0, 0) rectangle (6, 3) node[pos=.5,text width=4cm,align=center] {MLWE$_1$};
+\draw[rounded corners] (0, -6) rectangle (6, -3) node[pos=.5,text width=4cm,align=center] {dec-MLWE$_1$};
+
+\draw[thick,<-] (2.5, 3.2) -- (2.5,5.8);
+\draw (2.5,5) node[right, gray] {{\scriptsize \cite{RLWE1}}};
+\draw (2.5,4) node[right, gray] {{\scriptsize \cite{RLWE2}}};
+
+\draw[thick,<-] (3.5, -0.2) -- (3.5,-2.8);
+\draw[thick,->] (2.5, -0.2) -- (2.5,-2.8);
+\draw (2.8,-1.5) node[left, gray] {{\scriptsize \cite{RLWE2}}};
+
+%% rank 2
+\draw[rounded corners] (11, 6) rectangle (17, 9) node[pos=.5,text width=4cm,align=center] {$2$-module-\\SIVP};
+\draw[rounded corners] (11, 0) rectangle (17, 3) node[pos=.5,text width=4cm,align=center] {MLWE$_2$};
+\draw[rounded corners] (11, -6) rectangle (17, -3) node[pos=.5,text width=4cm,align=center] {dec-MLWE$_2$};
+
+\draw[thick,<-] (13.5, 3.2) -- (13.5,5.8);
+\draw (13.5,4.5) node[left, gray] {{\scriptsize \cite{MLWE2}}};
+
+\draw[thick,<-] (14.5, -0.2) -- (14.5,-2.8);
+\draw[thick,->] (13.5, -0.2) -- (13.5,-2.8);
+\draw (13.5,-1.5) node[left, gray] {{\scriptsize \cite{MLWE2}}};
+
+
+%% rank 3
+\draw[rounded corners] (22, 6) rectangle (28, 9) node[pos=.5,text width=4cm,align=center] {$3$-module-\\SIVP};
+\draw[rounded corners] (22, 0) rectangle (28, 3) node[pos=.5,text width=4cm,align=center] {MLWE$_3$};
+\draw[rounded corners] (22, -6) rectangle (28, -3) node[pos=.5,text width=4cm,align=center] {dec-MLWE$_3$};
+
+\draw[thick,<-] (24.5, 3.2) -- (24.5,5.8);
+\draw (24.5,4.5) node[left, gray] {{\scriptsize \cite{MLWE2}}};
+
+\draw[thick,<-] (25.5, -0.2) -- (25.5,-2.8);
+\draw[thick,->] (24.5, -0.2) -- (24.5,-2.8);
+\draw (24.5,-1.5) node[left, gray] {{\scriptsize \cite{MLWE2}}};
+
+%% etc
+\draw (34, 7.5) node {$\cdots$};
+\draw (34, 1.5) node {$\cdots$};
+\draw (34, -4.5) node {$\cdots$};
+
+%% diagonal arrows
+%\draw[thick,->] (6.3, 2.5) -- (10.7,6.5);
+%\draw[thick,->] (17.3, 2.5) -- (21.7,6.5);
+%\draw[thick,->] (28.3, 2.5) -- (32.7,6.5);
+
+%% horizontal arrows
+%% LWE
+\draw (8.5,2) node[gray, above] {{\scriptsize \cite{AD17}}};
+\draw[thick,<-] (6.3, 2) -- (10.7,2);
+\draw[thick,->] (6.3, 1) -- (10.7,1);
+\draw (19.5,2) node[gray, above] {{\scriptsize \cite{AD17}}};
+\draw[thick,<-] (17.3, 2) -- (21.7,2);
+\draw[thick,->] (17.3, 1) -- (21.7,1);
+\draw (30.5,2) node[gray, above] {{\scriptsize \cite{AD17}}};
+\draw[thick,<-] (28.3, 2) -- (32.7,2);
+\draw[thick,->] (28.3, 1) -- (32.7,1);
+
+%% SIVP
+\draw[thick,->] (6.3, 7) -- (10.7,7);
+
+\draw[thick,->] (17.3, 7) -- (21.7,7);
+\draw[thick,<-] (17.3, 8) -- (21.7,8);
+\draw (19.5,8.8) node[above,gray] {{\scriptsize \cite{LPSW19}}};
+\draw (19.5,8) node[above,gray] {{\scriptsize \cite{MS20}}};
+\draw[thick,->] (28.3, 7) -- (32.7,7);
+\draw[thick,<-] (28.3, 8) -- (32.7,8);
+\draw (30.5,8) node[above,gray] {{\scriptsize \cite{MS20}}};
+
+%% Big box
+%\draw[dotted, rounded corners, thick, gray] (35,10) -- (10,10) -- (10,4) -- (-1,4) -- (-1,-7) -- (36,-7) -- (36,10) -- (35,10);
+
+
+%% NTRU
+\draw[rounded corners] (-10, 0) rectangle (-4, 3) node[pos=.5,text width=4cm,align=center] {NTRU};
+\draw[rounded corners] (-10, -6) rectangle (-4, -3) node[pos=.5,text width=4cm,align=center] {dec-NTRU};
+
+
+%% NTRU arrows
+\draw[thick,->] (1, 5.7) -- (-5,3.3);
+\draw (-2.5,5) node[left,gray] {{\scriptsize \cite{PS21}}};
+
+\draw[thick,<-] (-7, -0.3) -- (-7,-2.7);
+
+\draw[thick,->] (-3.7, -4.5) -- (-0.3,1);
+\draw (-4,-4.5) node[right,gray] {{\scriptsize \cite{Pei16}}};
+
+%\end{scope}
+
+\end{tikzpicture}
+}
+\end{center}
+\caption{PoReductions (possibly quantum) between algebraic variants of lattice problems. Reductions with no references should be immediate.}
+\label{fig:reductions}
+\end{figure}
+
+Let us comment Figure~\ref{fig:reductions} a bit. A first observation is that the situation seems somewhat different between MLWE and module-SIVP for the rank-$1$ case. Indeed, for MLWE$_1$, we have reductions \emph{from and to} MLWE$_2$, meaning that these two problems are somewhat equivalent. In the case of module-SIVP, we only have the easy reduction from $1$-module-SIVP (i.e., ideal-SIVP) to $2$-module-SIVP. We already discussed in the previous section that the absence of reduction from $2$-module-SVP to ideal-SVP may be due to a gap in the hardness between these two problems.\footnote{The SIVP case is similar to the SVP case here.} For the MLWE problem, we know that the is no such gap between rank-$1$ and rank-$2$. As explained above, this is the reasons why, in these lecture notes, we decided to use the terminology MLWE$_1$ and not RLWE (there is no reason to treat the case $n = 1$ differently from the cases $n \geq 2$).
+
+On a related topic, you may have heard that MLWE$_1$ (i.e., RLWE) is based on the hardness of ideal-SIVP, and that solving ideal-SIVP efficiently would have an impact on the security of MLWE$_1$. This is not really correct. As you can see on the figure, we only have a reduction from ideal-SIVP to MLWE$_1$, so an algorithm solving ideal-SIVP cannot be transformed into an algorithm solving MLWE$_1$ (at least not with our current knowledge). The figure also shows that one can reduce $2$-module-SIVP to the MLWE$_1$ problem (for some range of parameters), so, if you prefer, you could say that the hardness of MLWE$_1$ is based on the hardness of $2$-module-SIVP (which seems safer than ideal-SIVP).
+
+The figure shows that MLWE$_k$ (resp $k$-module-SIVP) is somewhat equivalent to MLWE${k+1}$ (resp $(k+1)$-module-SIVP) for all $k \geq 1$ (resp. $k \geq 2$). These reductions can be combined, but they induce some loss on the parameters each time. Hence, combining many of these reductions would lead to a reduction with a significant loss. For example, there is a polynomial time reduction from $k$-module-SIVP$_\gamma'$ to $2$-module-SIVP$_\gamma$ for large $k$'s, but the parameter $\gamma'$ is of the order of $\gamma^{2k}$: the loss is exponential in $k$.
+
+As a last observation, you may have notices that we know less for the NTRU problem than for the MLWE problem. In particular, an important open question is whether the search and decision versions of the NTRU problem are equivalent or not.\footnote{Some preliminary results have been proven in this direction in~\cite{PS21}: the authors showed equivalence between dec-NTRU and a variant of the search NTRU problem. But the equivalence between this variant of search NTRU and the search NTRU defined in Definition~\ref{def:NTRU} above is still open.}
+
+%explain Martin and Amit's reduction (if it can be done easily)
+\paragraph{Albrecht-Deo's reduction.} In these lecture notes, we will not cover the details of all the reductions mentioned in Figure~\ref{fig:reductions}, we refer the reader to the cited articles for more details. We will only detail the reduction by Albrecht and Deo~\cite{AD17}, which shows that MLWE$_{1}$ is no easier than MLWE$_{k}$, for appropriately chosen parameters.
+
+%In order to simplify the statement and the proof, we will consider a variant of the MLWE problem where the error is worst-case, below some bound $B$. In other words, the error $\vec e$ is not sampled anymore from some small distribution $\chi^m$, but is arbitrarily chosen among vectors $\vec e \in R^m$ with $\|\mink(e_i)\| \leq B$ for all their coordinates $e_i$. We write this variant wc-error-MLWE$_{n,m,q,B}$.
+
+%In order to state the result, we need to introduce the Hermite Normal Form variant of the module-LWE problem. In this variant, the secret $\vec s$ is sampled from the same distribution $\chi$ as the error, instead of being chosen uniformly at random in $R_q^n$. More precisely, the Hermite Normal Form search module-LWE problem HNF-MLWE$_{n,m,q,\chi}$ asks, given as input a sample from the module-LWE distribution $A^{\vec s}_{n,m,q,\chi}$ for some $\vec s \leftarrow \chi^n$, to recover the secret vector $\vec s$.
+%Recall that one should think of $\chi$ as outputting small elements, so in this version, the secret vector $\vec s$ is also small. This form is usually convenient for proofs, as the one of Albrecht and Deo. Moreover, it was proved by Roux-Langlois and Stehlé~\cite[Le. 4.24]{LS15} that this variant of MLWE is equivalent to the standard MLWE problem, for a well-chosen distribution $\chi$.
+
+In order to simplify the statement, we will introduce $B$-bounded distributions. A distribution $\chi$ over $R$ is said to be $B$-bounded if, for all $x$ in the support of $\chi$, we have $\|\mink(x)\| \leq B$. We are now ready to state a simplified version of Albrecht and Deo's main result from~\cite{AD17}.
+
+\begin{lemma}
+\label{lemma:Albrecht-Deo}
+Let $\alpha_1, \dots, \alpha_d \in R$ be a known basis of $R$.
+Let $q \geq 2$, $m \geq n \geq 2$ and $\chi$ be a $B$-bounded distribution for some $B > 0$. There is a polynomial 
+algorithm $\mathcal{A}$ that takes as input $(\vec A, \vec b) \leftarrow A^{\vec s}_{n,m,q,\chi}$ for some $\vec s \leftarrow \chi^n$ and outputs $(\vec{\tilde{a}}, \vec{\tilde{b}}) \in R_{q'}^m \times R_{q'}^m$ where $q' = q^n$ and $\vec{\tilde{b}} = \vec{\tilde{a}} \cdot \tilde{s} + \vec{\tilde{e}} \bmod q'$ for some $\vec{\tilde{e}} \in R^m$ with 
+\[\|\mink(\tilde{e}_i) \| \leq B' := 3nd \cdot \max_i \|\mink(\alpha_i)\| \cdot q^{n-1} \cdot B\] 
+for all coordinates $\tilde{e}_i$ of $\vec{\tilde{e}}$, and where $\tilde{s} = \sum_{i=1}^n s_i q^{i-1} \in R_{q'}$. Moreover, the vector $\vec{\tilde{a}} \in R_q'^m$ is uniformly distributed.
+%time reduction from HNF-MLWE$_{n,m,q,\chi}$ to MLWE$_{1,m,q', \chi'}$, where $q' = q^n$ and $\chi'$ is a $B'$-bounded distribution \emph{depending on the MLWE} for $B' = 2dq^{n-1} \cdot B$.
+\end{lemma}
+At a high level, the reduction from the lemma transforms a sample from MLWE with secret dimension $n$, modulus $q$ and error bounded by $B$, into a sample from MLWE with secret dimension $1$, modulus $q' = q^n$ and error bounded by $B' = 3nd\cdot \max_i \|\mink(\alpha_i)\| \cdot q^{n-1} \cdot B$. Recall that the interesting parameter regarding the noise size is the noise ratio $\alpha = B/q$. After the reduction, this noise ratio becomes $\alpha' = B'/q' = 3nd \cdot \max_i \|\mink(\alpha_i)\| \cdot  \alpha$. Hence, the noise ratio is increased only slightly by the reduction (by a quantity depending on the number field $K$).\footnote{Note that for cyclotomic fields, we know a basis of $R$ such that $\max_i \|\mink(\alpha_i)\| = \sqrt{d}$.}
+Note also that, from the new secret $\tilde{s}$, one can efficiently recover the original secret $\vec s \in R_{q}^n$ be decomposing $\tilde{s}$ in base $q$. So a solution to the new MLWE$_1$ instance can be transformed back into a solution to the original MLWE$_n$ instance.
+
+Let's emphasize that the statement from Lemma~\ref{lemma:Albrecht-Deo} does not immediately provide a reduction from MLWE$_{n,m,q,\chi}$ to MLWE$_{1,m,q',\chi'}$ for some $B'$-bounded distribution $\chi'$. The first obstacle is that the noise term $\tilde{e}$ obtained after the reduction depends on the MLWE instance $(\vec A, \vec b)$ (and in particular on the secret $\vec s$). To transform the tuple $(\tilde{a}, \tilde{b})$ into an MLWE$_{1,m,q',\chi'}$ sample, one would need to make the noise term independent from the input of the reduction. This can be done using a technique called noise sampling, which essentially consists in adding a large fresh noise term to the sample, to hide the old noise term. This works well but requires to take $q$ quite large, since the noise flooding technique will increase $\tilde{e}$ quite a lot.
+
+Another limitation of our lemma is that we assumed that the secret $\vec s$ was sampled from the same distribution $\chi$ as the noise term $\vec e$, whereas in our definition of MLWE the secret $\vec s$ should be uniformly chosen in $(R_q)^n$. The variant of MLWE with small noise is known as the Hermite normal form variant of MLWE, and Roux-Langlois and Stehlé proved that this variant is equivalent to the standard MLWE problem for a well chosen distribution $\chi$~\cite[Le. 4.24]{MLWE2}.
+
+Let us now prove the lemma. \textbf{Do not read the following proof before the tutorial session, since we will do the proof as an exercise.}
+
+\begin{proof}
+Let $(\vec A, \vec b)$ be as in the lemma's statement. Then $\vec b = \vec A \cdot \vec s + \vec e \bmod q$ for some $\vec e \leftarrow \chi^m$. Since we assumed that $\chi$ is $B$-bounded, we know that $\|\mink(e_i)\| \leq B$ for all coordinate $e_i$ of $\vec e$. Similarly, since $\vec s \leftarrow \chi^n$, then $\|\mink(s_i)\| \leq B$ for all coordinate $s_i$ of $\vec s$.
+
+For every coordinate $a_{i,j} \in R_q$ of $\vec A$, let us compute a representative $\overline{a}_{i,j} \in R$ such that $\|\mink(a_{i,j}) \| \leq q \cdot d \cdot \max_i \|\alpha_i\|$. To do so, we first compute any representative $x \in R$. Then, we write $x = \sum_i x_i \alpha_i$, with $x_i \in \ZZ$, which is possible since the $alpha_i$'s form a basis of $R$. Finally, we reduce the $x_i$'s module $q$: $\overline{a}_{i,j} = \sum_i y_i \alpha_i$n where $y_i$ is the integer in $[0,q)$ equal to $x_i$ modulo $q$. Note that $\overline{a}_{i,j}$ differs from $x$ by multiples of $q$, so it is another representative of $a_{i,j} \in R_q$. Moreover, $\|\mink(a_{i,j})\| \leq \sum_i |y_i| \cdot \|\mink(\alpha_i)\| \leq q \cdot d \cdot \max_i \|\mink(\alpha_i)\|$ as desired.
+
+Let us now compute $\vec{\tilde{a}} = (\tilde{a_1}, \dots, \tilde{a_m})$ where $\tilde{a_i} = \sum_{j = 1}^n \overline{a}_{i,j} q^{n-j}$. 
+We also define $\tilde{b} = q^{n-1} \cdot \vec b \in R^m$.
+Recall from the lemma that $\tilde{s}$ is defined as $\tilde{s} = \sum_{j=1}^n s_j q^{j-1}$.
+
+Let us fix some $i \in \{1,\dots,m\}$. We want to prove that $\tilde{b_i} = \tilde{a_i} \cdot \tilde{s} + \tilde{e_i}\bmod q'$ for some small $\tilde{e_i}$. Let us explicit the computation
+\begin{align*}
+\tilde{a_i} \cdot \tilde{s} &= \Big(\sum_{j = 1}^n \overline{a}_{i,j} q^{n-j} \Big) \cdot \Big( \sum_{j=1}^n s_j q^{j-1}\Big) \\
+&= \sum_{k = 0}^{n-1} q^k \cdot \sum_{j = 1}^{k+1} s_j \overline{a}_{i,n-k-1+j} \bmod q^n\\
+&= q^{n-1} \cdot \sum_{j = 1}^n s_j \overline{a}_{i,j} + \sum_{k = 0}^{n-2} q^k \cdot \sum_{j = 1}^{k+1} s_j \overline{a}_{i,n-k-1+j} \bmod q^n.
+\end{align*}
+Observe that $\sum_{j = 1}^n s_j \overline{a}_{i,j} = \langle \vec a_i, \vec s \rangle \bmod q = b_i-e_i \bmod q$, where $\vec a_i$ is the $i$-th line of $\vec A$. Hence, $q^{n-1} \cdot \sum_{j = 1}^n s_j \overline{a}_{i,j} = q^{n-1} \cdot (b_i - e_i) \bmod q^n$.
+Let us define 
+\[ \tilde{e_i} = q^{n-1} \cdot e_i + \sum_{k = 0}^{n-2} q^k \cdot \sum_{j = 1}^{k+1} s_j \overline{a}_{i,n-k-1+j}.\]
+By definition, this noise term satisfies $\tilde{b_i} = \tilde{a_i} \cdot \tilde{s} + \tilde{e_i}\bmod q'$. It remains to bound its size.
+\begin{align*}
+\|\mink(\tilde{e_i})\| & \leq q^{n-1} \cdot \|\mink(e_i)\| + \sum_{k = 0}^{n-2} q^k \cdot \sum_{j = 1}^{k+1} \|\mink(s_j \overline{a}_{i,n-k-1+j})\| \\
+&\leq q^{n-1} \cdot B + \sum_{k = 0}^{n-2} q^k \cdot \sum_{j = 1}^{k+1} \|\mink(s_j)\| \cdot \|\mink(\overline{a}_{i,n-k-1+j})\| \\
+&\leq q^{n-1} \cdot B + \sum_{k = 0}^{n-2} q^k \cdot \sum_{j = 1}^{k+1} B \cdot q \cdot d \cdot \max_i \|\mink(\alpha_i)\| \\
+&\leq q^{n-1} \cdot B + \sum_{k = 0}^{n-2} q^{k+1} \cdot n \cdot B \cdot d \cdot \max_i \|\mink(\alpha_i)\| \\
+&\leq q^{n-1} \cdot B + nd \cdot B \cdot \max_i \|\mink(\alpha_i)\| \cdot \frac{q^{n}-1}{q-1} \\
+&\leq q^{n-1} \cdot B + nd \cdot B \cdot \max_i \|\mink(\alpha_i)\| \cdot 2q^{n-1},
+\end{align*}
+where in the last inequality we used the fact that $q \geq 2$ so that $(q-1)^{-1} \leq 2/q$. This provides the desired upper bound on the size of the coordinates of $\vec{\tilde{e}}$.
+\end{proof}
 
 
 
