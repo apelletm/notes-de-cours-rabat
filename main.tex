@@ -8,6 +8,12 @@
 \usepackage{url}
 \usepackage{tikz}
 
+\usepackage[section]{algorithm}
+\usepackage{algorithmic}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+\renewcommand{\algorithmiccomment}[1]{{\color{gray}\textit{#1}}}
+
 %\usepackage[a4paper, total={5in, 8in}]{geometry}
 
 
@@ -35,7 +41,7 @@
     colorlinks = true,
     citecolor = blue,
 }
-\setcounter{tocdepth}{2}
+\setcounter{tocdepth}{3}
 
 
 \def\labelitemi{$\bullet$}
@@ -69,6 +75,8 @@
 %%% Alice's macro
 \newcommand{\coeff}{\Sigma}
 \newcommand{\mink}{\tau}
+\DeclareMathOperator{\Aut}{Aut}
+\DeclareMathOperator{\Gal}{Gal}
 
 \begin{document}
 

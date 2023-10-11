@@ -370,6 +370,7 @@ Let $K = \QQ[X]/(X^2+1)$ and take the ideal $I = (1+X) \O_K$. The lattice $\mink
 Ideal lattices are lattices, but their algebraic structure constrain their geometry quite a lot. In particular, the first minimum of an ideal lattice cannot be arbitrarily small (in a given field $K$), and its last minimum cannot be arbitrarily large.
 
 \begin{lemma}
+\label{lemma:lower-upper-bounds-ideal-lambda_i}
 For any fractional ideal $I$ of $K$ we have
 \begin{align*}
 \lambda_1(\mink(I)) &\geq \sqrt{d} \cdot \N(I)^{1/d} \\
@@ -412,13 +413,13 @@ On the other hand, when the rank $r$ of the module becomes larger than $2$, we c
 The conclusion is that, at the moment, it seems that there might be a gap in hardness between ideal-SVP and $r$-module-SVP for $r \geq 2$, and there do not seem to be a gap in hardness between $r$-module-SVP and standard SVP (in dimension $rd$). Note that the discussion here is only based on the currently known best algorithms, which only provide us with upper bounds on the hardness of the problems. This does not allow us to conclude that some problems are equivalent, nor that some problems are strictly harder than others. It only gives us some intuition on what might be happening, but this intuition may be proven false by future cryptanalysis development.
 
 
-From now on, the results we review will be used only for the cryptanalysis part of the course (Section~\ref{sec:cryptanalysis}).
+%From now on, the results we review will be used only for the cryptanalysis part of the course (Section~\ref{sec:cryptanalysis}).
 
-\subsubsection{Ideals and subfields}
-split, ramify, inert
+%\subsubsection{Ideals and subfields}
+%split, ramify, inert
 
-\subsubsection{Units}
-log unit lattice, cyclotomic units
+%\subsubsection{Units}
+%log unit lattice, cyclotomic units
 
 %Alice -- Rappels de théorie des nombres -- CM: 1h30 / TD: 1h
 
@@ -549,7 +550,7 @@ Estimating the probability $\Pr_{h \leftarrow \mathcal{U}(R_q)}(gh = f \bmod q)$
 %Now that it is established that $g$ is invertible modulo $q$, we can rewrite $gh = f \bmod q$ into $h = f/g \bmod q$, and we see that the probability that such an event happen is $1/q^d$. Hence, the probability that $h$ is an NTRU instance is at most $(2 \cdot (2B+1))^d \cdot 1/q^d \leq 
 \end{proof}
 
-%TODO NTRU with large f and g's
+%TODO NTRU with large f and g's -> h is uniform
 
 \begin{definition}[search NTRU]
 \label{def:NTRU}
@@ -807,6 +808,228 @@ where in the last inequality we used the fact that $q \geq 2$ so that $(q-1)^{-1
 
 \subsection{Cryptanalysis}
 \label{sec:cryptanalysis}
+
+In this part, we will review two attacks, one on some special instances of ideal-SVP, and the other one on NTRU when the modulus $q$ is very large and the trapdoor size $B$ is very small. Both attacks exploit the algebraic structure of the problems. More precisely, both attack make use of so-called subfields in the field $K$. The attack on NTRU could work even without the presence of these subfields, but the formulation with subfields is simpler and so we will stick to this one on these lecture notes.
+There exist also other attacks exploiting the algebraic structure of the problem, for instance so-called unit-attacks (or even S-unit attacks), but they require more background on number theory and we will not discuss them here.
+
+Before describing the two attacks of this section, let us start with some more background on subfields and Galois theory.
+
+\subsubsection{Subfields and Galois theory}
+
+So far, we have seen number fields as polynomial rings of the form $K = \QQ(X)/P(X)$, where $P$ is an irreducible polynomial of degree $d$. When discussing subfields, it is sometimes convenient to adopt another vision of number fields, by fixing one complex embedding $\sigma_i: K \rightarrow \CC$ and seeing $K$ as a subset of $\CC$. Recall that $\sigma_i$ maps $X$ to a complex root $\alpha_i$ of $P$. Hence, the image of $K$ by $\sigma_i$ is equal to $\QQ(\alpha_i)$, the smallest subfield of $\CC$ containing both $\QQ$ and $\alpha_i$. Since $\sigma_i$ is an isomorphism, we have $K \sim \QQ(\alpha_i)$.
+
+This vision of number fields as subsets of $K$ can be convenient, but also misleading. It is important to keep in mind that this is the image of $K$ by one of the $d$ complex embeddings of $K$. In particular, it may give the impression that $K$ is an object of dimension $1$, since $\QQ(\alpha_i)$ lives in $\CC$, whereas for our applications it is usually more convenient to see $K$ as a dimension $d$ object, via the canonical embedding $\mink$. Note that both vision are not contradictory: $K$ has a dimension $d$ over $\QQ$, but lives inside a space of dimension $1$ over $\CC$ (but $\CC$'s dimension over $\QQ$ is infinite anyway).
+
+\begin{example}
+If $P = X^2+1$, then $K \sim \QQ(i) = \QQ(-i)$. Here, both complex embeddings of $K$ give the same subset $\QQ(i) = \QQ(-i)$ of $\CC$. This is not always the case. For instance if $P = X^3-2$, then the roots of $P$ are $\sqrt[3]{2}$, $j \cdot \sqrt[3]{2}$ and $j^2 \cdot \sqrt[3]{2}$, where $j$ is a primitive third root of unity in $\CC$. We have that $K = \QQ[X]/P(X) \sim \QQ(\sqrt[3]{2}) \sim \QQ(j \cdot \sqrt[3]{2})$, but both sets $\QQ(\sqrt[3]{2})$ and $\QQ(j \cdot \sqrt[3]{2})$ are not equal. Indeed, the first one is included in $\RR$ whereas the second one is not.
+\end{example}
+
+\paragraph{Subfields.} Let $K$ and $L$ be number fields. We say that $K$ is a \emph{subfield} of $L$ if $K$ is included in $L$. In this situation, we say that $L/K$ is a \emph{relative extension} of number field. Since $K \subset L$, then $L$ is a $K$-vector space. The dimension of this vector space over $K$ is called the \emph{degree} of the relative extension and is denoted $[L:K]$.
+Using the fact that $K$ is a $\QQ$-vector space of dimension $[K:\QQ]$ and that $L$ is a $K$-vector space of dimension $[L:K]$, one can see that $L$ is a $\QQ$-vector space of dimension $[K:\QQ] \cdot [L:K]$. But this dimension is exactly the degree of $L$ as a number field. Hence, we obtain the equality
+\[ [L:\QQ] = [L:K] \cdot [K:\QQ].\]
+The relative degree of $L$ over $K$ always divides the degree of $L$ over $\QQ$, so in particular it is finite. Relative extensions are usually represented on diagrams as follows.
+
+\begin{center}
+\begin{tikzpicture}
+
+    \node (Q1) at (0,3) {$L$};
+    \node (Q2) at (0,1.5) {$K$};
+    \node (Q3) at (0,0) {$\QQ$};
+
+    \draw (Q1)--(Q2) node [pos=0.5, right,inner sep=0.25cm] {$[L:K]$};
+    \draw (Q2)--(Q3) node [pos=0.5, right,inner sep=0.25cm] {$[K:\QQ]$};
+
+\end{tikzpicture}
+\end{center}
+The lines on the diagram represent inclusion (the field below is included in the field on top). And the numbers along the lines represent the degree of the relative extension.
+
+\begin{lemma}
+\label{lemma:equality-subfields}
+If $K$ is a subfield of $L$ with the same degree over $\QQ$, i.e., $[K:\QQ] = [L:\QQ]$, then $K = L$.
+\end{lemma}
+
+\begin{proof}
+Using the formula on the degrees above, we see that if $[K:\QQ] = [L:\QQ]$ then the relative degree $[L:K]$ equals $1$, meaning that $L$ has dimension $1$ over $K$. This means that there must exist $b \in L$ such that $L = \{b \cdot x\,|\, x \in K\}$. Since $L$ contains $1$, we have some $x_0 \in K$ such that $b \cdot x_0 = 1$, i.e., $b = x_0^{-1}$. And since $K$ is a field and $x_0 \in K$, then $b$ is in $K$ too. This implies that $L \subseteq K$, which proves the equality since we assumed that $K$ was a subfield of $L$.
+\end{proof}
+
+\begin{example}
+Let $L = \QQ(\zeta_8)$, where $\zeta_8$ is a primitive $8$-th root of unity in $\CC$.  A minimal polynomial for $\zeta_8$ is $P = X^4+1$, of degree $4$. So we have $[L:\QQ] = 4$, and $L \sim \QQ[X]/(X^4+1)$. Let us now consider the subfields of $L$. If $K$ is a subfield of $L$, then its degree $[K:\QQ]$ must divide $[L:\QQ] = 4$. This means that the degree of $K$ is either $1$, $2$ or $4$. If $K$ has degree $1$, then $K = \QQ$ (using Lemma~\ref{lemma:equality-subfields} and the fact that $\QQ$ is a subfield of $K$ by definition). Similarly, if $K$ has degree $4$, then $K = L$. The interesting cases are then when $K$ has degree $2$.
+
+A first example of a subfield of degree $2$ is $K_1 = \QQ(i)$. Since $\zeta_8^2 = i$, then $K_1$ is indeed included in $L$, and is has degree $2$ since the minimal polynomial of $i$ is $X^2+1$. Another subfield of degree $2$ is $K_2 = \QQ(\zeta_8+\overline{\zeta_8})$. Note that $\overline{\zeta_8} = \zeta_8^{-1}$ is in $L$, so we indeed have the inclusion $K_2 \subseteq L$. One can check that the minimal polynomial of $\zeta_8+\overline{\zeta_8}$ is $X^2-2$, which has degree $2$ as desired.
+Finally, $L$ also contains the subfield $K_3 = \QQ(\zeta_8-\overline{\zeta_8})$, which has minimal polynomial $X^2+2$. These are the only three proper subfields of $L$ (we will prove this later, using tools from Galois theory). Overall, we obtain the following diagram.
+
+\begin{center}
+\begin{tikzpicture}
+
+    \node (Q1) at (0,4) {$\QQ(\zeta_8)$};
+    \node (Q2) at (3,2) {$\QQ(i)$};
+    \node (Q3) at (0,2) {$\QQ(\zeta_8-\overline{\zeta_8})$};
+    \node (Q4) at (-3,2) {$\QQ(\zeta_8+\overline{\zeta_8})$};
+    \node (Q5) at (0,0) {$\QQ$};
+
+    \draw (Q1)--(Q2) node [pos=0.3, right,inner sep=0.5cm] {$2$};
+    \draw (Q1)--(Q3) node [pos=0.5, right,inner sep=0.25cm] {$2$};
+    \draw (Q1)--(Q4) node [pos=0.3, left,inner sep=0.5cm] {$2$};
+    \draw (Q5)--(Q2) node [pos=0.3, right,inner sep=0.5cm] {$2$};
+    \draw (Q5)--(Q3) node [pos=0.5, right,inner sep=0.25cm] {$2$};
+    \draw (Q5)--(Q4) node [pos=0.3, left,inner sep=0.5cm] {$2$};
+
+\end{tikzpicture}
+\end{center}
+\end{example}
+
+When considering subfields, it is sometimes convenient to add some subscript to disambiguate the notations introduced in Section~\ref{sec:number-theory}. For example, if $L/K$ is a relative extension of number fields and $x \in K$, then we will write $\mink_K(x) \in \CC^{[K:\QQ]}$ for the canonical embedding of $x$ when seen as an element of $K$, and $\mink_L(x) \in \CC^{[L:\QQ]}$ for the canonical embedding of $x$ when seen as an element of $L$. The two canonical embedding are related, as stated in the following lemma.
+
+\begin{lemma}
+\label{lemma:canonical-norm-subfield}
+Let $L/K$ be extensions of number fields. Any complex embedding of $K$ can be extended to $[L/K]$ complex embeddings of $L$, and this covers all the complex embeddings of $L$.
+As a consequence, for any $x \in K$, we have $\|\mink_L(x)\| = \sqrt{[L:K]} \cdot \|\mink_K(x)\|$.
+\end{lemma}
+
+\begin{proof}
+The first part of the lemma is proven in \cite[Th. 50]{Marcus}. This implies that if $x \in K$, then the coordinates of $\mink_L(x)$ can be grouped by packs of size $[L:K]$, where they are all equal and equal to one of the coordinates of $\mink_K(x)$. The second part of the lemma follows from this observation.
+\end{proof}
+
+The behavior of ideals in field extensions is a well understood phenomena. In these lecture note, we will only need the simple observation below, whose proof should follow easily from the definition of integral and fractional ideals: make sure you believe it.
+\begin{lemma}
+\label{lemma:intersection-ideal-subfield}
+Let $L/K$ be an extension of number fields. If $I$ is a fractional ideal of $L$, then $I \cap K$ is a fractional ideal of $K$.
+\end{lemma}
+
+
+\paragraph{Automorphisms.} Let $K$ be a number field of degree $d$. An automorphism of $K$ is a field morphism sending $K$ to $K$ and fixing $\QQ$ point-wise. We write $\Aut(K)$ the set of automorphisms of $K$, which is a group for the composition ($\phi_1 \circ \phi_2 \in \Aut(K)$ for all $\phi_1, \phi_2 \in \Aut(K)$).
+
+\begin{lemma}
+\label{lemma:upper-bound-automorphisms}
+There are at most $d = [K:\QQ]$ automorphisms of $K$.
+\end{lemma}
+
+\begin{proof}
+Assume without loss of generality that $K = \QQ[X]/P(X)$ for some irreducible polynomial $P$ of degree $d$ (we have seen that any number field $K$ is isomorphic to a $\QQ[X]/P(X)$, and this preserves the number of automorphisms). Let $\phi$ be an automorphism of $K$, since $\phi(x) = x$ for all $x \in \QQ$ and since $\phi$ is a field morphism, then $\phi$ is uniquely determined by the value of $\phi(X) \in K$. We will show that $\phi(X)$ can take at most $d$ values in $K$, which will prove that there are at most $d$ distinct automorphisms of $K$.
+Since $\phi$ is a morphism, then $P(\phi(X)) = \phi(P(X)) = \phi(0) = 0$. So $\phi(X)$ must be a root of $P$. But $P$ is a non-zero polynomial of degree $d$, hence it has at most $d$ roots in $K$, which proves that there are at most $d$ possible choices for $\phi(X)$. This concludes the proof.
+\end{proof}
+
+Automorphisms provide ways to construct subfields of a number field $K$, as explained in the following lemma.
+\begin{lemma}
+Let $K$ be a number field, and let $H$ be a subgroup of the automorphism group $\Aut(K)$ of $K$. Let $K_H$ be the subset of elements of $K$ that are fixed point by the automorphisms of $H$, i.e., $K_H := \{ x \in K \,|\, \phi(x) = x \, \forall \phi \in H\}$. Then $K_H$ is a subfield of $K$, called the fixed-field of $H$.
+\end{lemma}
+
+\begin{proof}
+Since all automorphisms of $K$ fix $\QQ$ point-wise, then $K_H$ contains $\QQ$. Moreover, by definition $K_H \subseteq K$. So we only need to prove that $K_H$ is a field. The fact that the sum, multiplication and division of elements of $K_H$ are still in $K_H$ follows from the fact that all the $\phi$'s in $H$ are field morphisms.
+\end{proof}
+
+This lemma can be straightened when the number field $K$ is Galois (see below), establishing a correspondence between subfields of $K$ and subgroups of $\Aut(K)$.
+
+\begin{example}
+Let $K = \QQ(\zeta_8)$ as above. Then $\phi_1: \zeta_8 \rightarrow -\zeta_8$ is an automorphism of $K$, whose order is $2$. The set $H = \{id, \phi_1\}$ is then a subgroup of $\Aut(K)$. Let $K_H$ be the fixed field of $H$. The field $K_H$ contains $K_1 = \QQ(i)$. Indeed, it suffices to check that $i = \zeta_8^2 \in K$ is fixed by all elements of $H$. The morphism properties then ensure that all elements of $\QQ(i)$ are fixed by $id$ and $\phi_1$. We have seen in the previous example that the only subfields of $K$ containing $\QQ(i)$ are either $K$ itself or $\QQ(i)$. We cannot have $K_H = K$, since the element $\zeta_8 \in K$ is not fixed by $\phi_1$. Hence, we conclude that $K_H = \QQ(i)$.
+
+A similar reasoning can be used to show that $\phi_2: \zeta_8 \rightarrow \overline{\zeta_8}$ is an automorphism of order $2$, and that $K_2 = \QQ(\zeta_8 + \overline{\zeta_8})$ is the fixed field of $H = \{id, \phi_2\}$.
+\end{example}
+
+\paragraph{Galois number fields.} 
+
+\begin{definition}
+A number field $K$ is said to be Galois if and only if $|\Aut(K)| = [K:\QQ]$.
+\end{definition}
+Galois number fields are number fields with the maximum number of automorphisms. The proof of Lemma~\ref{lemma:upper-bound-automorphisms} shows that a number field $K = \QQ[X]/P(X)$ is Galois if and only if the polynomial $P$ is completely split in $K$ (this is another way to define Galois number fields). When $K$ is Galois, we write $\Gal(K/\QQ)$ the group $\Aut(K)$, and we call it the Galois group of $K$.
+
+\begin{theorem}[{\cite[Th. 55]{Marcus}}]
+\label{thm:Galois-correspondance}
+Let $K$ be a Galois number field. Then there is a one-to-one correspondence between subgroups of $\Gal(K/\QQ)$ and subfields of $K$. This correspondence is obtained by sending a subgroup $H$ of $\Gal(K/\QQ)$ to the fixed subfield $K_H$ of $H$. Moreover, the relative degree $[K:K_H]$ is the cardinality of $H$.
+\end{theorem}
+
+\begin{example}
+The number field $K = \QQ(\zeta_8)$ from the previous example is a Galois number field. We already seen two example of subgroups of of $\Gal(K)$, and their corresponding fixed fields.
+
+Let us prove using Galois theory that the number field $K$ has only $5$ subfields (the $3$ proper subfields of degree $2$, and the two subfields $K$ and $\QQ$). Using Theorem~\ref{thm:Galois-correspondance}, it suffices to prove that $\Gal(K/\QQ)$ has cardinality $5$. Let us describe this group. It contains $[K:\QQ] = 4$ elements, which can be fully described by the image of $\zeta_8$. The $4$ automorphisms of $K$ are then
+\begin{align*}
+id: \zeta_8 &\rightarrow \zeta_8 \\
+\phi_1: \zeta_8 &\rightarrow -\zeta_8 \\
+\phi_2: \zeta_8 &\rightarrow \overline{\zeta_8} \\
+\phi_3: \zeta_8 &\rightarrow -\overline{\zeta_8}.
+\end{align*}
+One can check that $\Gal(K/\QQ)$ is isomorphic as a group to $(\ZZ/2\ZZ)^2$. This group has 1 subgroup of size 4, 3 subgroups of size 2 and 1 subgroup of size 1, corresponding to all the $5$ subfields we found in the previous example.
+\end{example}
+
+When $L$ is Galois and $K$ is a subfield of $L$, we can define the relative trace $\Tr_{L/K}$ and norm $\N_{K/L}$ of the extension $L/K$. These relative trace and norm exists even when $L$ is not Galois, but the definition is slightly less simple, so we will focus only on Galois number fields in these lecture notes. Let $H$ be the subgroup of $\Gal(L:\QQ)$ of all automorphisms fixing $K$ point-wise (so that $K$ is the fixed field of $H$). We define
+\begin{align*}
+\Tr_{L/K}: L &\rightarrow K  & \N_{L/K}: L &\rightarrow K\\
+x &\mapsto \sum_{\phi \in H} \phi(x)  & x &\mapsto \prod_{\phi \in H} \phi(x)\\
+\end{align*}
+
+Note that, for $x \in L$, the elements $\Tr_{L/K}(x)$ and $\N_{L/K}(x)$ are indeed in $K$. To see this, observe that, by definition, for any $\phi \in H$ it holds that $\phi(\Tr_{L/K}(x)) = \Tr_{L/K}(x)$ and $\phi(\N_{L/K}(x)) = \N_{L/K}(x)$ (here we use the fact that $H$ is a group for composition of maps). Since $K$ is exactly the subset of $L$ fixed by all automorphisms in $H$, we conclude that $\Tr_{L/K}(x)$ and $\N_{L/K}(x)$ are in $K$. Like the usual trace and norm, the relative trace is additive and the relative norm is multiplicative.
+
+\begin{lemma}[{\cite[Theorem 5]{Marcus}}]
+Let $L$ be a Galois number field and $K$ be a subfield of $L$. To avoid ambiguity, let us write $\N_L$ and $\Tr_L$ (resp. $\N_K$ and $\Tr_K$) the algebraic norm and trace over $L$ (resp. over $K$). Then for all $x \in L$ we have
+\begin{align}
+\label{eq:composing-relative-norm} \Tr_L(x) &= \Tr_K(\Tr_{L/K}(x)) \\
+\N_L(x) &= \N_K(\N_{L/K}(x)).
+\end{align}
+\end{lemma}
+
+\subsubsection{Short vectors in special ideals}
+
+In this section, we will describe an algorithm that uses subfields to find short vectors in special ideals. The ideals for which the algorithm works are very specific, and they correspond in a sens to ideals of a subfield. We give more details below.
+
+\begin{definition}
+Let $I$ be a fractional ideal of a number field $K$. We call decomposition group of $I$ the group of automorphisms of $K$ fixing $I$ as a set. In other words, the decomposition group of $I$ is the set
+\[ \{ \phi \in \Aut(K) \,|\, \phi(I) = I \}\]
+where $\phi(I) = \{ \phi(x)\,|\, x \in I\}$.
+\end{definition}
+
+The algorithm we will describe in this section works for fractional ideals $I$ whose decomposition group is not trivial (i.e., for ideals $I$ that are fixed by at least one automorphism that is not the identity). The more automorphisms fix $I$, the more efficient our algorithm will be (if one wants a polynomial time algorithm, then the ideal $I$ must be fixed by $\alpha d$ automorphisms, for some constant $\alpha \in (0,1]$). Note that, in most cases (for a good definition of ``most''), the decomposition group of an ideal $I$ is trivial, and our algorithm does not work (or, at least, does not outperform standard lattice reduction algorithms). Hence, this algorithm does not threaten the hardness of ideal-SVP in general.
+
+Let us explain the intuition behind the algorithm. Assume that $K$ is Galois. Recall that, for an element $x \in K$, if $x$ is fixed by a non-trivial subgroup $H$ of the automorphism group of $K$, then $x \in K_H$, where $K_H$ is a strict subfield of $K$. The same reasoning also applies (with slightly more care) to ideals: if the ideal $I$ is fixed as a set by $H$, then $I$ can somehow be seen as an ideal in $K_H$. The advantage of the algorithm comes from the fact that $K_H$ is a number field of smaller degree than $K$. Hence, when seen as lattices, ideals of $K_H$ have a smaller dimension than ideals of $K$, which makes the lattice reduction algorithms run faster.
+Formalizing this intuition was done in~\ref{BGP22}, but we will not do it in these lecture notes. Instead, we will describe a simpler version of the algorithm, which computes slightly longer vectors, but requires much less technical material.
+
+\begin{theorem}
+\label{thm:attack-ideal-SVP}
+Let $K$ be a Galois number field and $I$ be a fractional ideal of $K$, with decomposition group $H$. Let $\gamma \geq 1$, and let us write $d$ the degree of $K$. There is an algorithm that takes as input $I$, makes one call to an SVP$_\gamma$ solver in a lattice of dimension $d/|H|$, and solves ideal-SVP$_{\gamma'}$ in $I$, where $\gamma' = \Delta_K^{1/d} \cdot \gamma$.
+Except for the call to the SVP solver, the algorithm runs in polynomial time.
+\end{theorem}
+
+Recall that $\mink(I)$ is a lattice of dimension $d$. Hence, it is trivial to find a short vector in $\mink(I)$ with a call to an SVP solver in dimension $d$. The statement in the theorem becomes interesting when $d/|H| < d$, i.e., when $|H| > 1$. Again, let us stress that this is not the typical case: for most ideals $I$, the algorithm from Theorem~\ref{thm:attack-ideal-SVP} does not outperform existing algorithms.
+
+The algorithm from Theorem~\ref{thm:attack-ideal-SVP} is described in Algorithm~\ref{algo:attack-ideal-SVP} below. The main idea of the algorithm is to compute $K_H$, the fixed field of $H$, and then consider the ideal $J = I \cap K_H$. This is an ideal in a number field of smaller degree, and the SVP solver is called on this ideal. By definition, the short element of $J$ output by the SVP solver is also in $I$. The main point of the proof is to show that this element is short in $I$ too. This is where we use the fact that $I$ is stabilized by elements of $I$.
+
+\begin{algorithm}
+\caption{Find short vectors in ideals}
+\label{algo:attack-ideal-SVP}
+\begin{algorithmic}[1]
+\REQUIRE A fractional ideal $I$ (of some number field $K$)
+\ENSURE An element $s \in I$
+\STATE Compute the decomposition group $H$ of $I$
+\STATE Compute the subfield $K_H$ of $K$ fixed by $H$
+\STATE Compute $J = I \cap K_H$
+\STATE $\vec v \leftarrow \text{SVP}_\gamma(\mink_{K_H}(J))$ \label{step:SVP}
+\STATE Compute $s \in J$ such that $\mink_{K_H}(s) = \vec v$
+\RETURN $s$
+\end{algorithmic}
+\end{algorithm} 
+
+\begin{proof}[Proof of Theorem~\ref{thm:attack-ideal-SVP}]
+Let us prove that Algorithm~\ref{algo:attack-ideal-SVP} satisfies the conditions of Theorem~\ref{thm:attack-ideal-SVP}. First of all, one can check that all the computations performed by the algorithm can be done in polynomial time, except the call to the SVP solver in Step~\ref{step:SVP}. We will not detail here how the computation of $H$ and $K_H$ can be done in polynomial time, but trust me: with the good representation, this can be done by simple linear algebra, in polynomial time (more details are provided in~\cite{BGP22}).
+
+Observe also that the number field $K_H$ has degree $d/|H|$ by Theorem~\ref{thm:Galois-correspondance}. So the lattice $\mink_{K_H}(J)$ has dimension $d/|H|$, and the call to the SVP solver is done for a lattice of the appropriate dimension.
+
+By definition of $J$, any non-zero vector $s \in J$ is also a non-zero vector in $I$. Hence, to prove the Theorem is only remains to upper bound the euclidean norm of $\mink_K(s)$.
+
+Let $t_1, \dots, t_d \in I$ be $\ZZ$-linearly independent and such that $\|\mink_K(t_i)\| \leq \lambda_d(\mink_K(I))$ for all $i$'s.
+Let us fix some index $i \in \{1, \dots, d\}$.
+By definition of $H$, we know that for all $\phi \in H$, $\phi(I) = I$, and so $\phi(t_i) \in I$. Since $I$ is stable by addition, this means that 
+\[\Tr_{K/K_H}(t_i) = \sum_{\phi \in H} \phi(t_i) \in I.\]
+Moreover, we have also seen above that for any $x \in K$, $\Tr_{K/K_H}(x) \in K_H$. We conclude that 
+\[\Tr_{K/K_H}(t_i) \in I \cap K_H = J.\]
+We would like to use this inclusion to deduce an upper bound on $\lambda_1(\sigma_{K_H}(J)$. To do so, we need that $\Tr_{K/K_H}(t_i)$ is non-zero for at least one of the $t_i$'s. Assume by contradiction that $\Tr_{K/K_H}(t_i) = 0$ for all $i$'s. Then, by Equation~\eqref{eq:composing-relative-norm}, it also holds that $\Tr_{K}(t_i) = 0$ for all $i$'s. Since the $t_i$'s are $\ZZ$-linearly independent vectors of $K$, they form a $\QQ$-basis of $K$. By linearity of the trace map, we finally conclude that $\Tr_K(x) = 0$ for all $x \in K$. This is a contradiction, since the trace map is not the zero function. Hence, we conclude that at least one of the elements $\Tr_{K/K_H}(t_i)$ is non-zero, which implies that
+\[\lambda_1(\mink_{K_H}(J)) \leq \max_i \|\mink_{K_H}(\Tr_{K/K_H}(t_i))\| = \sqrt{|H|}^{-1} \cdot \max_i \|\mink_{K_H}(\Tr_{K/K_H}(t_i))\| \leq \sqrt{|H|}^{-1} \cdot \lambda_d(\mink_K(I)).\]
+Here, we used the relations between the canonical embedding in $K$ and $K_H$ stated in Lemma~\ref{lemma:canonical-norm-subfield}. Recall from Lemma~\ref{lemma:lower-upper-bounds-ideal-lambda_i} that $\lambda_d(\mink_K(I)) \leq \Delta_K^{1/d} \cdot \lambda_1(\mink_K(I))$. Hence, we conclude that the shortest element of the ideal $J$ in not much larger than the shortest element of the ideal $I$:
+\[\lambda_1(\mink_{K_H}(J)) \leq \frac{\Delta_K^{1/d} \lambda_1(\mink_K(I))}{\sqrt{[H|}}.\]
+
+The call to the SVP oracle then returns a vector $\vec v \in \mink_{K_H}(J)$ such that $\|\vec v\| \leq \gamma \lambda_1(\mink_{K_H}(J))$. Finally, using Lemma~\ref{lemma:canonical-norm-subfield} again, we obtain the desired upper bound
+\[ \|\mink_K(s)\| = \sqrt{|H|} \cdot \|\mink_{K_H}(s)\| = \sqrt{|H|} \cdot \|\vec v\| \leq \Delta_K^{1/d} \cdot \gamma \cdot \lambda_1(\mink_K(I)).\]
+\end{proof}
+
+
 
 %\subsection{Ring and Module variants of LWE, and the NTRU problem}
 
