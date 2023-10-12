@@ -993,11 +993,11 @@ where $\phi(I) = \{ \phi(x)\,|\, x \in I\}$.
 The algorithm we will describe in this section works for fractional ideals $I$ whose decomposition group is not trivial (i.e., for ideals $I$ that are fixed by at least one automorphism that is not the identity). The more automorphisms fix $I$, the more efficient our algorithm will be (if one wants a polynomial time algorithm, then the ideal $I$ must be fixed by $\alpha d$ automorphisms, for some constant $\alpha \in (0,1]$). Note that, in most cases (for a good definition of ``most''), the decomposition group of an ideal $I$ is trivial, and our algorithm does not work (or, at least, does not outperform standard lattice reduction algorithms). Hence, this algorithm does not threaten the hardness of ideal-SVP in general.
 
 Let us explain the intuition behind the algorithm. Assume that $K$ is Galois. Recall that, for an element $x \in K$, if $x$ is fixed by a non-trivial subgroup $H$ of the automorphism group of $K$, then $x \in K_H$, where $K_H$ is a strict subfield of $K$. The same reasoning also applies (with slightly more care) to ideals: if the ideal $I$ is fixed as a set by $H$, then $I$ can somehow be seen as an ideal in $K_H$. The advantage of the algorithm comes from the fact that $K_H$ is a number field of smaller degree than $K$. Hence, when seen as lattices, ideals of $K_H$ have a smaller dimension than ideals of $K$, which makes the lattice reduction algorithms run faster.
-Formalizing this intuition was done in~\ref{BGP22}, but we will not do it in these lecture notes. Instead, we will describe a simpler version of the algorithm, which computes slightly longer vectors, but requires much less technical material.
+Formalizing this intuition was done in~\cite{BGP22}, but we will not do it in these lecture notes. Instead, we will describe a simpler version of the algorithm, which computes slightly longer vectors, but requires much less technical material.
 
 \begin{theorem}
 \label{thm:attack-ideal-SVP}
-Let $K$ be a Galois number field and $I$ be a fractional ideal of $K$, with decomposition group $H$. Let $\gamma \geq 1$, and let us write $d$ the degree of $K$. There is an algorithm that takes as input $I$, makes one call to an SVP$_\gamma$ solver in a lattice of dimension $d/|H|$, and solves ideal-SVP$_{\gamma'}$ in $I$, where $\gamma' = \Delta_K^{1/d} \cdot \gamma$.
+Let $K$ be a Galois number field and $I$ be a fractional ideal of $K$, with decomposition group $H$. Let $\gamma \geq 1$, and let us write $d$ the degree of $K$. There is an algorithm that takes as input $I$, makes one call to an SVP$_\gamma$ solver in a lattice of dimension $d/|H|$, and solves ideal-SVP$_{\gamma'}$ in $I$, where $\gamma' = |H| \cdot \Delta_K^{1/d} \cdot \gamma$.
 Except for the call to the SVP solver, the algorithm runs in polynomial time.
 \end{theorem}
 
@@ -1034,18 +1034,25 @@ By definition of $H$, we know that for all $\phi \in H$, $\phi(I) = I$, and so $
 Moreover, we have also seen above that for any $x \in K$, $\Tr_{K/K_H}(x) \in K_H$. We conclude that 
 \[\Tr_{K/K_H}(t_i) \in I \cap K_H = J.\]
 We would like to use this inclusion to deduce an upper bound on $\lambda_1(\sigma_{K_H}(J)$. To do so, we need that $\Tr_{K/K_H}(t_i)$ is non-zero for at least one of the $t_i$'s. Assume by contradiction that $\Tr_{K/K_H}(t_i) = 0$ for all $i$'s. Then, by Equation~\eqref{eq:composing-relative-norm}, it also holds that $\Tr_{K}(t_i) = 0$ for all $i$'s. Since the $t_i$'s are $\ZZ$-linearly independent vectors of $K$, they form a $\QQ$-basis of $K$. By linearity of the trace map, we finally conclude that $\Tr_K(x) = 0$ for all $x \in K$. This is a contradiction, since the trace map is not the zero function. Hence, we conclude that at least one of the elements $\Tr_{K/K_H}(t_i)$ is non-zero, which implies that
-\[\lambda_1(\mink_{K_H}(J)) \leq \max_i \|\mink_{K_H}(\Tr_{K/K_H}(t_i))\| = \sqrt{|H|}^{-1} \cdot \max_i \|\mink_{K_H}(\Tr_{K/K_H}(t_i))\| \leq \sqrt{|H|}^{-1} \cdot \lambda_d(\mink_K(I)).\]
-Here, we used the relations between the canonical embedding in $K$ and $K_H$ stated in Lemma~\ref{lemma:canonical-norm-subfield}. Recall from Lemma~\ref{lemma:lower-upper-bounds-ideal-lambda_i} that $\lambda_d(\mink_K(I)) \leq \Delta_K^{1/d} \cdot \lambda_1(\mink_K(I))$. Hence, we conclude that the shortest element of the ideal $J$ in not much larger than the shortest element of the ideal $I$:
-\[\lambda_1(\mink_{K_H}(J)) \leq \frac{\Delta_K^{1/d} \lambda_1(\mink_K(I))}{\sqrt{[H|}}.\]
+\begin{align*}
+\lambda_1(\mink_{K_H}(J)) &\leq \max_i \|\mink_{K_H}(\Tr_{K/K_H}(t_i))\| \\
+& = \sqrt{|H|}^{-1} \cdot \max_i \|\mink_{K}(\Tr_{K/K_H}(t_i))\| \\
+& = \sqrt{|H|}^{-1} \cdot \max_i \|\mink_{K}(\sum_{\phi \in H}\phi(t_i))\| \\
+& \leq \sqrt{|H|}^{-1} \cdot \max_i \sum_{\phi \in H}\|\mink_{K}(\phi(t_i))\| \\
+& = \sqrt{|H|}^{-1} \cdot \max_i |H| \cdot \mink_{K}(t_i)\| \\
+& \leq \sqrt{|H|} \cdot \lambda_d(\mink_K(I)).
+\end{align*}
+Here, we used Lemma~\ref{lemma:canonical-norm-subfield} for the equality on the second line, and Lemma~\ref{lemma:automorphism-preserves-size} for the equality on the fourth line. Recall from Lemma~\ref{lemma:lower-upper-bounds-ideal-lambda_i} that $\lambda_d(\mink_K(I)) \leq \Delta_K^{1/d} \cdot \lambda_1(\mink_K(I))$. Hence, we conclude that the shortest element of the ideal $J$ in not much larger than the shortest element of the ideal $I$:
+\[\lambda_1(\mink_{K_H}(J)) \leq \sqrt{H} \cdot \Delta_K^{1/d} \cdot \lambda_1(\mink_K(I)).\]
 
 The call to the SVP oracle then returns a vector $\vec v \in \mink_{K_H}(J)$ such that $\|\vec v\| \leq \gamma \lambda_1(\mink_{K_H}(J))$. Finally, using Lemma~\ref{lemma:canonical-norm-subfield} again, we obtain the desired upper bound
-\[ \|\mink_K(s)\| = \sqrt{|H|} \cdot \|\mink_{K_H}(s)\| = \sqrt{|H|} \cdot \|\vec v\| \leq \Delta_K^{1/d} \cdot \gamma \cdot \lambda_1(\mink_K(I)).\]
+\[ \|\mink_K(s)\| = \sqrt{|H|} \cdot \|\mink_{K_H}(s)\| = \sqrt{|H|} \cdot \|\vec v\| \leq |H| \cdot \Delta_K^{1/d} \cdot \gamma \cdot \lambda_1(\mink_K(I)).\]
 \end{proof}
 
 \subsubsection{Subfield attack on dec-NTRU with large modulus}
 \label{sec:attack-NTRU}
 
-In this section, we will describe an algorithm that takes as input an element $h \in R_q$ and decides whether $h$ is an NTRU$_{q,B}$ instance of not. The algorithm works for any regime of parameters $(q,B)$, but it will be efficient only when $q$ is very large and $B$ is somewhat small. A typical example to keep in mind during this section is $q \approx 2^{\sqrt{d}}$ and $B = \poly(d)$. For sufficiently small values of $q$, the algorithm does not outperform standard lattice reduction algorithms (ignoring the structure of the lattice). A study of the crossover point, i.e., the minimal size of $q$ for which the algorithm becomes more effective than standard lattice reduction algorithms was done in~\ref{DW21}.
+In this section, we will describe an algorithm that takes as input an element $h \in R_q$ and decides whether $h$ is an NTRU$_{q,B}$ instance of not. The algorithm works for any regime of parameters $(q,B)$, but it will be efficient only when $q$ is very large and $B$ is somewhat small. A typical example to keep in mind during this section is $q \approx 2^{\sqrt{d}}$ and $B = \poly(d)$. For sufficiently small values of $q$, the algorithm does not outperform standard lattice reduction algorithms (ignoring the structure of the lattice). A study of the crossover point, i.e., the minimal size of $q$ for which the algorithm becomes more effective than standard lattice reduction algorithms was done in~\cite{DW21}.
 
 The history of attacks on NTRU with a large modulus $q$ (called ``overstretched NTRU'') starts in 2016, with two concurrent works by Albrecht, Bai and Ducas~\cite{ABD16}, and Cheon, Jeong and Lee~\cite{CJL16}. Both attacks use subfields to reduce the dimension of the NTRU instance. The principle of the attacks is somewhat similar, except that~\cite{ABD16} uses the relative norm whereas~\cite{CJL16} use the relative trace, to map elements of $K$ to a subfield.
 %The algorithm we will describe in this section uses subfields and relative norms, and follows the framework described in. A similar framework, using the relative trace instead of the relative norm was proposed concurrently in~\cite{CJL16}. The proof using the relative norm is slightly simpler than the one using the relative trace, which is why we chose to present this one in these lecture notes.
@@ -1140,7 +1147,7 @@ Let us write $g_0' = \N_{K/K'}(g_0)$ and $f_0' = \N_{K/K'}(f_0)$. Recall also th
 The rank-2 module $M_{h'} \subseteq \O_{K'}^2$ contains the short non-zero vector $(g_0',f_0')$, hence $\lambda_1(\mink_{K'}(M_{h'})) \leq 2B' \leq q^{1/4}/8$.
 
 Let $\gamma = q^{1/4}$ and $\vec v$ be a solution to SVP$_\gamma$ in $\mink_{K'}(M_{h'})$, as in the theorem statement. Then 
-\[\|\vec v\| \gamma \cdot \lambda_1(\mink_{K'}(M_{h'})) \leq \sqrt{q}/8.\]
+\[\|\vec v\| \leq \gamma \cdot \lambda_1(\mink_{K'}(M_{h'})) \leq \sqrt{q}/8.\]
 This means that, when $h$ is an NTRU instance, our algorithms always finds $\vec v$ with $\|\vec v\| \leq \sqrt{q}/8$ and outputs correctly ``NTRU instance''.
 This concludes the proof of correctness of the algorithm.
 \end{proof}
