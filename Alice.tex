@@ -521,6 +521,7 @@ The take-away message from this discussion is that recovering the secret $\vec s
 
 
 \subsubsection{NTRU}
+\label{sec:NTRU}
 The NTRU cryptosystem is one of the oldest lattice-based public key encryption scheme, which dates back to 1998~\cite{NTRU}. One of the hardness assumption underlying the security of this cryptosystem is now called the NTRU assumption. In these lecture notes, we will focus on the hardness assumption (and the associated algorithmic problem). Since the first cryptosystem from 1998, this assumption has been used to construct more primitives (public key encryption schemes but also signatures and more). We will see an example of such a construction in Section~\ref{sec:constructions}.
 
 \begin{definition}[NTRU instances]
@@ -979,7 +980,7 @@ Let $L$ be a Galois number field and $K$ be a subfield of $L$. To avoid ambiguit
 \end{lemma}
 
 \subsubsection{Short vectors in special ideals}
-\label{attack:ideal-SVP}
+\label{sec:attack-ideal-SVP}
 
 In this section, we will describe an algorithm that uses subfields to find short vectors in special ideals. The ideals for which the algorithm works are very specific, and they correspond in a sens to ideals of a subfield. We give more details below.
 
@@ -1046,85 +1047,102 @@ The call to the SVP oracle then returns a vector $\vec v \in \mink_{K_H}(J)$ suc
 
 In this section, we will describe an algorithm that takes as input an element $h \in R_q$ and decides whether $h$ is an NTRU$_{q,B}$ instance of not. The algorithm works for any regime of parameters $(q,B)$, but it will be efficient only when $q$ is very large and $B$ is somewhat small. A typical example to keep in mind during this section is $q \approx 2^{\sqrt{d}}$ and $B = \poly(d)$. For sufficiently small values of $q$, the algorithm does not outperform standard lattice reduction algorithms (ignoring the structure of the lattice). A study of the crossover point, i.e., the minimal size of $q$ for which the algorithm becomes more effective than standard lattice reduction algorithms was done in~\ref{DW21}.
 
-The history of attacks on NTRU with a large modulus $q$ (called ``overstretched NTRU'') starts in 2016, with two concurrent works by Albrecht, Bai and Ducas~\cite{ABD16}, and Cheon, Jeong and Lee~\cite{CJL16}. Both attacks use subfields to reduce the dimension of the NTRU instance. The principle of the attacks is somewhat similar, except that~\cite{ABD16} uses the relative norm whereas~\cite{CLJ16} use the relative trace, to map elements of $K$ to a subfield.
+The history of attacks on NTRU with a large modulus $q$ (called ``overstretched NTRU'') starts in 2016, with two concurrent works by Albrecht, Bai and Ducas~\cite{ABD16}, and Cheon, Jeong and Lee~\cite{CJL16}. Both attacks use subfields to reduce the dimension of the NTRU instance. The principle of the attacks is somewhat similar, except that~\cite{ABD16} uses the relative norm whereas~\cite{CJL16} use the relative trace, to map elements of $K$ to a subfield.
 %The algorithm we will describe in this section uses subfields and relative norms, and follows the framework described in. A similar framework, using the relative trace instead of the relative norm was proposed concurrently in~\cite{CJL16}. The proof using the relative norm is slightly simpler than the one using the relative trace, which is why we chose to present this one in these lecture notes.
 In 2017, Kirchner and Fouque generalized the previous two attacks to any number fields, even those without any subfields~\cite{KF17}. This new attack does not rely on the algebraic structure anymore, but only on the geometric properties of the NTRU lattices. Its analysis is significantly more involved than the two previous subfield attacks, and relies on heuristics. The asymptotic complexity of all three attacks is roughly the same.
 In this section, we will analyze the attack from~\cite{ABD16}, which is (to my opinion), the simplest of the three attacks.
 
-As for the attack on ideal-SVP in Section~\ref{sec:attack-ideal-SVP}, the attacks works by transforming the input NTRU instance $h$ in field $K$ into a new instance $h'$ is a subfield $K'$ of $K$, and then solve the problem in smaller dimension. The main idea here is to take $h' = \N_{K/K'}(h)$. If $(f,g)$ was a trapdoor for $h$, then $(f', g') = (\N_{K/K'}(f),\N_{K/K'}(g))$ will be a trapdoor for $h'$, and the size of $f'$ and $g'$ can be controlled from the size of $f$ and $g$, and the degree of $K'$. By choosing an appropriate subfield $K'$, we can then make sure than $h'$ is an NTRU instance in $K'$, and solve the problem in smaller dimension there.
+As for the attack on ideal-SVP in Section~\ref{sec:attack-ideal-SVP}, the attacks works by transforming the input NTRU instance $h$ in field $K$ into a new instance $h'$ is a subfield $K'$ of $K$, and then solve the problem in smaller dimension. The main idea here is to take $h' = \N_{K/K'}(h)$. If $(f,g)$ was a trapdoor for $h$, then $(f', g') = (\N_{K/K'}(f),\N_{K/K'}(g))$ will be a trapdoor for $h'$, and the size of $f'$ and $g'$ can be controlled from the size of $f$ and $g$, and the degree of $K'$. By choosing an appropriate subfield $K'$, we can then make sure that $h'$ is an NTRU instance in $K'$, and solve the problem in smaller dimension there.
 
-One can see from this high level overview that the attack will not solve the search variant of NTRU: it will not find a shortest possible trapdoor $(f,g)$ for $h$. Instead, the algorithm will find $(f', g')$, which can be transformed into a trapdoor for $h$ but is somewhat large. Nevertheless, this can still be used to determine whether $h$ was an NTRU instance or not, i.e., to solve dec-NTRU. The key observation here is that, when $h$ is uniformly sampled in $R_q$, then with overwhelming probability the shortest trapdoor for $h$ will have size roughly $\sqrt{q}$. Hence, if we are able to find only slightly smaller trapdoors for NTRU instance, we will be able to solve the decisional NTRU problem. This is formalized in Lemma~\ref{lemma:attack-NTRU-1} below.
+One can see from this high level overview that the attack will not solve the search variant of NTRU: it will not find a shortest possible trapdoor $(f,g)$ for $h$. Instead, the algorithm will find $(f', g')$, a trapdoor for $h'$. This trapdoor can then be lifted to a large trapdoor for $h$ (with $f$ and $g$ only slightly smaller than $\sqrt{q}$, instead of being $\leq B$). This is what is done in~\cite{ABD16}, but this is not what we will do here. Instead, we will choose a less technical road, and simply use $(f',g')$ to distinguish between NTRU instances and random instances. This is less powerful than the attack described originally in~\cite{ABD16}, and it requires some heuristic, but this will be sufficient to solve dec-NTRU.
 
-Recall that we denoted by $M_h$ the NTRU module associated to some $h \in R$ (see Definition~\ref{def:NTRU-module}). From a lattice point of view, the situation is as follows: if $h$ is an NTRU instance, then $\lambda_1(M_h)$ is of the order of $B$ (i.e., quite small). On the other hand, if $h$ is uniformly sampled, then with good probability $\lambda_1(M_h)$ is of the order of $\sqrt{q}$ (i.e., very large). Our objective is to distinguish between these two cases, and to do so we will design an algorithm that finds vectors in $\lambda_1(M_h)$ just slightly smaller than $\sqrt{q}$ when $h$ is an NTRU instance. This is not enough to recover the shortest vector of $M_h$ (i.e., to solve search NTRU), but this will be enough to distinguish.
+Our objective is then: given $h' = \N_{K/K'}(h)$, can we distinguish the cases where $h$ was an NTRU$_{q,B}$ instance, and the cases where $h$ was uniformly sampled. We have seen above that if we choose our parameters well, then $h'$ is an NTRU$_{q,B'}$ instance when $h$ was an NTRU$_{q,B}$ instance, with a $B'$ larger than $B$. We hope that, if $h$ was uniform modulo $q$, then $h'$ is still uniform modulo $q$, or, at least, that $h'$ does not become an NTRU instance if $h$ was not. This is a reasonable assumption, since we have seen that NTRU instances are quite rare as long as $B$ is small compared to $\sqrt{q}$. But we do not know how to prove it, so we will simply assume it.
 
-\begin{lemma}
-Let $q >1$ be an integer, $B > 0$ be a real number and $\psi$ be a distribution over NTRU$_{q,B}$ instances. Assume we have an algorithm $\mathcal{A}$ such that, given as input any NTRU$_{q,B}$ instance $h$ in the support of $\psi$, it outputs $(f,g) \in R^2$ non-zero such that $g h = f \bmod q$ and $\|\mink(f)\|,\|\mink(g)\| \leq \sqrt{q}/8$.
-Then there exists an algorithm $\mathcal{B}$ that solves dec-NTRU$_{q,B,\psi}$ with probability $\geq 1-2^{-d}$. Algorithm $\mathcal{B}$ makes one call to $\mathcal{A}$ and, except for that call, it runs in polynomial time.
-\end{lemma}
+\begin{heuristic}
+\label{heuristic:NTRU}
+Let $K/K'$ be an extension of number fields, with respective degrees $d$ and $d'$.
+Let $q > 1$ be an integer and $B' \in (0,\sqrt{q}/8]$. We assume that
+\[{\Pr}_{h \leftarrow \mathcal{U}(\O_K/(q\O_K))}\big( \N_{K/K'}(h) \text{is an NTRU$_{q,B'}$ instance in $K'$}\big) \leq 2^{-d'}.\]
+\end{heuristic}
 
-\begin{proof} Let $B' = \sqrt{q}/8$.
-Algorithm $\mathcal{B}$ simply runs $\mathcal{A}$ on its input $h$, and let $(f,g)$ be the output of $\mathcal{A}$. If $(f,g) \neq (0,0)$ and $g h = f \bmod q$ and $\|\mink(f)\|,\|\mink(g)\| \leq B'$, then algorithm $\mathcal{B}$ outputs ``NTRU instance'', otherwise it outputs ``random instance''.
-It is clear that except for the call to $\mathcal{A}$, Algorithm~$\mathcal{B}$ runs in polynomial time.
-Also, by assumption on $\mathcal{A}$, if $h$ was an NTRU$_{q,B}$ instance sampled from $\psi$, then Algorithm~$\mathcal{B}$ always succeeds and outputs ``NTRU instance''.
+Note that, from Lemma~\ref{lemma:proportion-NTRU-instances}, we know that the proportion of NTRU$_{q,B'}$ instances in $K'$ is $\leq \left( \frac{2^5 \cdot (B')^2}{q}\right)^{d'} \leq 2^{-d'}$ since $B' \leq \sqrt{q}/8$. Hence, if $\N_{K/K'}(h)$ were uniformly distributed in $\O_{K'}/(q\O_{K'})$, then our heuristic would be provably true. Our main assumption is then to assume that $\N_{K/K'}(h)$ behaves like a uniformly distributed element modulo $q$.
 
-Hence, the only technical point of the proof is to show that if $h$ is uniformly chosen in $R_q$, then Algorithm~$\mathcal{B}$ wrongly outputs ``NTRU instance'' with probability at most $2^{-d}$. To do so, we will show that the probability over the random choice of $h$ that there exists a trapdoor $(f,g)$ for $h$ with $\|\mink(f)\|,\|\mink(g)\| \leq B'$ is $\leq 2^{-d}$, and so $\mathcal{A}$ cannot output such a trapdoor with higher probability.
+%, which can be transformed into a trapdoor for $h$ but is somewhat large. Nevertheless, this can still be used to determine whether $h$ was an NTRU instance or not, i.e., to solve dec-NTRU. The key observation here is that, when $h$ is uniformly sampled in $R_q$, then with overwhelming probability the shortest trapdoor for $h$ will have size roughly $\sqrt{q}$. Hence, if we are able to find only slightly smaller trapdoors for NTRU instance, we will be able to solve the decisional NTRU problem. This is formalized in Lemma~\ref{lemma:attack-NTRU-1} below.
 
-By definitions, the elements $h \in R_q$ for which there exists a trapdoor $(f,g)$ with $\|\mink(f)\|,\|\mink(g)\| \leq B'$ are precisely NTRU$_{q,B'}$ instances. By Lemma~\ref{lemma:proportion-NTRU-instances}, we know that the proportion of NTRU$_{q,B'}$ instances in $R_q$ is at most $\left( \frac{2^5 \cdot (B')^2}{q}\right)^d$, which is $\leq 2^{-d}$ by our choice of $B'$. Hence, we conclude that the probability that a uniformly random $h$ admits a trapdoor $\leq B'$ is at most $2^{-d}$ as desired.
-\end{proof}
+%Recall that we denoted by $M_h$ the NTRU module associated to some $h \in R$ (see Definition~\ref{def:NTRU-module}). From a lattice point of view, the situation is as follows: if $h$ is an NTRU instance, then $\lambda_1(M_h)$ is of the order of $B$ (i.e., quite small). On the other hand, if $h$ is uniformly sampled, then with good probability $\lambda_1(M_h)$ is of the order of $\sqrt{q}$ (i.e., very large). Our objective is to distinguish between these two cases, and to do so we will design an algorithm that finds vectors in $\lambda_1(M_h)$ just slightly smaller than $\sqrt{q}$ when $h$ is an NTRU instance. This is not enough to recover the shortest vector of $M_h$ (i.e., to solve search NTRU), but this will be enough to distinguish.
 
-Let us now prove the main part of the attack, namely that there is an algorithm that, given as input an NTRU$_{q,B}$ instance $h$ with very large $q$, finds a trapdoor for $h$ slightly smaller than $\sqrt{q}$. As explained above, the algorithm works by transforming the NTRU instance into a new NTRU instance in a field of smaller degree, and solving the NTRU problem in this smaller dimensional number field. In order to simplify the statement of the algorithm and the theorem, we will restrict ourselves to a power-of-two cyclotomic field $K$. This way, $K$ has many subfields and we know exactly their degrees (there is at least one for each power-of-two $\leq d$). There is no real restriction to extend the algorithm to other number fields with subfields, but the statement would be messier, depending on the available degrees for the subfields of $K$.
+%\begin{lemma}
+%Let $q >1$ be an integer, $B > 0$ be a real number and $\psi$ be a distribution over NTRU$_{q,B}$ instances. Assume we have an algorithm $\mathcal{A}$ such that, given as input any NTRU$_{q,B}$ instance $h$ in the support of $\psi$, it outputs $(f,g) \in R^2$ non-zero such that $g h = f \bmod q$ and $\|\mink(f)\|,\|\mink(g)\| \leq \sqrt{q}/8$.
+%Then there exists an algorithm $\mathcal{B}$ that solves dec-NTRU$_{q,B,\psi}$ with probability $\geq 1-2^{-d}$. Algorithm $\mathcal{B}$ makes one call to $\mathcal{A}$ and, except for that call, it runs in polynomial time.
+%\end{lemma}
+
+%\begin{proof} Let $B' = \sqrt{q}/8$.
+%Algorithm $\mathcal{B}$ simply runs $\mathcal{A}$ on its input $h$, and let $(f,g)$ be the output of $\mathcal{A}$. If $(f,g) \neq (0,0)$ and $g h = f \bmod q$ and $\|\mink(f)\|,\|\mink(g)\| \leq B'$, then algorithm $\mathcal{B}$ outputs ``NTRU instance'', otherwise it outputs ``random instance''.
+%It is clear that except for the call to $\mathcal{A}$, Algorithm~$\mathcal{B}$ runs in polynomial time.
+%Also, by assumption on $\mathcal{A}$, if $h$ was an NTRU$_{q,B}$ instance sampled from $\psi$, then Algorithm~$\mathcal{B}$ always succeeds and outputs ``NTRU instance''.
+
+%Hence, the only technical point of the proof is to show that if $h$ is uniformly chosen in $R_q$, then Algorithm~$\mathcal{B}$ wrongly outputs ``NTRU instance'' with probability at most $2^{-d}$. To do so, we will show that the probability over the random choice of $h$ that there exists a trapdoor $(f,g)$ for $h$ with $\|\mink(f)\|,\|\mink(g)\| \leq B'$ is $\leq 2^{-d}$, and so $\mathcal{A}$ cannot output such a trapdoor with higher probability.
+
+%By definitions, the elements $h \in R_q$ for which there exists a trapdoor $(f,g)$ with $\|\mink(f)\|,\|\mink(g)\| \leq B'$ are precisely NTRU$_{q,B'}$ instances. By Lemma~\ref{lemma:proportion-NTRU-instances}, we know that the proportion of NTRU$_{q,B'}$ instances in $R_q$ is at most $\left( \frac{2^5 \cdot (B')^2}{q}\right)^d$, which is $\leq 2^{-d}$ by our choice of $B'$. Hence, we conclude that the probability that a uniformly random $h$ admits a trapdoor $\leq B'$ is at most $2^{-d}$ as desired.
+%\end{proof}
+
+We are now ready to describe the attack. As explained above, the algorithm works by transforming the NTRU instance into a new NTRU instance in a field of smaller degree, and solving the decisional NTRU problem in this smaller dimensional number field. In order to solve the decisional NTRU problem in the smaller dimensional number field, we use lattice reduction to find a short trapdoor, as explained in Section~\ref{sec:NTRU}. If we succeed in finding a trapdoor significantly smaller than $\sqrt{q}$, then we guess that $h$ was an NTRU instance, and if we do not succeed, then we guess that $h$ was uniformly chosen.
+In order to simplify the statement of the algorithm and the theorem, we will restrict ourselves to a power-of-two cyclotomic field $K$. This way, $K$ has many subfields and we know exactly their degrees (there is at least one for each power-of-two $\leq d$). There is no real restriction to extend the algorithm to other number fields with subfields, but the statement would be messier, depending on the available degrees for the subfields of $K$.
 
 \begin{algorithm}
-\caption{Finding somewhat short NTRU trapdoors in power-of-two cyclotomic fields}
+\caption{Solving dec-NTRU in power-of-two cyclotomic fields}
 \label{algo:attack-NTRU}
 \begin{algorithmic}[1]
 \REQUIRE An integer $q$, a bound $B \in (0,q^{1/4}/16]$ and an NTRU$_{q,B}$ instance $h$ in a power-of-two cyclotomic field $K = \QQ[X]/(X^d+1)$.
-\ENSURE A pair $(f,g) \in R^2$.
-\STATE Let $m$ be the smaller power-of-two $\geq d \cdot \frac{\log B}{\log(q^{1/4}/16)}$
-\STATE Let $K' = \QQ[X]/(X^m+1)$ (this is a subfield of $K$)
+\ENSURE A guess ``NTRU instance'' or ``random instance'' \vspace{1mm}
+\STATE Let $m$ be the smaller power-of-two $\geq d \cdot \frac{\log B}{\log(q^{1/4}/16)}$ \vspace{1mm}
+\STATE Let $K' = \QQ[X]/(X^m+1)$ (this is a subfield of $K$)\vspace{1mm}
 %TODO add in an example the fact that power of two cyclotomic fields are subfields of one another
-\STATE Compute $h' = \N_{K/K'}(h) \in K'$
-\STATE Compute $M_{h'} \in \O_{K'}^{2 \times 2}$ the NTRU-module associated to $h'$ in $K'$
-\STATE Let $\gamma = q^{1/4}$
-\STATE $\vec v \leftarrow \text{SVP}_\gamma(\mink_{K'}(M_h))$ \label{step:SVP-NTRU}
-\STATE Compute $(g',f') \in \O_{K'}^2$ such that $\mink_{K'}((f',g')) = \vec v$
-\STATE Set $g = g' \in \O_K$ and compute $f \in \O_K$ such that $f = gh \bmod q$ and $f = \sum_{i = 0}^{d-1} f_i X^i$ with $f_i \in (-q/2,q]$ for all $i$'s
-\RETURN $(f,g)$
+\STATE Compute $h' = \N_{K/K'}(h) \in K'$\vspace{1mm}
+\STATE Compute $M_{h'} \in \O_{K'}^{2 \times 2}$ the NTRU-module associated to $h'$ in $K'$ (see Definition~\ref{def:NTRU-module})\vspace{1mm}
+\STATE Solve $\vec s \leftarrow \text{SVP}_\gamma(\mink_{K'}(M_h))$ with $\gamma = q^{1/4}$\vspace{1mm} \label{step:SVP-NTRU}
+\IF{$\|\vec s\| \leq \sqrt{q}/8$\vspace{1mm}}\label{step:if-small-NTRU}
+	\RETURN ``NTRU instance''
+\ELSE
+	\RETURN ``random instance''
+\ENDIF
 \end{algorithmic}
 \end{algorithm} 
 
 
 \begin{theorem}
 \label{thm:attack-NTRU}
-Let $K = \QQ[X]/(X^d+1)$ with $d$ a power-of-two. Let $q >2$ be an integer and $B > 0$ be a real number with $B \leq q^{1/4}/16$. Let $h \in R_q$ be an NTRU$_{q,B}$ instance. Assume that $h$ admits a trapdoor $(f_0,g_0)$ such that $\|\mink_K(f_0)\|, \|\mink_K(g_0)\| \leq B$ and $\|\mink_K(f_0^{-1})\| \leq B$ and $\N_K(f_0)$, $\N_K(g_0)$ are coprime.
-On input $(a,B,h)$, Algorithm~\ref{algo:attack-NTRU} outputs $(f,g) \in R\setminus\{(0,0)\}$ such that $g \cdot h = f \bmod q$ and $\|\mink_K(f)\|, \|\mink_K(g)\| \leq \sqrt{q}/8$. This algorithm makes one call to an SVP$_\gamma$ solver in a lattice of dimension $2m$, where $m = 2^{\left\lceil \log_2\left(\frac{d\log B}{\log(q^{1/4}/16)}\right)\right\rceil}$ and $\gamma = q^{1/4}$. Except for the call to the SVP solver, the algorithm runs in polynomial time.
+Let $K = \QQ[X]/(X^d+1)$ with $d$ a power-of-two. Let $q >2$ be an integer and $B > 0$ be a real number with $B \leq \frac{q^{1/4}}{16}$. Let $\psi$ be any distribution over NTRU$_{q,B}$ instances. Define $m := 2^{\left\lceil \log_2\left(\frac{d\log B}{\log(q^{1/4}/16)}\right)\right\rceil}$ and $\gamma := q^{1/4}$.
+%Let $h \in R_q$ be an NTRU$_{q,B}$ instance. Assume that $h$ admits a trapdoor $(f_0,g_0)$ such that $\|\mink_K(f_0)\|, \|\mink_K(g_0)\| \leq B$ and $\|\mink_K(f_0^{-1})\| \leq B$ and $\N_K(f_0)$, $\N_K(g_0)$ are coprime.
+%On input $(q,B,h)$, 
+Under Heuristic~\ref{heuristic:NTRU}, Algorithm~\ref{algo:attack-NTRU} solves dec-NTRU$_{q,B,\psi}$ with probability $\geq 1-2^m$. The algorithm makes one call to an SVP$_\gamma$ solver in a lattice of dimension $2m$, and, except for this call, it runs in polynomial time.
 \end{theorem}
 
-The choice of $m$ and $\gamma$ in the Theorem's statement may be a bit hard to apprehend, so let's take a concrete example. Assume that $B$ is a constant and that $q = 2^{\sqrt{d}}$. Then $m \approx \frac{d}{\sqrt{d}} \approx \sqrt{d}$, and $\gamma = 2^{\sqrt{d}/4} \approx 2^{m}$ (ignoring all constants). Solving SVP$_{2^m}$ in a lattice of dimension $m$ can be done in polynomial time using the LLL algorithm, so in this situation, one should expect that our algorithm runs in polynomial time, even including the SVP call.
+The choice of $m$ and $\gamma$ in the theorem's statement may be a bit hard to apprehend, so let's take two concrete examples. 
+\begin{itemize}
+\item Assume that $B$ is a constant and that $q = 2^{\sqrt{d}}$. Then $m \approx \frac{d}{\sqrt{d}} \approx \sqrt{d}$, and $\gamma = 2^{\sqrt{d}/4} \approx 2^{m}$ (ignoring all constants). Solving SVP$_{2^m}$ in a lattice of dimension $m$ can be done in polynomial time using the LLL algorithm, so in this situation, one should expect that our algorithm runs in polynomial time, even including the SVP call.
 
-On the other hand, assume that $B$ and $q$ are both $\poly(d)$. Then $m \approx d$, and $\gamma = \poly(d)$. We are asked to solve SVP$_{\gamma}$ in a lattice of dimension $d$ with approximation factor $\poly(d)$. The best algorithms to do so are exponential in $d$, hence we do not gain anything compared to running lattice reduction algorithms directly on the NTRU module lattice $M_h$.
+\item On the other hand, assume that $B$ and $q$ are both $\poly(d)$. Then $m \approx d$, and $\gamma = \poly(d)$. We are asked to solve SVP$_{\gamma}$ in a lattice of dimension $d$ with approximation factor $\poly(d)$. The best algorithms to do so are exponential in $d$, hence we do not gain anything compared to running lattice reduction algorithms directly on the NTRU module lattice $M_h$.
+\end{itemize}
 
 \begin{proof}
-Again, the assertion on the run time follows easily by inspection of the algorithm. One should note that since $B \leq q^{1/4}/16$, then $m \leq d$, and so there is indeed a subfield of $K$ of degree $m$. The existence of $f$ in the last step of the algorithm follows from the fact that $f$ is defined modulo $q$, and so one can reduce it's coefficient in the interval $(-q/2,q]$.
+Again, the assertion on the run time follows easily by inspection of the algorithm. One should note that since $B \leq q^{1/4}/16$, then $m \leq d$, and so there is indeed a subfield of $K$ of degree~$m$.
 
-Regarding correctness, we know that $g' \neq 0$. Indeed, we have seen that by definition of the NTRU module $M_{h'}$, any vector $(g',f')$ in this module satisfies $g' \cdot h' = f' \bmod q$. So if $g' = 0$, then we must have $f' = 0 \bmod q$. Moreover, as $(g',f')$ is a solution to SVP$_\gamma$, it must be non-zero, and so $f' \in \O_{K'}$ must be a non-zero multiple of $q$. This implies in particular that $\|\mink_{K'}(f')\| \geq q$. But we will see below that $\|\mink_{K'}(f')\| \leq \sqrt{q}/8$, hence it must be that $g = g'$ is non-zero, i.e., $(f,g) \in \O_K^2 \setminus \{(0,0)\}$.
+Let us now prove that the algorithm is correct with good probability. 
+To do so, we distinguish the two cases: $h$ is an NTRU$_{q,B}$ instance, or $h$ is uniformly random. Let us start with the case $h \leftarrow \mathcal{U}(R_q)$. Recall from Section~\ref{sec:NTRU} that any vector $(g',f') \in M_{h'}$ satisfies $g' \cdot h' = f' \bmod q$. Hence, if there exists $\vec v \in \mink_{K'}(M_{h'})$ non-zero with $\|vec v\| \leq \sqrt{q}/8$, then the corresponding vector $(g',f') \in M_{h'}$ is non-zero and satisfies $\|\mink_{K'}(g')\|, \|\mink_{K'}(f')\| \leq \|vec v\| \leq \sqrt{q}/8$. In other words, $h'$ is an NTRU$_{q,\sqrt{q}/8}$ instance in $K'$. From Heuristic~\ref{heuristic:NTRU}, this happens with probability $\leq 2^{-m}$. Hence, the probability that the algorithm wrongly outputs ``NTRU instance'' when $h$ is actually uniformly chosen is $\leq 2^{-m}$.
 
-The condition $gh = f \bmod q$ is satisfied by definition of $f$ in the last step. It remains to upper bound the size of $f$ and $g$.
-
-Let $f_0$ and $g_0$ be as in the theorem's statement.
+Let us now consider the case where $h$ is an NTRU$_{q,B}$ instance in $K$.
+Let $(f_0,g_0)$ be a trapdoor for $h$, that is $(f_0, g_0) \neq (0,0)$ and $g_0 \cdot h = f_0 \bmod q$ and $\|\mink_K(f_0)\|,\|\mink_K(g_0)\| \leq B$.
 Let $H$ be the subgroup of $\Aut(K)$ fixing $K'$. Recall that $K$ is Galois, so $H$ exists and has cardinality $|H| = d/m$. For any $\phi \in H$, it holds that $\phi(q) = q$ since $q \in \QQ$, and so $\phi(g_0) \cdot \phi(h) = \phi(f_0) \bmod q$. (Make sure you understand why $\phi(q) = q$ was needed here.) By definition of the relative norm, this implies that
 \[ \N_{K/K'}(g_0) \cdot \N_{K/K'}(h) = \N_{K/K'}(f_0) \bmod q.\]
-Let us write $g_0' = \N_{K/K'}(g_0)$ and $f_0' = \N_{K/K'}(f_0)$. Recall also the notation $h' = \N_{K/K'}(h)$ from the algorithm. By Lemmas~\ref{lemma:automorphism-preserves-size} and~\ref{lemma:canonical-norm-subfield}, we know that $\|\mink_{K'}(g_0')\| = \sqrt{|H|}^{-1} \cdot \|\mink_{K}(g_0')\| \leq \sqrt{|H|}^{-1} \cdot \|\mink_{K}(g_0)\|^{|H|} \leq \sqrt{|H|}^{-1} \cdot B^{|H|}$. Similarly, $\|\mink_{K'}(f_0')\|\leq \sqrt{|H|}^{-1} \cdot B^{|H|}$. Letting $B' = \sqrt{|H|}^{-1} \cdot B^{|H|}$ we see that $h'$ is an NTRU$_{q,B'}$ instance in $K'$. Now, recall from the algorithm that $m \geq d \cdot \frac{\log B}{\log(q^{1/4}/16)}$, hence we have
-\[B' = \sqrt{|H|}^{-1} \cdot B^{d/m} \leq \sqrt{|H|}^{-1} \cdot B^{\frac{\log(q^{1/4}/16)}{\log B}} = \sqrt{|H|}^{-1} \cdot q^{1/4}/16.\]
-The rank-2 module $M_{h'} \subseteq \O_{K'}^2$ contains the short non-zero vector $(g',f')$, hence $\lambda_1(\mink_{K'}(M_{h'})) \leq 2B' \leq \sqrt{|H|}^{-1} \cdot q^{1/4}/8$.
+Let us write $g_0' = \N_{K/K'}(g_0)$ and $f_0' = \N_{K/K'}(f_0)$. Recall also the notation $h' = \N_{K/K'}(h)$ from the algorithm. By Lemmas~\ref{lemma:automorphism-preserves-size} and~\ref{lemma:canonical-norm-subfield}, we know that $\|\mink_{K'}(g_0')\| \leq \|\mink_{K}(g_0')\| \leq \|\mink_{K}(g_0)\|^{|H|} \leq B^{|H|}$. Similarly, $\|\mink_{K'}(f_0')\|\leq B^{|H|}$. Letting $B' = \cdot B^{|H|}$ we see that $h'$ is an NTRU$_{q,B'}$ instance in $K'$. Now, recall from the algorithm that $m \geq d \cdot \frac{\log B}{\log(q^{1/4}/16)}$, hence we have
+\[B' = B^{d/m} \leq B^{\frac{\log(q^{1/4}/16)}{\log B}} = q^{1/4}/16.\]
+The rank-2 module $M_{h'} \subseteq \O_{K'}^2$ contains the short non-zero vector $(g_0',f_0')$, hence $\lambda_1(\mink_{K'}(M_{h'})) \leq 2B' \leq q^{1/4}/8$.
 
-Let $\gamma = q^{1/4}$ and $(g', f') \in \O_{K'}^2$ be a solution to SVP$_\gamma$ in $M_{h'}$, as in the theorem statement. Then 
-\[\|\mink_K(g')\| = \sqrt{|H|} \|\mink_{K'}(g)\| \leq \sqrt{H} \cdot \gamma \cdot \lambda_1(\mink_{K'}(M_{h'})) \leq \sqrt{q}/8.\]
-Similarly, $\|\mink_K(f')\| \leq \sqrt{q}/8$.
-
-We have now proven that $g = g'$ satisfies the upper bound $\|\mink_K(g)\| \leq \sqrt{q}/8$. It remains to prove that the same holds for $f$, as defined in the last step of the algorithm. This is a little technical, so stay with me.
-
-
+Let $\gamma = q^{1/4}$ and $\vec v$ be a solution to SVP$_\gamma$ in $\mink_{K'}(M_{h'})$, as in the theorem statement. Then 
+\[\|\vec v\| \gamma \cdot \lambda_1(\mink_{K'}(M_{h'})) \leq \sqrt{q}/8.\]
+This means that, when $h$ is an NTRU instance, our algorithms always finds $\vec v$ with $\|\vec v\| \leq \sqrt{q}/8$ and outputs correctly ``NTRU instance''.
+This concludes the proof of correctness of the algorithm.
 \end{proof}
 
 
