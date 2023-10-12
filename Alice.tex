@@ -33,10 +33,14 @@ On the other hand, we also have examples of good choice of structure,\footnote{U
 The structure we will consider in this section is a special case of what is called \emph{modules over the ring of integers of a number field}. In order to make this name shorter, we will simply call these \emph{module lattices} in the rest of these lecture notes, as is commonly done in the cryptographic community. We will see in details what those objects are in Section~\ref{sec:number-theory} below. Module lattices are, by far, the most widely used structured lattices in lattice-based cryptography at the moment. If chosen appropriately, they may fall in the category of ``good structured lattices'' defined above, in the sens that, at the moment, we don't know how to solve standard algorithmic problems in these lattices (such at SVP) more efficiently than in non structured lattices.
 Before moving to the formal definition of module lattices, let us mention the existence of other kinds of structured lattices (which won't be covered here), such as ideals over a maximal order of a cyclic algebra~\cite{CLWE}.
 
+\paragraph{Some notations for this part.} If $X$ is a finite set, we write $|X|$ its cardinality and $\mathcal{U}(X)$ the uniform distribution over $X$.
+
 
 \subsection{Background on Number Theory}
 \label{sec:number-theory}
 In this section, we review some definitions and results of number theory that will be useful for the rest of the course. We will state most of the results without their proofs. Most of the proofs for the results about number theory can be found in Marcus' book~\cite{Marcus}. For the algorithmic results, or the results about modules, most of them are in Cohen's books~\cite{Cohen1, Cohen2}.
+
+
 \subsubsection{Number fields}
 
 A number field $K$ is a field, containing $\QQ$, and which has \emph{finite dimension} when seen as a vector space over $\QQ$.\footnote{Any field containing $\QQ$ can be seen as a vector space over $\QQ$, but not all of them have finite dimension as a $\QQ$-vector space. For instance, $\RR$ and $\CC$ are $\QQ$-vector spaces of infinite dimension.} The dimension of $K$ over $\QQ$ is called the \emph{degree} of the number field $K$, and denoted by $[K:\QQ]$. In these lecture notes, by convention, we will use the letter $d$ to denote the degree of a number field.
@@ -442,7 +446,7 @@ The module-LWE problem is an analogue of the LWE problem, in the module setting.
 Let $m \geq n \geq 1$ and $q > 1$ be integers and let $\chi$ be a distribution over $R$. For a secret vector $\vec s \in R_q^n$, the module-LWE distribution $A^{\vec s}_{n,m,q,\chi}$ is the distribution obtained by sampling $\vec A \leftarrow \mathcal{U}\Big(R_q^{m \times n}\Big)$ and $\vec e \leftarrow \chi^m$ and outputting $(\vec A, \vec b := \vec A \cdot \vec s + \vec e \bmod q) \in R_q^{m \times n} \times R_q^m$.
 \end{definition}
 
-\footnote{Alice: do we really need to define the LWE distribution? Maybe define the problems directly...}
+%\footnote{Alice: do we really need to define the LWE distribution? Maybe define the problems directly...}
 
 As in the standard LWE case, one should think of the distribution $\chi$ as outputting ``short'' elements of $R$ (e.g., elements following a discrete Gaussian distribution with small standard deviation). Since our elements are not integers anymore, but element of $\O_K$, a natural question arising is how to define shortness of an element? This is exactly what we discussed in Section~\ref{sec:embeddings}: we define the size of the elements of $K$ (and $\O_K$) via the coefficient or the canonical embedding, mapping $K$ into $\CC^d$. Depending on the context, either one of the two embeddings may be more convenient than the other. In these lecture notes, because we are more interested into the mathematical properties of the problems (and avoid practical questions), we will only consider the canonical embedding.
 
@@ -452,27 +456,27 @@ Hence, from now on, one could think of the distribution $\chi$ as outputting ele
 Let $m \geq n \geq 1$ be integers, $q >1$ be an integer and $\chi$ be a distribution over $R$. The search module-LWE problem MLWE$_{n,m,q,\chi}$ asks, given as input a sample from the module-LWE distribution $A^{\vec s}_{n,m,q,\chi}$ for some $\vec s \leftarrow \mathcal{U}(R_q^n)$, to recover the secret vector $\vec s$.
 
 The advantage of an adversary $\mathcal{A}$ against the module-LWE problem is defined as
-\[ \adv(\A) := \Pr\Big(\A(\vec A, \vec b) = \vec s\,|\, \vec s \leftarrow \mathcal{U}(R_q^n),\, (\vec A, \vec b) \leftarrow A^{\vec s}_{n,m,q,\chi} \text{ for all }i\Big), \]
-where the probability is taken over the random choices of $\A$, the random choice of $\vec s$, and the random distribution $A^{\vec s}_{n,m,q,\chi}$.
+\[ \adv(\A) := \Pr\Big(\A(\vec A, \vec b) = \vec s\,|\, \vec s \leftarrow \mathcal{U}(R_q^n),\, (\vec A, \vec b) \leftarrow A^{\vec s}_{n,m,q,\chi}\Big), \]
+where the probability is taken over the randomness of $\A$, the random choice of $\vec s$, and the random distribution $A^{\vec s}_{n,m,q,\chi}$.
 \end{definition}
 
 There is also a decisional version of the module-LWE problem.
 
 \begin{definition}[Decision module-LWE]
-Let $m \geq n \geq 1$ be integers, $q >1$ be an integer and $\chi$ be a distribution over $R$. The decision module-LWE problem dec-MLWE$_{n,m,q,\chi}$ asks to distinguish between $m$ samples from $A^{\vec s}_{n,q,\chi}$ (for some $\vec s \leftarrow \mathcal{U}(R_q^n)$) and $m$ samples from the distribution $\mathcal{U}(R_q^n \times R_q)$.
+Let $m \geq n \geq 1$ be integers, $q >1$ be an integer and $\chi$ be a distribution over $R$. The decision module-LWE problem dec-MLWE$_{n,m,q,\chi}$ asks to distinguish between a sample from $A^{\vec s}_{n,m,q,\chi}$ (for some $\vec s \leftarrow \mathcal{U}(R_q^n)$) and a sample from the distribution $\mathcal{U}(R_q^{m \times n} \times R_q^m)$.
 
 The advantage of an adversary $\mathcal{A}$ against the decision module-LWE problem is defined as
 \begin{align*} \adv(\A) := \Big| &\Pr\Big(\A(\vec A, \vec b) = 1\,\big|\, \vec s \leftarrow \mathcal{U}(R_q^n),\, (\vec A, \vec b) \leftarrow A^{\vec s}_{n,m,q,\chi}\Big) \\
-&- \Pr\Big(\A(\vec A, \vec b) = 1\,\big|\, \vec A \leftarrow \mathcal{U}(R_q^{m \times n}), \, \vec b \leftarrow \mathcal{U}(R_q^n)\Big) \Big|,
+&- \Pr\Big(\A(\vec A, \vec b) = 1\,\big|\, \vec A \leftarrow \mathcal{U}(R_q^{m \times n}), \, \vec b \leftarrow \mathcal{U}(R_q^m)\Big) \Big|,
 \end{align*}
-where the probabilities are taken over the random choices of $\A$, the random choice of $\vec s$, and the random distribution $A^{\vec s}_{n,m,q,\chi}$.
+where the probabilities are taken over the randomness of $\A$, the random choice of $\vec s$, and the random distributions $A^{\vec s}_{n,m,q,\chi}$, $\mathcal{U}(R_q^{m \times n})$ and $\mathcal{U}(R_q^m)$.
 \end{definition}
 
 When $n = 1$, the (dec-)module-LWE$_{n,m,q,\chi}$ problem is usually called (decision) Ring LWE, and denoted (dec-)RLWE$_{m,q,\chi}$.
 This is somehow reminiscent of the terminology used for $r$-module-SVP, where we give a special name to the case $r = 1$, namely ideal-SVP.
 We will see below however that the situation is different between the module-LWE and module-SVP cases. For module-SVP, we argued that there exists better algorithms in the case $r = 1$, which justifies giving it a different name. In the case of module-LWE, there is no such (known) difference between the case $n = 1$ and the case $n \geq 2$. In the rest of these lecture notes, will only use the terminology module-LWE and will not make a distinction between the case $n = 1$ and the case $n \geq 2$.
 
-\paragraph{Module-LWE as a module-lattice problem.} We will see that, as in the case of standard LWE, the module-LWE problem can be seen as an instance of module-BDD in modules of rank $m$ (provided the LWE parameters are well chosen).
+\paragraph{Module-LWE as a module-lattice problem.} We will see that, as in the case of standard LWE, the module-LWE problem can somehow be seen as an instance of module-BDD in modules of rank $m$ (provided the LWE parameters are well chosen).
 Let us start by defining construction A module-lattices, in a similar way as what was done for standard lattices.
 
 \begin{definition}
@@ -489,7 +493,9 @@ One can check that $\Lambda(\vec A)$ is generated over $R$ by the column vectors
 Moreover, the $m$ vectors $q \cdot \vec e_i$ are $K$-linearly independent, hence their $K$-span is the full space $K^m$. This implies that the rank of $\Lambda(\vec A)$ is maximal and equal to $m$.
 \end{proof}
 
-Let $(\vec A, \vec b)$ be an instance of MLWE$_{n,m,q,\chi}$, with $\vec b = \vec A \cdot \vec s + \vec e$ and $\|\mink(e_i)\| \leq B$ for all coordinates $e_i \in R$ of $\vec e$. If we let $M = \Lambda(\vec A)$, we see that $\vec v = \vec b - \vec e$ belongs to $M$. Moreover, $\|\mink(\vec b - \vec v)\| =  \| \mink(\vec e)\| \leq \sqrt{m} \cdot B$. So $\vec v$ is a close point to $\vec b$ in the module $M$. If the distance between $\vec v$ and $\vec b$ were significantly smaller than the first minimum $\lambda_1(M)$, then we could conclude that $\vec b$ is a module-BDD instance in the module $M$, with solution $\vec v$. We already have an upper bound on the distance between $\vec v$ and $\vec b$, hence it ``suffices'' to obtain a lower bound on $\lambda_1(M)$, for instance using a variant of the Minkowski-Hlawka theorem for module lattices, similar to Theorem~\ref{thm:Minkowski-Hlawka}. Unfortunately, I do not know any place where this variant has been formally stated and proven, and we will not prove it in these lecture notes. So, for now, we will have to assume that $\lambda_1(M) \geq \gamma \cdot \sqrt{m} \cdot B $ for some $\gamma >2$. If this is the case, then $\vec b$ is a module-BDD$_\gamma$ instance in the module $M = \Lambda(\vec A)$. Moreover, solving this instance allows one to recover $\vec v = \vec A \cdot \vec s \bmod q$, and then to recover $\vec s$ by solving the linear system.
+Let $\chi$ be a distribution that outputs only elements $\vec e$ such that $\|\mink(e_i)\| \leq B$ for all coordinates $e_i \in R$ of $\vec e$, for some $B > 0$. We say that such distribution $\chi$ is \emph{$B$-bounded}.
+Let $(\vec A, \vec b)$ be an instance of MLWE$_{n,m,q,\chi}$, with $\vec b = \vec A \cdot \vec s + \vec e$.  If we let $M = \Lambda(\vec A)$, we see that $\vec v = \vec b - \vec e \bmod q$ belongs to $M$. Moreover, $\|\mink(\vec b - \vec v)\| =  \| \mink(\vec e)\| \leq \sqrt{m} \cdot B$. So $\vec v$ is a close point to $\vec b$ in the module~$M$. If the distance between $\vec v$ and $\vec b$ were significantly smaller than the first minimum $\lambda_1(M)$, then we could conclude that $\vec b$ is a module-BDD instance in the module $M$, with solution~$\vec v$. We already have an upper bound on the distance between $\vec v$ and $\vec b$, hence it ``suffices'' to obtain a lower bound on $\lambda_1(M)$, for instance using a variant of the Minkowski-Hlawka theorem for module lattices, similar to Theorem~\ref{thm:Minkowski-Hlawka}. Unfortunately, I do not know any place where this variant has been formally stated and proven, and we will not prove it in these lecture notes. So, for now, we will have to assume that $\lambda_1(M) \approx \det(M)^{1/(dm)} \approx q^{1-n/m}$, as in the unstructured case. If this is the case, then $\vec b$ is a module-BDD$_\gamma$ instance in the module $M = \Lambda(\vec A)$, for $\gamma \approx q^{1-n/m}/B$ (one should think of $B$ as being significantly smaller than $q^{1-n/m}$ for this to be a true BDD instance).
+Moreover, solving this instance allows one to recover $\vec v = \vec A \cdot \vec s \bmod q$, and then to recover $\vec s$ by solving the linear system modulo $q$.
 
 The take-away message from this discussion is that recovering the secret $\vec s$ of an MLWE instance $(\vec A, \vec b)$ can likely be done by solving a module-BDD instance in the module $\Lambda(\vec A)$.
 
@@ -526,7 +532,8 @@ The take-away message from this discussion is that recovering the secret $\vec s
 
 \subsubsection{NTRU}
 \label{sec:NTRU}
-The NTRU cryptosystem is one of the oldest lattice-based public key encryption scheme, which dates back to 1998~\cite{NTRU}. One of the hardness assumption underlying the security of this cryptosystem is now called the NTRU assumption. In these lecture notes, we will focus on the hardness assumption (and the associated algorithmic problem). Since the first cryptosystem from 1998, this assumption has been used to construct more primitives (public key encryption schemes but also signatures and more). We will see an example of such a construction in Section~\ref{sec:constructions}.
+The NTRU cryptosystem is one of the oldest lattice-based public key encryption scheme, which dates back to 1998~\cite{NTRU}. One of the hardness assumption underlying the security of this cryptosystem is now called the NTRU assumption. In these lecture notes, we will focus on the hardness assumption (and the associated algorithmic problem). Since the first cryptosystem from 1998, this assumption has been used to construct more primitives (public key encryption schemes but also signatures and more). 
+%We will see an example of such a construction in Section~\ref{sec:constructions}.
 
 \begin{definition}[NTRU instances]
 Let $q >1$ be an integer and $B >0$ be a real number. An NTRU$_{q,B}$ instance is an element $h \in R$ such that there exists $(f,g) \in R^2\setminus \{(0,0)\}$ with $\|\mink(f)\|, \|\mink(g)\| \leq B$ satisfying $g \cdot h = f \bmod q$. The pair $(f,g) \in R^2$ is called a trapdoor for $h$.
@@ -534,7 +541,7 @@ Let $q >1$ be an integer and $B >0$ be a real number. An NTRU$_{q,B}$ instance i
 
 It is common when defining NTRU to rewrite the equation $g \cdot h = f \bmod q$ into $h = f/g \bmod q$. This requires $g$ to be invertible, and may add some technicalities for some of the results. In these lecture notes, we do not impose that $g$ is invertible modulo $q$, which is why we write the equation $g \cdot h = f \bmod q$.
 
-One should think of the constant $B$ to be significantly smaller than $\sqrt{q}$. In this case, only a small proportion of elements of $R$ are NTRU instances (most elements of $R$ cannot be written as $g \cdot h = f \bmod q$ for small $g$ and $f$).
+One should think of the constant $B$ to be significantly smaller than $\sqrt{q}$. In this case, only a small proportion of elements of $R$ are NTRU instances (most elements of $R$ cannot be written as $g \cdot h = f \bmod q$ for small $g$ and $f$), as stated in the following lemma.
 
 \begin{lemma}
 \label{lemma:proportion-NTRU-instances}
@@ -591,7 +598,7 @@ Let $q >1$ be an integer, $B >0$ be a real number and $\psi$ be a distribution o
 %\end{itemize}
 %\end{remark}
 
-\paragraph{NTRU as a module-lattice problem.} We will now see that the NTRU problem can be seen as a special case of module-SVP in modules of rank $2$. Below, we define a notion of NTRU module, which will play a similar role as the image module-lattice for module-LWE. Note that NTRU modules are defined for any $h \in R$, even for those that are not NTRU instances.
+\paragraph{NTRU as a module-lattice problem.} We will now see that the NTRU problem can be seen as a special case of module-SVP in modules of rank $2$. Below, we define a notion of NTRU module, which will play a similar role as the image module-lattice $\Lambda(\vec A)$ for module-LWE. Note that NTRU modules are defined for any $h \in R$, even for those that are not NTRU instances.
 
 \begin{definition}[NTRU module lattices]
 \label{def:NTRU-module}
@@ -603,20 +610,20 @@ h & q
 We will write $M_h$ this module.
 \end{definition}
 
-We will now prove that the search NTRU problem can be reduced to module-$SVP$ in the module $M_h$ associated to the NTRU instance $h$.
+We will now prove that the search NTRU problem can be reduced to module-SVP in the module $M_h$ associated to the NTRU instance $h$.
 
 \begin{lemma}
 Let $q >1$ be an integer and $B >0$ be a real number. Let $h \in R_q$ be an NTRU$_{q,B}$ instance. There is a polynomial time reduction from solving NTRU$_{q,2B}$ on input $h$ to solving module-SVP on input $M_h$.
 \end{lemma}
 
-Note that even though $h$ is an NTRU$_{q,B}$, i.e., it has a trapdoor $(f,g)$ with both $\|\mink(f)\|, \|\mink(g)\| \leq B$, our reduction is only guaranteed to solve NTRU$_{q,2B}$ on $h$, that is to find $(f',g')$ such that $\|\mink(f')\|, \|\mink(g')\| \leq 2B$. If we had defined NTRU instances by giving an upper bound on the euclidean norm of the vector $\mink((f,g))$ instead of  on $\mink(f)$ and $\mink(g)$ separately, we would not have this small loss here (you can check this claim by looking at the details of the proof below).
+Note that even though $h$ is an NTRU$_{q,B}$, i.e., it has a trapdoor $(f,g)$ with both $\|\mink(f)\|$, $\|\mink(g)\| \leq B$, our reduction is only guaranteed to solve NTRU$_{q,2B}$ on $h$, that is to find $(f',g')$ such that $\|\mink(f')\|, \|\mink(g')\| \leq 2B$. If we had defined NTRU instances by giving an upper bound on the euclidean norm of the vector $\mink((f,g))$ instead of  on $\mink(f)$ and $\mink(g)$ separately, we would not have had this small loss here (you can check this claim by looking at the details of the proof below).
 
 
 \begin{proof}
 Let $(f,g) \in R^2$ be a solution to the NTRU problem on input $h$, i.e., $g \cdot h = f \bmod q$ and $\|\mink(g)\|, \|\mink(f)\| \leq B$. The vector $\vec v = (g,f)^T$ belongs to the module $M_h$. Indeed, let $r \in R$ be such that $g \cdot h = f + qr$. Then $\vec v = g \cdot (1, h)^T - r \cdot (0, q)^T$ is in the $R$-span of the columns of $\vec B_h$, i.e., it is in $M_h$.
 This vector satisfies $\|\mink(\vec v)\| \leq \|\mink(g)\| + \| \mink(f)\| \leq 2B$ and is non-zero (since $(f,g) \neq (0,0)$). Hence, it must be be that $\lambda_1(M_h) \leq 2B$.
 
-Let $\vec w := (g',f') \in M_h$ be a solution to module-SVP in $M_h$, i.e., $\vec w \neq (0,0)$ and $\|\vec w \| \leq \lambda_1(M_h)$. Since we have seen that $\lambda_1(M_h) \leq 2B$, it holds in particular that $\|\mink(f')\|, \|\mink(g')\| \leq 2B$. Moreover, since $M_h \subseteq R^2$, then we have $f', g' \in R$. To prove that $(f',g')$ is a solution to NTRU$_{q,2B}$, it hence only remain to prove that $g' H = f' \bmod q$. Recall that $M_h$ has basis $\vec B_h$, hence it must exists $x_1, x_2 \in R$ such that $\vec w = x_1 \cdot (1, h)^T + x_2 (0, q)^T = (x_1, x_1 h + x_2 q)^T$. Identifying the coefficients shows that $x_1 = g$ and $f = g \cdot h + x_2 q = g \cdot h \bmod q$ as desired. This concludes the proof.
+Let $\vec w := (g',f') \in M_h$ be a solution to module-SVP in $M_h$, i.e., $\vec w \neq (0,0)$ and $\|\mink(\vec w) \| \leq \lambda_1(M_h)$. Since we have seen that $\lambda_1(M_h) \leq 2B$, it holds in particular that $\|\mink(f')\|, \|\mink(g')\| \leq 2B$. Moreover, since $M_h \subseteq R^2$, then we have $f', g' \in R$. To prove that $(f',g')$ is a solution to NTRU$_{q,2B}$, it hence only remains to prove that $g' h = f' \bmod q$. Recall that $M_h$ has basis $\vec B_h$, hence it must exists $x_1, x_2 \in R$ such that $\vec w = x_1 \cdot (1, h)^T + x_2 (0, q)^T = (x_1, x_1 h + x_2 q)^T$. Identifying the coefficients shows that $x_1 = g'$ and $f' = g' \cdot h + x_2 q = g' \cdot h \bmod q$ as desired. This concludes the proof.
 \end{proof}
 
 
@@ -630,12 +637,12 @@ Now that we have defined many algorithmic problems, it is natural to wonder how 
 \item[$\bullet$] MLWE$_{n}$ means MLWE$_{n,m,q,\chi}$ for some $m,q,\chi$;
 \item[$\bullet$] NTRU means NTRU$_{q,B,\psi}$ for some $q, B, \psi$.
 \end{itemize}
-This implies in particular that the reductions presented on the Figure may \emph{not} compose. Indeed, some reduction may require specific choice of parameters $m$, $q$, $\chi$, etc, and the other may require other choices for the same parameters, making them incompatible. The figure is here to help you get a better idea of how the problems compare to one another, but it should not be used as a formal statement since some information is (voluntarily) missing.
+This implies in particular that the reductions presented on the figure may \emph{not} compose. Indeed, some reduction may require a specific choice of parameters $m$, $q$, $\chi$, etc, and the other may require another choice for the same parameters, making them incompatible. The figure is here to help you get a better idea of how the problems compare to one another, but it should not be used as a formal statement since some information is (voluntarily) missing.
 
-This being said, let us make two more disclaimers on the figure. First, some of the reductions shown on the figure may be \emph{quantum}. Quantum reductions are usually not a problem for us, since all the problem are supposed to be post-quantum (so a quantum attack against one of the problems would already be surprising).
+This being said, let us make two more disclaimers on the figure. First, some of the reductions shown on the figure may be \emph{quantum}. Quantum reductions are usually not an issue for us, since all the problem are supposed to be post-quantum (so a quantum attack against one of the problems would already be surprising).
 Second, the references on the figure points to the first article proving such a reduction. Better reductions might have been proven since then (with smaller loss in the parameters for instance), but this is invisible on the figure since we do not specify most of the parameters anyway. Also, the figure only reflects the state of knowledge at the time where I wrote these lecture notes (October 2023). New reductions may be proven in the future.
 
-\begin{figure}
+\begin{figure}[h!]
 \begin{center}
 \scalebox{0.85}{
 \begin{tikzpicture}[scale = 0.35]
@@ -737,19 +744,18 @@ Second, the references on the figure points to the first article proving such a 
 \end{tikzpicture}
 }
 \end{center}
-\caption{PoReductions (possibly quantum) between algebraic variants of lattice problems. Reductions with no references should be immediate.}
+\caption{Polynomial time (possibly quantum) reductions between algebraic variants of lattice problems. Reductions with no references should be immediate.}
 \label{fig:reductions}
 \end{figure}
 
-Let us comment Figure~\ref{fig:reductions} a bit. A first observation is that the situation seems somewhat different between MLWE and module-SIVP for the rank-$1$ case. Indeed, for MLWE$_1$, we have reductions \emph{from and to} MLWE$_2$, meaning that these two problems are somewhat equivalent. In the case of module-SIVP, we only have the easy reduction from $1$-module-SIVP (i.e., ideal-SIVP) to $2$-module-SIVP. We already discussed in the previous section that the absence of reduction from $2$-module-SVP to ideal-SVP may be due to a gap in the hardness between these two problems.\footnote{The SIVP case is similar to the SVP case here.} For the MLWE problem, we know that the is no such gap between rank-$1$ and rank-$2$. As explained above, this is the reasons why, in these lecture notes, we decided to use the terminology MLWE$_1$ and not RLWE (there is no reason to treat the case $n = 1$ differently from the cases $n \geq 2$).
+Let us comment Figure~\ref{fig:reductions} a bit. A first observation is that the situation seems somewhat different between MLWE and module-SIVP for the rank-$1$ case. Indeed, for MLWE$_1$, we have reductions \emph{from and to} MLWE$_2$, meaning that these two problems are somewhat equivalent. In the case of module-SIVP, we only have the easy reduction from $1$-module-SIVP (i.e., ideal-SIVP) to $2$-module-SIVP. We already discussed in the previous section that the absence of reduction from $2$-module-SVP to ideal-SVP may be due to a gap in the hardness between these two problems.\footnote{The SIVP case is similar to the SVP case here.} For the MLWE problem, we know that there is no such gap between rank-$1$ and rank-$2$. As explained above, this is the reasons why, in these lecture notes, we decided to use the terminology MLWE$_1$ and not RLWE (there is no reason to treat the case $n = 1$ differently from the cases $n \geq 2$).
 
-On a related topic, you may have heard that MLWE$_1$ (i.e., RLWE) is based on the hardness of ideal-SIVP, and that solving ideal-SIVP efficiently would have an impact on the security of MLWE$_1$. This is not really correct. As you can see on the figure, we only have a reduction from ideal-SIVP to MLWE$_1$, so an algorithm solving ideal-SIVP cannot be transformed into an algorithm solving MLWE$_1$ (at least not with our current knowledge). The figure also shows that one can reduce $2$-module-SIVP to the MLWE$_1$ problem (for some range of parameters), so, if you prefer, you could say that the hardness of MLWE$_1$ is based on the hardness of $2$-module-SIVP (which seems safer than ideal-SIVP).
+On a related topic, you may have heard that MLWE$_1$ (i.e., RLWE) is based on the hardness of ideal-SIVP, and that solving ideal-SIVP efficiently would have an impact on the security of MLWE$_1$. This is not really correct. As you can see on the figure, we indeed have a reduction from ideal-SIVP to MLWE$_1$, but we do not have a reverse reduction from MLWE$_1$ to ideal-SIVP. So an algorithm solving ideal-SIVP cannot be transformed into an algorithm solving MLWE$_1$ (at least not with our current knowledge). The figure also shows that one can reduce $2$-module-SIVP to the MLWE$_1$ problem (for some range of parameters), so, if you prefer, you could say that the hardness of MLWE$_1$ is based on the hardness of $2$-module-SIVP (which seems safer than ideal-SIVP).
 
-The figure shows that MLWE$_k$ (resp $k$-module-SIVP) is somewhat equivalent to MLWE${k+1}$ (resp $(k+1)$-module-SIVP) for all $k \geq 1$ (resp. $k \geq 2$). These reductions can be combined, but they induce some loss on the parameters each time. Hence, combining many of these reductions would lead to a reduction with a significant loss. For example, there is a polynomial time reduction from $k$-module-SIVP$_\gamma'$ to $2$-module-SIVP$_\gamma$ for large $k$'s, but the parameter $\gamma'$ is of the order of $\gamma^{2k}$: the loss is exponential in $k$.
+The figure shows that MLWE$_k$ (resp $k$-module-SIVP) is somewhat equivalent to MLWE$_{k+1}$ (resp $(k+1)$-module-SIVP) for all $k \geq 1$ (resp. $k \geq 2$). These reductions can be combined, but they induce some loss on the parameters each time. Hence, combining many of these reductions would lead to a reduction with a significant loss. For example, there is a polynomial time reduction from $k$-module-SIVP$_{\gamma'}$ to $2$-module-SIVP$_\gamma$ for any $k$, but the parameter $\gamma'$ is of the order of $\gamma^{2k}$: the loss is exponential in $k$.
 
-As a last observation, you may have notices that we know less for the NTRU problem than for the MLWE problem. In particular, an important open question is whether the search and decision versions of the NTRU problem are equivalent or not.\footnote{Some preliminary results have been proven in this direction in~\cite{PS21}: the authors showed equivalence between dec-NTRU and a variant of the search NTRU problem. But the equivalence between this variant of search NTRU and the search NTRU defined in Definition~\ref{def:NTRU} above is still open.}
+As a last observation, you may have noticed that we know less for the NTRU problem than for the MLWE problem. In particular, an important open question is whether the search and decision versions of the NTRU problem are equivalent or not.\footnote{Some preliminary results have been proven in this direction in~\cite{PS21}: the authors showed equivalence between dec-NTRU and a variant of the search NTRU problem. But the equivalence between this variant of search NTRU and the search NTRU defined in Definition~\ref{def:NTRU} is still open.}
 
-%explain Martin and Amit's reduction (if it can be done easily)
 \paragraph{Albrecht-Deo's reduction.} In these lecture notes, we will not cover the details of all the reductions mentioned in Figure~\ref{fig:reductions}, we refer the reader to the cited articles for more details. We will only detail the reduction by Albrecht and Deo~\cite{AD17}, which shows that MLWE$_{1}$ is no easier than MLWE$_{k}$, for appropriately chosen parameters.
 
 %In order to simplify the statement and the proof, we will consider a variant of the MLWE problem where the error is worst-case, below some bound $B$. In other words, the error $\vec e$ is not sampled anymore from some small distribution $\chi^m$, but is arbitrarily chosen among vectors $\vec e \in R^m$ with $\|\mink(e_i)\| \leq B$ for all their coordinates $e_i$. We write this variant wc-error-MLWE$_{n,m,q,B}$.
@@ -757,33 +763,35 @@ As a last observation, you may have notices that we know less for the NTRU probl
 %In order to state the result, we need to introduce the Hermite Normal Form variant of the module-LWE problem. In this variant, the secret $\vec s$ is sampled from the same distribution $\chi$ as the error, instead of being chosen uniformly at random in $R_q^n$. More precisely, the Hermite Normal Form search module-LWE problem HNF-MLWE$_{n,m,q,\chi}$ asks, given as input a sample from the module-LWE distribution $A^{\vec s}_{n,m,q,\chi}$ for some $\vec s \leftarrow \chi^n$, to recover the secret vector $\vec s$.
 %Recall that one should think of $\chi$ as outputting small elements, so in this version, the secret vector $\vec s$ is also small. This form is usually convenient for proofs, as the one of Albrecht and Deo. Moreover, it was proved by Roux-Langlois and Stehlé~\cite[Le. 4.24]{LS15} that this variant of MLWE is equivalent to the standard MLWE problem, for a well-chosen distribution $\chi$.
 
-In order to simplify the statement, we will introduce $B$-bounded distributions. A distribution $\chi$ over $R$ is said to be $B$-bounded if, for all $x$ in the support of $\chi$, we have $\|\mink(x)\| \leq B$. We are now ready to state a simplified version of Albrecht and Deo's main result from~\cite{AD17}.
+In order to simplify the statement, we will introduce $B$-bounded distributions. A distribution $\chi$ over $R$ is said to be $B$-bounded if, for all $x$ in the support of $\chi$, we have $\|\mink(x)\| \leq B$. We will also state the result only for power-of-two cyclotomic fields, since this makes the bound $B'$ cleaner.
+Overall, we will prove the following simplified version of Albrecht and Deo's main result from~\cite{AD17}.
 
 \begin{lemma}
 \label{lemma:Albrecht-Deo}
-Let $\alpha_1, \dots, \alpha_d \in R$ be a known basis of $R$.
-Let $q \geq 2$, $m \geq n \geq 2$ and $\chi$ be a $B$-bounded distribution for some $B > 0$. There is a polynomial 
+%Let $\alpha_1, \dots, \alpha_d \in R$ be a known basis of $R$.
+Let $K$ be a power-of-two cyclotomic field.
+Let $q \geq 2$, $m \geq n \geq 2$ and $\chi$ be a $B$-bounded distribution for some $B > 0$. There is a polynomial time 
 algorithm $\mathcal{A}$ that takes as input $(\vec A, \vec b) \leftarrow A^{\vec s}_{n,m,q,\chi}$ for some $\vec s \leftarrow \chi^n$ and outputs $(\vec{\tilde{a}}, \vec{\tilde{b}}) \in R_{q'}^m \times R_{q'}^m$ where $q' = q^n$ and $\vec{\tilde{b}} = \vec{\tilde{a}} \cdot \tilde{s} + \vec{\tilde{e}} \bmod q'$ for some $\vec{\tilde{e}} \in R^m$ with 
-\[\|\mink(\tilde{e}_i) \| \leq B' := 3nd \cdot \max_i \|\mink(\alpha_i)\| \cdot q^{n-1} \cdot B\] 
-for all coordinates $\tilde{e}_i$ of $\vec{\tilde{e}}$, and where $\tilde{s} = \sum_{i=1}^n s_i q^{i-1} \in R_{q'}$. Moreover, the vector $\vec{\tilde{a}} \in R_q'^m$ is uniformly distributed.
+\[\|\mink(\tilde{e}_i) \| \leq B' := 3nd^{3/2} \cdot q^{n-1} \cdot B\] 
+for all coordinates $\tilde{e}_i$ of $\vec{\tilde{e}}$, and where $\tilde{s} = \sum_{i=1}^n s_i q^{i-1} \in R_{q'}$. Moreover, the vector $\vec{\tilde{a}} \in R_{q'}^m$ is uniformly distributed.
 %time reduction from HNF-MLWE$_{n,m,q,\chi}$ to MLWE$_{1,m,q', \chi'}$, where $q' = q^n$ and $\chi'$ is a $B'$-bounded distribution \emph{depending on the MLWE} for $B' = 2dq^{n-1} \cdot B$.
 \end{lemma}
-At a high level, the reduction from the lemma transforms a sample from MLWE with secret dimension $n$, modulus $q$ and error bounded by $B$, into a sample from MLWE with secret dimension $1$, modulus $q' = q^n$ and error bounded by $B' = 3nd\cdot \max_i \|\mink(\alpha_i)\| \cdot q^{n-1} \cdot B$. Recall that the interesting parameter regarding the noise size is the noise ratio $\alpha = B/q$. After the reduction, this noise ratio becomes $\alpha' = B'/q' = 3nd \cdot \max_i \|\mink(\alpha_i)\| \cdot  \alpha$. Hence, the noise ratio is increased only slightly by the reduction (by a quantity depending on the number field $K$).\footnote{Note that for cyclotomic fields, we know a basis of $R$ such that $\max_i \|\mink(\alpha_i)\| = \sqrt{d}$.}
+At a high level, the reduction from the lemma transforms a sample from MLWE with secret dimension $n$, modulus $q$ and error bounded by $B$, into a sample from MLWE with secret dimension $1$, modulus $q' = q^n$ and error bounded by $B' = 3nd^{3/2} \cdot q^{n-1} \cdot B$. Recall that the interesting parameter regarding the noise size is the noise ratio $\alpha = B/q$. After the reduction, this noise ratio becomes $\alpha' = B'/q' = 3nd^{3/2} \cdot  \alpha$. Hence, the noise ratio is increased only slightly by the reduction. %\footnote{Note that for cyclotomic fields, we know a basis of $R$ such that $\max_i \|\mink(\alpha_i)\| = \sqrt{d}$.}
 Note also that, from the new secret $\tilde{s}$, one can efficiently recover the original secret $\vec s \in R_{q}^n$ be decomposing $\tilde{s}$ in base $q$. So a solution to the new MLWE$_1$ instance can be transformed back into a solution to the original MLWE$_n$ instance.
 
-Let's emphasize that the statement from Lemma~\ref{lemma:Albrecht-Deo} does not immediately provide a reduction from MLWE$_{n,m,q,\chi}$ to MLWE$_{1,m,q',\chi'}$ for some $B'$-bounded distribution $\chi'$. The first obstacle is that the noise term $\tilde{e}$ obtained after the reduction depends on the MLWE instance $(\vec A, \vec b)$ (and in particular on the secret $\vec s$). To transform the tuple $(\tilde{a}, \tilde{b})$ into an MLWE$_{1,m,q',\chi'}$ sample, one would need to make the noise term independent from the input of the reduction. This can be done using a technique called noise sampling, which essentially consists in adding a large fresh noise term to the sample, to hide the old noise term. This works well but requires to take $q$ quite large, since the noise flooding technique will increase $\tilde{e}$ quite a lot.
+Let's emphasize that the statement from Lemma~\ref{lemma:Albrecht-Deo} does not immediately provide a reduction from MLWE$_{n,m,q,\chi}$ to MLWE$_{1,m,q',\chi'}$ for some $B'$-bounded distribution $\chi'$. The first obstacle is that the noise term $\vec{\tilde{e}}$ obtained after the reduction depends on the MLWE instance $(\vec A, \vec b)$ (and in particular on the secret $\vec s$). To transform the pair $(\vec{\tilde{a}},\vec{ \tilde{b}})$ into an MLWE$_{1,m,q',\chi'}$ sample, one would need to make the noise term independent from the input of the reduction. This can be done using a technique called noise flooding, which essentially consists in adding a large fresh noise term to the sample, to hide the old noise term. This works well but requires to take $q$ quite large, since the noise flooding technique will increase $\vec{\tilde{e}}$ quite a lot.
 
-Another limitation of our lemma is that we assumed that the secret $\vec s$ was sampled from the same distribution $\chi$ as the noise term $\vec e$, whereas in our definition of MLWE the secret $\vec s$ should be uniformly chosen in $(R_q)^n$. The variant of MLWE with small noise is known as the Hermite normal form variant of MLWE, and Roux-Langlois and Stehlé proved that this variant is equivalent to the standard MLWE problem for a well chosen distribution $\chi$~\cite[Le. 4.24]{MLWE2}.
+Another limitation of our lemma is that we assumed that the secret $\vec s$ was sampled from the same distribution $\chi$ as the noise term $\vec e$, whereas in our definition of MLWE the secret $\vec s$ should be uniformly chosen in $(R_q)^n$. This variant of MLWE with small noise is known as the Hermite normal form variant of MLWE, and Roux-Langlois and Stehlé proved that it is equivalent to the standard MLWE problem for a well chosen distribution $\chi$~\cite[Le. 4.24]{MLWE2}.
 
 Let us now prove the lemma. \textbf{Do not read the following proof before the tutorial session, since we will do the proof as an exercise.}
 
 \begin{proof}
 Let $(\vec A, \vec b)$ be as in the lemma's statement. Then $\vec b = \vec A \cdot \vec s + \vec e \bmod q$ for some $\vec e \leftarrow \chi^m$. Since we assumed that $\chi$ is $B$-bounded, we know that $\|\mink(e_i)\| \leq B$ for all coordinate $e_i$ of $\vec e$. Similarly, since $\vec s \leftarrow \chi^n$, then $\|\mink(s_i)\| \leq B$ for all coordinate $s_i$ of $\vec s$.
 
-For every coordinate $a_{i,j} \in R_q$ of $\vec A$, let us compute a representative $\overline{a}_{i,j} \in R$ such that $\|\mink(a_{i,j}) \| \leq q \cdot d \cdot \max_i \|\alpha_i\|$. To do so, we first compute any representative $x \in R$. Then, we write $x = \sum_i x_i \alpha_i$, with $x_i \in \ZZ$, which is possible since the $alpha_i$'s form a basis of $R$. Finally, we reduce the $x_i$'s module $q$: $\overline{a}_{i,j} = \sum_i y_i \alpha_i$n where $y_i$ is the integer in $[0,q)$ equal to $x_i$ modulo $q$. Note that $\overline{a}_{i,j}$ differs from $x$ by multiples of $q$, so it is another representative of $a_{i,j} \in R_q$. Moreover, $\|\mink(a_{i,j})\| \leq \sum_i |y_i| \cdot \|\mink(\alpha_i)\| \leq q \cdot d \cdot \max_i \|\mink(\alpha_i)\|$ as desired.
+For every coordinate $a_{i,j} \in R_q$ of $\vec A$, let us compute a representative $\overline{a}_{i,j} \in R$ such that $\|\mink(\overline{a}_{i,j}) \| \leq q \cdot d^{3/2}$. To do so, we first compute any representative $\hat{a}_{i,j} \in R$. Then, we write $\hat{a}_{i,j} = \sum_i z_i X^i$, with $z_i \in \ZZ$, which is possible since the $X^i$ form a basis of $R$. Finally, we reduce the $z_i$'s module $q$: $\overline{a}_{i,j} = \sum_i y_i X^i$ where $y_i$ is the integer in $[0,q)$ equal to $z_i$ modulo $q$. Note that $\overline{a}_{i,j}$ differs from $\hat{a}_{i,j}$ by multiples of $q$, so it is another representative of $a_{i,j} \in R_q$. Moreover, $\|\mink(a_{i,j})\| \leq \sum_i |y_i| \cdot \|\mink(X^i)\| \leq q \cdot d \cdot \sqrt{d}$ as desired.
 
-Let us now compute $\vec{\tilde{a}} = (\tilde{a_1}, \dots, \tilde{a_m})$ where $\tilde{a_i} = \sum_{j = 1}^n \overline{a}_{i,j} q^{n-j}$. 
-We also define $\tilde{b} = q^{n-1} \cdot \vec b \in R^m$.
+Let us now compute $\vec{\tilde{a}} = (\tilde{a_1}, \dots, \tilde{a_m})^T$ where $\tilde{a_i} = \sum_{j = 1}^n \overline{a}_{i,j} q^{n-j}$. 
+We also define $\vec{\tilde{b}} = q^{n-1} \cdot \vec b \in R^m$.
 Recall from the lemma that $\tilde{s}$ is defined as $\tilde{s} = \sum_{j=1}^n s_j q^{j-1}$.
 
 Let us fix some $i \in \{1,\dots,m\}$. We want to prove that $\tilde{b_i} = \tilde{a_i} \cdot \tilde{s} + \tilde{e_i}\bmod q'$ for some small $\tilde{e_i}$. Let us explicit the computation
@@ -799,10 +807,10 @@ By definition, this noise term satisfies $\tilde{b_i} = \tilde{a_i} \cdot \tilde
 \begin{align*}
 \|\mink(\tilde{e_i})\| & \leq q^{n-1} \cdot \|\mink(e_i)\| + \sum_{k = 0}^{n-2} q^k \cdot \sum_{j = 1}^{k+1} \|\mink(s_j \overline{a}_{i,n-k-1+j})\| \\
 &\leq q^{n-1} \cdot B + \sum_{k = 0}^{n-2} q^k \cdot \sum_{j = 1}^{k+1} \|\mink(s_j)\| \cdot \|\mink(\overline{a}_{i,n-k-1+j})\| \\
-&\leq q^{n-1} \cdot B + \sum_{k = 0}^{n-2} q^k \cdot \sum_{j = 1}^{k+1} B \cdot q \cdot d \cdot \max_i \|\mink(\alpha_i)\| \\
-&\leq q^{n-1} \cdot B + \sum_{k = 0}^{n-2} q^{k+1} \cdot n \cdot B \cdot d \cdot \max_i \|\mink(\alpha_i)\| \\
-&\leq q^{n-1} \cdot B + nd \cdot B \cdot \max_i \|\mink(\alpha_i)\| \cdot \frac{q^{n}-1}{q-1} \\
-&\leq q^{n-1} \cdot B + nd \cdot B \cdot \max_i \|\mink(\alpha_i)\| \cdot 2q^{n-1},
+&\leq q^{n-1} \cdot B + \sum_{k = 0}^{n-2} q^k \cdot \sum_{j = 1}^{k+1} B \cdot q \cdot d^{3/2} \\
+&\leq q^{n-1} \cdot B + \sum_{k = 0}^{n-2} q^{k+1} \cdot n \cdot B \cdot d^{3/2} \\
+&\leq q^{n-1} \cdot B + nd^{3/2} \cdot B \cdot \frac{q^{n}-1}{q-1} \\
+&\leq q^{n-1} \cdot B + nd^{3/2} \cdot B \cdot 2q^{n-1},
 \end{align*}
 where in the last inequality we used the fact that $q \geq 2$ so that $(q-1)^{-1} \leq 2/q$. This provides the desired upper bound on the size of the coordinates of $\vec{\tilde{e}}$.
 \end{proof}
@@ -810,8 +818,8 @@ where in the last inequality we used the fact that $q \geq 2$ so that $(q-1)^{-1
 
 
 
-\subsection{Cryptographic constructions}
-\label{sec:constructions}
+%\subsection{Cryptographic constructions}
+%\label{sec:constructions}
 
 \subsection{Cryptanalysis}
 \label{sec:cryptanalysis}
