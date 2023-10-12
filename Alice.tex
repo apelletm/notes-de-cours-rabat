@@ -21,14 +21,14 @@ b_n & b_1 & \dots & b_{n-1} \\
 b_{2} & b_3 & \dots & b_1
 \end{pmatrix}.
 \end{align*}
-Then, storing this basis of you lattice only requires storing $n$ coefficients, instead of $n^2$ for an unstructured matrix. Also, multiplying this matrix with a vector can be done in quasi-linear time $O(n \cdot \poly( \log n) )$, instead of quadratic time $O(n^2)$.
-Let's remark here that a structured lattice only need to have a few structured bases. Not all bases need to have this special structure (and in general, not all bases will have this visible structure indeed). But as long as we can compute a nicely structured basis, then we can enjoy the benefits of the structure on the storage space, and the running time of basic operations (like matrix-vector multiplication).
+Then, storing this basis of your lattice only requires storing $n$ coefficients, instead of $n^2$ for an unstructured matrix. Also, multiplying this matrix with a vector can be done in quasi-linear time $O(n \cdot \poly( \log n) )$, instead of quadratic time $O(n^2)$.
+Let's remark here that a structured lattice only need to have a few structured bases. Not all bases need to have this special structure (and in general, most of the bases will not have this visible structure). But as long as we can compute a nicely structured basis, then we can enjoy the benefits of the structure on the storage space, and the running time of basic operations (like matrix-vector multiplication).
 
 On the negative side, adding structure to the lattices may render the algorithmic problems based on these lattices easier to solve. From a cryptographic perspective, this would mean making the cryptographic constructions based on these problems weaker against attackers. It is then important to choose wisely the structure one adds to the lattices, and to study the impact of this structure on potential attacks.
-There have been examples of poorly chosen structure, leading to attacks on the structured schemes \cite{BLA}.
+There have been examples of poorly chosen structure, leading to attacks on the structured schemes  (e.g., \cite{Gentry01, BCV20}).
 %aller voir la thèse de Carl : https://www.esat.kuleuven.be/cosic/publications/thesis-399.pdf
 % (une attaque de Gentry sur NTRU avec les sous corps de X^n-1, et ses propres articles sur le sujet)
-On the other hand, we also have examples of good choice of structure,\footnote{Understand here that they are good \emph{so far}. They might become ``poorly chosen'' in a few months/years if someone manages to exploit the structure to find better attacks.} for which the best known attack is the same as the best known attack against unstructured lattices (i.e., for the moment, the only way we know to solve some algorithmic problems in these lattice is to forget about the structure, and use standard attacks against unstructured lattice problems).
+On the other hand, we also have examples of good choice of structure,\footnote{Understand here that they are good \emph{so far}. They might become ``poorly chosen'' in a few months/years if someone manages to exploit the structure to find better attacks.} for which the best known attack is the same as the best known attack against unstructured lattices (i.e., for the moment, the only way we know to solve some algorithmic problems in these lattices is to forget about the structure, and use standard attacks against unstructured lattice problems).
 
 The structure we will consider in this section is a special case of what is called \emph{modules over the ring of integers of a number field}. In order to make this name shorter, we will simply call these \emph{module lattices} in the rest of these lecture notes, as is commonly done in the cryptographic community. We will see in details what those objects are in Section~\ref{sec:number-theory} below. Module lattices are, by far, the most widely used structured lattices in lattice-based cryptography at the moment. If chosen appropriately, they may fall in the category of ``good structured lattices'' defined above, in the sens that, at the moment, we don't know how to solve standard algorithmic problems in these lattices (such at SVP) more efficiently than in non structured lattices.
 Before moving to the formal definition of module lattices, let us mention the existence of other kinds of structured lattices (which won't be covered here), such as ideals over a maximal order of a cyclic algebra~\cite{CLWE}.
@@ -36,12 +36,12 @@ Before moving to the formal definition of module lattices, let us mention the ex
 
 \subsection{Background on Number Theory}
 \label{sec:number-theory}
-In this section, we review some definitions and results of number theory that will be useful for the rest of the course. The last subsections are a little bit more advanced, and will be used only for the cryptanalysis part (Section~\ref{sec:cryptanalysis}). In this section, we will state most of the results without their proofs. Most of the proofs for the results about number theory can be found in Marcus' book~\cite{Marcus}. For the algorithmic results, or the results about modules, most of them are in Cohen's books~\cite{Cohen1, Cohen2}.
+In this section, we review some definitions and results of number theory that will be useful for the rest of the course. We will state most of the results without their proofs. Most of the proofs for the results about number theory can be found in Marcus' book~\cite{Marcus}. For the algorithmic results, or the results about modules, most of them are in Cohen's books~\cite{Cohen1, Cohen2}.
 \subsubsection{Number fields}
 
-A number field $K$ is a field, containing $\QQ$, and which has \emph{finite dimension} when seen as a vector space over $\QQ$.\footnote{Any field containing $\QQ$ can be seen as a vector space over $\QQ$, but not all of them have finite dimension as a $\QQ$-vector space. For instance, $\RR$ and $\CC$ are $\QQ$-vector spaces of infinite dimension.} The dimension of $K$ over $\QQ$ is called the \emph{degree} of the number field $K$, and denoted by $[K:\QQ]$. In these lecture notes, by convention, we will use the letter $d$ to denote the degree of a number field (when there is no conflict of notation).
+A number field $K$ is a field, containing $\QQ$, and which has \emph{finite dimension} when seen as a vector space over $\QQ$.\footnote{Any field containing $\QQ$ can be seen as a vector space over $\QQ$, but not all of them have finite dimension as a $\QQ$-vector space. For instance, $\RR$ and $\CC$ are $\QQ$-vector spaces of infinite dimension.} The dimension of $K$ over $\QQ$ is called the \emph{degree} of the number field $K$, and denoted by $[K:\QQ]$. In these lecture notes, by convention, we will use the letter $d$ to denote the degree of a number field.
 
-There are multiple ways to represent number fields. The most frequent ones are seeing them as subsets of $\CC$, or as polynomial rings. In these lecture notes, we will adopt the polynomial ring representation, which will be more convenient.
+There are multiple ways to represent number fields. The most frequent ones are seeing them as subsets of $\CC$, or as polynomial rings. For the moment, let's adopt the polynomial ring representation, which will be more convenient.
 
 \begin{lemma}
 \label{le:nb-field-eq-def}
@@ -84,24 +84,24 @@ Any $x \in K$ can be written as $x = \frac{z}{n}$ with $z \in \O_K$ and $n \in \
 Take an integral basis $(\alpha_1, \dots, \alpha_d)$ of $K$ and let $x_i \in \QQ$ be such that $x = \sum_i x_i \alpha_i$. Then taking $n$ to be the least common multiple of all the denominators of the $x_i$'s gives the desired result.
 \end{proof}
 
-\paragraph{Complex embeddings.} There exists always $d$ fields homomorphisms from $K$ to $\CC$,\footnote{We impose here that the field homomorphism sends $1$ to $1$, which avoids the trivial function sending every element of $K$ to $0$.} called the \emph{complex embeddings} of $K$. Note that field homomorphisms are always injective, and that they fix $\QQ$ point-wise. Let us write $\sigma_1, \dots, \sigma_d$ these complex embeddings. Some of them may have their image lying fully in $\RR \subset \CC$. We call those real embeddings, and we will write $d_\RR$ their number. If $\sigma$ is a complex embedding whose image is not fully contained in $\RR$, then $\overline{\sigma}$ (defined by $\overline{\sigma}(x) = \overline{\sigma(x)}$) is also a complex embedding. We say that $\sigma$ and $\overline{\sigma}$ are conjugate. Let $d_{\CC}$ be the number of such pairs of conjugate complex embeddings. Then we have $d = d_\RR + 2 d_\CC$. In the rest of this course, we order the complex embeddings such that $\sigma_1, \dots, \sigma_{d_\RR}$ are real embeddings, and $(\sigma_i, \sigma_{i+d_\CC})$ are pairs of conjugate embeddings for $d_\RR < i \leq d_\RR+d_\CC$.
+\paragraph{Complex embeddings.} There exists always $d$ field homomorphisms from $K$ to $\CC$,\footnote{We impose here that the field homomorphism sends $1$ to $1$, which avoids the trivial function sending every element of $K$ to $0$.} called the \emph{complex embeddings} of $K$. Note that field homomorphisms are always injective, and that they fix $\QQ$ point-wise. Let us write $\sigma_1, \dots, \sigma_d$ these complex embeddings. Some of them may have their image lying fully in $\RR \subset \CC$. We call those real embeddings, and we will write $d_\RR$ their number. If $\sigma$ is a complex embedding whose image is not fully contained in $\RR$, then $\overline{\sigma}$ (defined by $\overline{\sigma}(x) = \overline{\sigma(x)}$) is also a complex embedding. We say that $\sigma$ and $\overline{\sigma}$ are conjugate. Let $d_{\CC}$ be the number of such pairs of conjugate complex embeddings. Then we have $d = d_\RR + 2 d_\CC$. In the rest of this course, we order the complex embeddings such that $\sigma_1, \dots, \sigma_{d_\RR}$ are real embeddings, and $(\sigma_i, \sigma_{i+d_\CC})$ are pairs of conjugate embeddings for $d_\RR < i \leq d_\RR+d_\CC$.
 
 \begin{lemma}
-Let $K = \QQ[X]/P(X)$ with $P$ irreducible, and let $\alpha_1, \dots, \alpha_d$ be the $d$ roots of $P$ in~$\CC$. Then, the complex embeddings of $K$ are exactly the functions
+Let $K = \QQ[X]/P(X)$ with $P$ irreducible, and let $\mu_1, \dots, \mu_d$ be the $d$ roots of $P$ in~$\CC$. Then, the complex embeddings of $K$ are exactly the functions
 \begin{align*}
 \sigma_i: \ \ \ K & \rightarrow \CC \\
-                f(X) & \mapsto f(\alpha_i)
+                f(X) & \mapsto f(\mu_i)
 \end{align*}
 for $i \in \{1, \dots, d\}$.\footnote{Here, $f$ is a polynomial in $\QQ[X]$ of degree $< d$. We use the fact that $P(\alpha_i) = 0$, which implies that reduction modulo $P$ does not change the output of the function, and so the function is well defined over $\QQ[X]/P(X)$.}
 \end{lemma}
 
 \begin{proof}
-First of all, one can check that the functions $\sigma_i$ defined in the lemma are indeed field homomorphisms, with image in $\CC$, as desired. Moreover, since $P$ is irreducible, then all the roots $\alpha_i$ are distinct, and so the functions $\sigma_i$ are distinct too (since they have distinct evaluations at~$X$).
+First of all, one can check that the functions $\sigma_i$ defined in the lemma are indeed field homomorphisms, with image in $\CC$, as desired. Moreover, since $P$ is irreducible, then all the roots $\mu_i$ are distinct, and so the functions $\sigma_i$ are distinct too (since they have distinct evaluations at~$X$).
 
 If we admit that there are only $d$ complex embeddings for $K$, then we are done. However, since the proof is instructive, we will also prove that any complex embedding of $K$ is one of the~$\sigma_i$. This will also prove that there are exactly $d$ complex embeddings (which we have admitted above).
 
 Let $\sigma$ be a complex embedding. Since it is a field homomorphism and since it fixes $\QQ$, then the knowledge of $\sigma(X)$ uniquely determines $\sigma$. Indeed, if $\beta = \sigma(X) \in \CC$, then for any $f(X) = \sum_i f_i X^i \in K$ (with $f_i \in \QQ$), we have $\sigma(\sum_i f_i X^i) = \sum_i f_i \beta^i = f(\beta)$.
-Moreover, since $P(X) = 0$, then we should have $P(\beta) = P(\sigma(X)) = \sigma(P(X)) = \sigma(0) = 0$. So $\beta$ is a complex root of $P$, i.e., it is one of the $\alpha_i$'s. This proves that $\sigma$ is equal to one of the $\sigma_i$'s.
+Moreover, since $P(X) = 0$, then we should have $P(\beta) = P(\sigma(X)) = \sigma(P(X)) = \sigma(0) = 0$. So $\beta$ is a complex root of $P$, i.e., it is one of the $\mu_i$'s. This proves that $\sigma$ is equal to one of the $\sigma_i$'s.
 \end{proof}
 
 \begin{example}
@@ -133,7 +133,7 @@ The trace is additive and the algebraic norm is multiplicative. I.e., for any $x
 \end{align*}
 \end{lemma}
 
-\subsubsection{Ideals} For any commutative ring $R$, an \emph{ideal} $I$ of $R$ is a subset of which is an additive group, and is stable by multiplication by an element of $R$, i.e., for all $x \in I$ and $\alpha \in R$, it holds that $\alpha x \in I$. In our context with number fields $K$ and ring of integers $\O_K$, we will consider ideals of $\O_K$, as well as a generalization of those.
+\subsubsection{Ideals} For any commutative ring $R$, an \emph{ideal} $I$ of $R$ is a subset of $R$ which is an additive group, and is stable by multiplication by an element of $R$, i.e., for all $x \in I$ and $\alpha \in R$, it holds that $\alpha x \in I$. In our context with number fields $K$ and ring of integers $\O_K$, we will consider ideals of $\O_K$, as well as a generalization of those.
 
 \begin{definition}
 Let $K$ be a number field and $\O_K$ its ring of integers.
@@ -143,7 +143,7 @@ Let $K$ be a number field and $\O_K$ its ring of integers.
 \end{itemize}
 \end{definition}
 
-Note that $K$ is a ring, and so one can define the ideals of $K$ when seen as a ring. However, since $K$ is also a field, it only has two ideals: $K$ and $\{0\}$. Those are not very interesting, and we will never consider ideals of $K$ in these lecture notes. Instead, we will sometimes use the terminology ``ideal of $K$'' to refer to fractional ideals of $K$ (and we will always specify ``\emph{integral} ideal if $K$'' when they are integral).
+Note that $K$ is a ring, and so one can define the ideals of $K$ when seen as a ring. However, since $K$ is also a field, it only has two ideals: $K$ and $\{0\}$. Those are not very interesting, and we will never consider ideals of $K$ in these lecture notes. Instead, we will sometimes use the terminology ``ideal of $K$'' to refer to fractional ideals of $K$ (and we will always specify ``\emph{integral} ideal of $K$'' when they are integral).
 
 \begin{example}
 For $K = \QQ$ and $\O_K = \ZZ$, the set $\mathfrak{a} = \{3x\,|\, x \in \ZZ\}$ is an integral ideal of $K$. And the set $I = \{5x/7 \,|\, x \in \ZZ\}$ is a fractional ideal of $K$.
@@ -163,7 +163,7 @@ In general, the ring $\O_K$ may not be principal, meaning that there exists idea
 Any fractional ideal $I$ can be generated by at most $2$ elements of $K$, i.e., there exists $\alpha, \beta \in K$ such that $I = \{ \alpha \cdot x + \beta \cdot y \,|\, x, y \in \O_K\}$.
 \end{lemma}
 
-\paragraph{Arithmetic over ideals.} In a number field $K$, we will want to do arithmetic over the fractional ideals. We will see below that, while the ring $\O_K$ might not have the same nice arithmetic properties as the ring $\ZZ$ (for instance, we usually do not have euclidean division in $\O_K$, and sometimes not even unique factorization), everything works better if we consider ideals of $\O_K$, rather than elements of $\O_K$.
+\paragraph{Arithmetic over ideals.} In a number field $K$, we will want to do arithmetic over the fractional ideals. We will see below that, while the ring $\O_K$ might not have the same nice arithmetic properties as the ring $\ZZ$ (for instance, we usually do not have a Euclidean division in $\O_K$, and sometimes not even unique factorization), everything works better if we consider ideals of $\O_K$, rather than elements of $\O_K$.
 
 \begin{definition}
 Let $I$ and $J$ be two fractional ideals. We define the addition and multiplication of $I$ and $J$ as
@@ -174,11 +174,11 @@ I \cdot J &= \{ \sum_{i = 1}^r x_i \cdot y_i \,|\, r > 0, x_i \in I, y_i \in J\}
 \end{definition}
 
 \begin{example}
-When $K = \QQ$ and $\O_K = \ZZ$, we have $6\ZZ + 8 \ZZ = 2\ZZ$, and $2 \ZZ \cdot 3 \ZZ = 6 \ZZ$.
-
-When the ideals are integral, the addition of two ideals corresponds to their gcd, i.e., if $x, y \in \ZZ$, then $x \ZZ + y \ZZ = \gcd(x,y) \ZZ$. More generally, in an arbitrary number field $K$, the sum of two integral ideals $\mathfrak{a}$ and $\mathfrak{b}$ is the smallest (for inclusion) integral ideal containing both $\mathfrak{a}$ and $\mathfrak{b}$.
-
-In any number field $K$, if $I = \alpha \O_K$ and $J = \beta \O_K$ are principal, then we always have $I\cdot J = (\alpha \cdot \beta)\O_K$.
+\begin{itemize}
+\item When $K = \QQ$ and $\O_K = \ZZ$, we have $6\ZZ + 8 \ZZ = 2\ZZ$, and $2 \ZZ \cdot 3 \ZZ = 6 \ZZ$.
+\item When the ideals are integral, the addition of two ideals corresponds to their gcd, i.e., if $x, y \in \ZZ$, then $x \ZZ + y \ZZ = \gcd(x,y) \ZZ$. More generally, in an arbitrary number field $K$, the sum of two integral ideals $\mathfrak{a}$ and $\mathfrak{b}$ is the smallest (for inclusion) integral ideal containing both $\mathfrak{a}$ and $\mathfrak{b}$.
+\item In any number field $K$, if $I = \alpha \O_K$ and $J = \beta \O_K$ are principal, then we always have $I\cdot J = (\alpha \cdot \beta)\O_K$.
+\end{itemize}
 \end{example}
 
 \begin{lemma}
@@ -195,7 +195,7 @@ We will also assume in these lecture notes that a prime ideal is non-zero.\footn
 \begin{example}
 Over $\ZZ$, the prime ideals are exactly the ideals $p \cdot \ZZ$, where $p$ is a prime integer.
 
-In $K = \QQ[X]/(X^2+1)$ and $\O_K = \ZZ[X]/(X^2+1)$, the principal ideal $\mathfrak{a} := (1+X) \cdot \O_K$ is prime. To see this, one can first check that an element $a + bX \in \O_K$ is divisible by $1+X$ if and only if $a = b \bmod 2$. Hence, $\mathfrak{a} = \{a + bX \,|\, a, b \in \ZZ, a = b \bmod 2\}$. Let $x = a+bX$ and $y = c+dX$ be in $\O_K$ and such that $x \cdot y \in \mathfrak{a}$. We have $x \cdot y = (ac-bd) + (ad+bc)X$, and so by the property above, we know that $ac-bd = ad+bc \bmod 2$. One can check that this equation implies that either $a = b \bmod 2$ or $c = d \bmod 2$ (for instance, by testing all the $2^4$ possible values of $a,b,c$ and $d$ modulo $2$). Hence, either $x$ of $y$ is in $\mathfrak{a}$, as desired.
+In $K = \QQ[X]/(X^2+1)$ and $\O_K = \ZZ[X]/(X^2+1)$, the principal ideal $\mathfrak{a} := (1+X) \cdot \O_K$ is prime. To see this, one can first check that an element $a + bX \in \O_K$ is divisible by $1+X$ if and only if $a = b \bmod 2$. Hence, $\mathfrak{a} = \{a + bX \,|\, a, b \in \ZZ, a = b \bmod 2\}$. Let $x = a+bX$ and $y = c+dX$ be in $\O_K$ and such that $x \cdot y \in \mathfrak{a}$. We have $x \cdot y = (ac-bd) + (ad+bc)X$, and so by the property above, we know that $ac-bd = ad+bc \bmod 2$. One can check that this equation implies that either $a = b \bmod 2$ or $c = d \bmod 2$ (for instance, by testing all the $2^4$ possible values of $a,b,c$ and $d$ modulo $2$). Hence, either $x$ or $y$ is in $\mathfrak{a}$, as desired.
 \end{example}
 
 \begin{lemma}
@@ -212,21 +212,25 @@ In $K = \QQ[X]/(X^2+1)$, we have $2 \O_K = \mathfrak{p}^2$, where $\mathfrak{p} 
 An integral ideal $\mathfrak{a}$ is prime if and only if the quotient space $\O_K/\mathfrak{a}$ has no divisors of zero. In our case, this is equivalent to $\O_K/\mathfrak{a}$ being a field (because it is a finite, commutative ring).
 \end{lemma}
 
-\paragraph{Algebraic norm.} The algebraic norm of an non-zero integral ideal $\mathfrak{a}$ is $\N(a) = |\O_K/\mathfrak{a}|$, i.e., it is the index of $\mathfrak{a}$ in $\O_K$. This is an positive integer. For a non-zero fractional ideal $I = x \cdot \mathfrak{a}$, with $x \in K$ and $\mathfrak{a}$ an integral ideal, the algebraic norm is defined as $\N(I) = |\N(x)| \cdot |\N(\mathfrak{a})|$. This is a positive rational number, and it does not depend on the choice of $x$ and $\mathfrak{a}$.
+\paragraph{Algebraic norm.} The algebraic norm of an non-zero integral ideal $\mathfrak{a}$ is $\N(a) = |\O_K/\mathfrak{a}|$, i.e., it is the index of $\mathfrak{a}$ in $\O_K$. This is a positive integer. For a non-zero fractional ideal $I = x \cdot \mathfrak{a}$, with $x \in K$ and $\mathfrak{a}$ an integral ideal, the algebraic norm is defined as $\N(I) = |\N(x)| \cdot |\N(\mathfrak{a})|$. This is a positive rational number, and it does not depend on the choice of $x$ and $\mathfrak{a}$.
 
 \begin{properties}
 \label{prop:norm-ideal}
 \begin{enumerate}
-\item if $I = \alpha \O_K$ is principal, then $\N(I) = |\N(\alpha)|$;
-\item the norm is multiplicative, i.e., for $I$ and $J$ fractional ideals, we have $\N(I \cdot J) = \N(I) \cdot \N(J)$;
-\item if $\mathfrak{p}$ is a prime ideal, then $\N(\mathfrak{p}) = p^k$ for some $k \geq 1$ and $p$ a prime integer;
-\item for an integral ideal $\mathfrak{a}$, we have $\N(\mathfrak{a}) \in \mathfrak{a}$ (when seeing $\N(\mathfrak{a})$ as an element of $K$ via the inclusion $\ZZ \subset K$).
+\item If $I = \alpha \O_K$ is principal, then $\N(I) = |\N(\alpha)|$;
+\item The norm is multiplicative, i.e., for $I$ and $J$ fractional ideals, we have $\N(I \cdot J) = \N(I) \cdot \N(J)$;
+\item If $\mathfrak{p}$ is a prime ideal, then $\N(\mathfrak{p}) = p^k$ for some $k \geq 1$ and $p$ a prime integer;
+\item For an integral ideal $\mathfrak{a}$, we have $\N(\mathfrak{a}) \in \mathfrak{a}$ (when seeing $\N(\mathfrak{a})$ as an element of $K$ via the inclusion $\ZZ \subset K$).
+\item If $I \subseteq J$, then $I = \mathfrak{a} \cdot J$ with $\mathfrak{a}$ an integral ideal. This implies in particular that $\N(J) |\N(I)$ (because $\N(\mathfrak{a})$ is an integer).
 \end{enumerate}
-\item if $I \subseteq J$, then $I = \mathfrak{a} \cdot J$ with $\mathfrak{a}$ a fractional ideal. This implies in particular that $\N(J) |\N(I)$ (because $\N(\mathfrak{a})$ is an integer).
 \end{properties}
 
 
-\paragraph{Computational aspects.} {\color{red} TODO}$\ZZ$-basis of ideals. The fact that we can go from $2$-elements representation to basis in polynomial time and conversely. The fact that we can add and multiply efficiently, and factor ideals if we can factor integers.
+\paragraph{Computational aspects.} 
+%TODO improve
+From a computational perspective, ideals in a number fields behave similarly to elements in $\ZZ$. One can add, multiply and invert ideals in polynomial time. One can also compute the algebraic norm of an ideal in polynomial time, or compute two elements $x,y$ generating the ideal.
+For factoring, the cost is the same as for factoring a (large) integer: to factor an ideal $\mathfrak{a}$, it is sufficient to factor its algebraic norm $\N(\mathfrak{a})$, and them perform some polynomial time computations.
+%{\color{red} TODO}$\ZZ$-basis of ideals. The fact that we can go from $2$-elements representation to basis in polynomial time and conversely. The fact that we can add and multiply efficiently, and factor ideals if we can factor integers.
 
 \subsubsection{Modules}
 \label{sec:modules}
@@ -234,11 +238,11 @@ Let $m \geq 1$ be an integer and let $M \subset K^m$. We say that $M$ is a finit
 \[ M = \{ \sum_{i = 1}^t x_i \vec b_i \,|\, x_1, \dots, x_t \in \O_K\}. \]
 We say that such elements $(\vec b_1, \dots, \vec b_t)$ are a generating set of $M$ (they are not unique).
 In the rest of these lecture notes, we will say that $M$ is a ($\O_K$-)module, instead of the longer (but more accurate) terminology ``finitely generated $\O_K$-module included in $K^m$ for some $m \geq 1$''.
+The lemma below states that ideals are the ``simplest'' modules.
 
 \begin{lemma}
-If $m = 1$, then a $M \subset K$ is a module if and only if it is a fractional ideal of $K$.
+If $m = 1$, then a set $M \subset K$ is a module (for the definition above) if and only if it is a fractional ideal of $K$.
 \end{lemma}
-\noindent Ideals are the simplest cases of modules, when the dimension is $1$.
 
 \begin{proof}
 Let $I$ be a fractional ideal. From Lemma~\ref{lemma:two-elm-rep}, we know that $I = \{ x_1 \alpha + x_2 \beta \,|\, x_1, x_2 \in \O_K\}$ for some $\alpha, \beta \in K$. This proves that $I$ is a module in $K$ for our definition above.
@@ -249,7 +253,7 @@ On the other hand, let $M \subset K$ be a module. By definition, there exists $b
 The rank of a module $M$ is the dimension of the $K$-vector space spanned by the elements of $M$ (which is a subspace of $K^m$).
 \end{definition}
 
-By setting $K = \QQ$ and $\O_K = \ZZ$, one can see that a $\ZZ$-module is simply a lattice. In a sense, modules are generalizations of lattices, to more general rings (here, the ring $\O_K$). There are still some differences between modules and lattices. The first one is that, in lattices, we often care about geometric questions. For this, we need to have a notion of ``size'' for the vectors of our lattice, which is obtained by taking their euclidean norm (or infinity norm, or any other norm). When replacing $\QQ$ by $K$, it is nor clear anymore what the size of an element of $K$ is, let alone a vector of $K^m$. We will discuss this in more details in Sections~\ref{sec:embeddings} and~\ref{sec:id-mod-lat}.
+By setting $K = \QQ$ and $\O_K = \ZZ$, one can see that a $\ZZ$-module is simply a lattice. In a sense, modules are generalizations of lattices, to more general rings (here, the ring $\O_K$). There are still some differences between modules and lattices. The first one is that, in lattices, we often care about geometric questions. For this, we need to have a notion of ``size'' for the vectors of our lattice, which is obtained by taking their euclidean norm (or infinity norm, or any other norm). When replacing $\QQ$ by $K$, it is not clear anymore what the size of an element of $K$ is, let alone a vector of $K^m$. We will discuss this in more details in Sections~\ref{sec:embeddings} and~\ref{sec:id-mod-lat}.
 
 Another difference between modules and lattices is that lattices always have bases, but modules may not. So far, we have defined a module by a generating set, but it might not be possible to extract a set of linearly independent basis vectors from this generating set. There exists however a notion of pseudo-basis, which can be used somehow analogously to the notion of basis (up to some more technicalities).
 
@@ -288,7 +292,7 @@ Note that the canonical embedding depends on our choice of polynomial $P$. If we
 In $K = \QQ[X]/(X^2+1)$, we have $\coeff(1+X) = (1,1) \in \QQ^2$ and $\mink(1+X) = (1+i, 1-i) \in \CC^2$.
 \end{example}
 
-One of the advantage of the coefficient embedding is that it lives in $\QQ^d$ instead of $\CC^d$, which makes it easier to manipulate on a computer. On the other hand, the canonical embedding is more intrinsic to the field, and enjoy nicer mathematical properties, which can be useful for analysis.
+One of the advantage of the coefficient embedding is that it lives in $\QQ^d$ instead of $\CC^d$, which makes it easier to manipulate on a computer. On the other hand, the canonical embedding is more intrinsic to the field, and enjoys nicer mathematical properties, which can be useful for analysis.
 
 Let's also remark that the image of $\mink(K)$ lives in a $\RR$-vector subspace of $\CC^d$, with dimension $d$ over $\RR$ (when $\CC^d$ has dimension $2d$ over $\RR$). This is the space
 \[\{x \in \CC^d \,|\, x_1, \dots, x_{d_\RR} \in \RR, \text{ and } x_{d_\RR+1} = \overline{x_{d_\RR+d_\CC+1}}, \dots, x_{d_\RR+d_\CC} = \overline{x_d} \}.\]
@@ -310,9 +314,9 @@ Let $x \in K$, then $\|\mink(x)\| \geq \sqrt{d} \cdot |\N(x)|^{1/d}$. In particu
 \end{lemma}
 
 \begin{proof}
-Applying the inequality of arithmetic and geometric means to the vector $(|\sigma_1(x)|^2, \dots, |\sigma_d(x)|^2)$ leads
+Applying the inequality of arithmetic and geometric means to the vector $(|\sigma_1(x)|^2, \dots, |\sigma_d(x)|^2)$ gives
 \[ 1/d \cdot \|\mink(x)\|^2 = 1/d \cdot \sum_i |\sigma_i(x)|^2 \geq \Big(\prod_i |\sigma_i(x)|^2\Big)^{1/d} = |\N(x)|^{2/d},\]
-which gives the desired inequality. The second part of the statement is obtained by noticing that the algebraic norm of an non-zero element of $\O_K$ is an integer, thus it is $\geq 1$ in absolute value.
+which gives the desired inequality. The second part of the statement is obtained by noticing that the algebraic norm of a non-zero element of $\O_K$ is an integer, thus it is $\geq 1$ in absolute value.
 \end{proof}
 
 The norm induced over $K$ by the canonical embedding satisfies the triangular inequality (which is a requirement for a norm), but it is also sub-multiplicative.
@@ -323,7 +327,7 @@ For any $x,y \in K$, we have
 \end{lemma}
 
 \begin{proof}
-This properties follows from the fact that, by definition of $\mink$, the vector $\mink(x \cdot y)$ is the product coordinate-wise of the vectors $\mink(x)$ and $\mink(y)$.
+This follows from the fact that the vector $\mink(x \cdot y)$ is the product coordinate-wise of the vectors $\mink(x)$ and $\mink(y)$.
 \end{proof}
 
 \subsubsection{Ideal and module lattices}
@@ -335,7 +339,7 @@ Let $M$ a module in $K^m$ of rank $r$. Then, the sets
 \[\coeff(M) := \{ \coeff(\vec b)\,|\, \vec b\in M\} \subset \QQ^{md}\]
 and 
 \[\mink(M) := \{ \mink(\vec b)\,|\, \vec b\in M\} \subset \CC^{md}\]
-are lattices of rank $dr$.\footnote{Note that we usually define a lattice as a subset of $\RR^t$, but our set $\mink(M)$ lives in $\CC^{md}$. Extending the definition of lattices to subset of $\CC^t$ (using the hermitian norm of $\CC$) is usually pretty harmless, but if one prefers to keep all lattices in $\RR^t$, it suffices to map $\CC^{md}$ to $\RR^{2md}$ isometrically, and consider $\mink(M)$ as a (non full-rank) lattice in this space.}
+are lattices of rank $dr$.\footnote{Note that we usually define a lattice as a subset of $\RR^t$, but our set $\mink(M)$ lives in $\CC^{md}$. Extending the definition of lattices to subsets of $\CC^t$ (using the hermitian norm of $\CC$) is usually pretty harmless, but if one prefers to keep all lattices in $\RR^t$, it suffices to map $\CC^{md}$ to $\RR^{2md}$ isometrically, and consider $\mink(M)$ as a (non full-rank) lattice in this space.}
 They are called \textit{module lattices}. If $m = r = 1$, then $M = I$ is a fractional ideal, and we call $\coeff(I)$ and $\mink(I)$ ideal lattices.
 \end{proposition}
 
@@ -353,9 +357,9 @@ More generally, for a power-of-two cyclotomic field $K = \QQ[X]/(X^d+1)$, the di
 \begin{proposition}
 \label{prop:volume-id-mod}
 Let $I$ be a fractional ideal, then
-\[ \det(\mink(I)) = \N(I) \cdot \sqrt{\Delta_K}.\]
+\[ \det(\mink(I)) = \sqrt{\Delta_K}\cdot \N(I) .\]
 More generally, if $M$ is a module of rank $r$ in $K^r$ with pseudo-basis $((\vec b_i, I_i))_i$, we have
-\[\det(\mink(I)) = |\N\big({\det}_K(\vec B)\big)| \cdot \prod_i \N(I_i) \cdot \Delta_K^{r/2},\]
+\[\det(\mink(M)) = \Delta_K^{r/2} \cdot |\N\big({\det}_K(\vec B)\big)| \cdot \prod_i \N(I_i),\]
 where $\vec B$ is the matrix whose column vectors are the $\vec b_i$, and $\det_K$ is the determinant over $\mathcal{M}_r(K)$.\footnote{We could also define an analogous formula for modules that do not have full rank (i.e., modules included in $K^m$ with $m > r$), but this requires defining a conjugation over $K$, which is slightly technical, and won't be needed here.}
 \end{proposition}
 
@@ -382,7 +386,7 @@ All the successive minima of the lattice $\mink(I)$ are concentrated in the inte
 \begin{proof}
 For the lower bound on $\lambda_1$, let us take $x \in I$, non-zero, and such that $\|\mink(x)\| = \lambda_1(\mink(I))$. By Lemma~\ref{lemma:AM-GM-inequality}, we know that $\|\mink(x)\| \geq \sqrt{d} \cdot |\N(x)|^{1/d}$. It then suffices to prove that for any non-zero $x \in I$, $|\N(x)| \geq \N(I)$. This follows from the fact that $x \O_K$ is included in $I$, and so, by Proposition~\ref{prop:norm-ideal}, $\N(I)$ divides $\N(x \O_K) = |\N(x)|$.
 
-For the upper bound on $\lambda_d$, let us take $x \in I$ non-zero and reaching $\lambda_1(\mink(I))$, and $y_1, \dots, y_d$ be in $\O_K$, $\QQ$-linearly independent and such that $\|\mink(y_i)\|_\infty \leq \lambda_d^{(\infty)}(\mink(\O_K))$ (here, we take the last minimum of $\mink(\O_K)$ for the \emph{infinity} norm instead of the euclidean norm). The elements $z_i = x \cdot y_i$ and in $I$ because $I$ is an ideal. They are $\QQ$-linearly independent, since otherwise we would have a linear dependence relation $\sum_i \alpha_i z_i = 0$ with the $\alpha_i$ in $\QQ$ not all zero. But since $x$ is non-zero, dividing by $x$ (over $K$) would give a linear dependence relation $\sum_i \alpha_i y_i = 0$, which is impossible by assumption on the $y_i$'s.
+For the upper bound on $\lambda_d$, let us take $x \in I$ non-zero and reaching $\lambda_1(\mink(I))$, and $y_1, \dots, y_d$ be in $\O_K$, $\QQ$-linearly independent and such that $\|\mink(y_i)\|_\infty \leq \lambda_d^{(\infty)}(\mink(\O_K))$ (here, we take the last minimum of $\mink(\O_K)$ for the \emph{infinity} norm instead of the euclidean norm). The elements $z_i = x \cdot y_i$ are in $I$ because $I$ is an ideal. They are $\QQ$-linearly independent, since otherwise we would have a linear dependence relation $\sum_i \alpha_i z_i = 0$ with the $\alpha_i$ in $\QQ$ not all zero, and dividing by $x$ would give a linear dependence relation $\sum_i \alpha_i y_i = 0$, which is impossible by assumption on the $y_i$'s.
 Hence, we know that 
 \[\lambda_d(\mink(I)) \leq \max_i \|\mink(z_i)\| \leq \max_i \|z_i\|_\infty \cdot \|x\| \leq \lambda_d^{(\infty)}(\mink(\O_K)) \cdot \lambda_1(\mink(\O_K)).\]
 Using the upper bound $\lambda_d^{(\infty)}(\mink(\O_K)) \leq \Delta_K^{1/d}$ from~\cite[Theorem A.4]{KoenThesis} leads the first inequality. The second inequality is obtained by applying Minkowski's first theorem on the ideal $\mink(I)$, giving us $\lambda_1(\mink(I)) \leq \sqrt{d} \det(\mink(I))^{1/d} = \sqrt{d} \cdot \Delta_K^{1/(2d)} \cdot \N(I)^{1/d}$.
@@ -405,12 +409,12 @@ When $r = 1$, we rather use the terminology ideal-SVP$_\gamma$ (resp. ideal-SIVP
 
 We could also define restriction of the SVP and SIVP problems to module lattices $\coeff(M)$ in coefficient embedding. However, we will not consider these problems in the rest of these notes, so we do not give them a name. From now on, we will only consider the canonical embedding $\mink$ (unless specified otherwise). Hence, to simplify notations, we may abuse notations and consider the modules $M$ directly as lattices (e.g., writing $\lambda_1(M)$, or $\det(M)$).
 
-Note that when $K = \QQ$ and $r = n$, the problems module-SVP and module-SIVP are just the regular SVP and SIVP problems. Varying the degree $d$ of $K$ and the rank $r$ of the module allows one to obtain various problems, ranging from ideal-S(I)VP at one extremity to standard S(I)VP at the other extremity.
+Note that when $K = \QQ$ and $r = n$, the problems module-SVP (resp. module-SIVP, module-BDD) is just the regular SVP (resp. SIVP, BDD) problem. Varying the degree $d$ of $K$ and the rank $r$ of the module allows one to obtain various problems, ranging from ideal-SVP at one extremity to standard SVP at the other extremity.
 
-\noindent\textit{Hardness of module-SVP.} Regarding hardness, the module-SVP problem seems to be essentially as hard as the standard SVP problem. A notable exception is when the modules have rank $1$, i.e. for the ideal-SVP problem. In this extreme case, there exists situations (e.g., when the approximation factor $\gamma$ is very large and the field $K$ is cyclotomic; or if one allows exponentially long pre-computations) where the ideal-SVP$_\gamma$ problem is asymptotically easier to solve than the SVP$_\gamma$ problem (at least with our current knowledge).\footnote{Note that these are only special cases. At the moment, we do not have an algorithm to solve efficiently ideal-SVP in all number fields, for all approximation factors.}
-On the other hand, when the rank $r$ of the module becomes larger than $2$, we currently have no algorithms solving $r$-module-SVP significantly faster than the best algorithms for SVP over all lattices of dimension $dr$.
+\noindent\textit{Hardness of module-SVP.} Regarding hardness, the module-SVP problem seems to be essentially as hard as the standard SVP problem. A notable exception is when the modules have rank $1$, i.e., for the ideal-SVP problem. In this extreme case, there exists situations (e.g., when the approximation factor $\gamma$ is very large and the field $K$ is cyclotomic; or if one allows exponentially long pre-computations) where the ideal-SVP$_\gamma$ problem is asymptotically easier to solve than the SVP$_\gamma$ problem on lattices of the same dimension (at least with our current knowledge).\footnote{Note that these are only special cases. At the moment, we do not have an algorithm to solve efficiently ideal-SVP in all number fields, for all approximation factors.}
+On the other hand, when the rank $r$ of the module becomes $\geq 2$, we currently have no algorithms solving $r$-module-SVP significantly faster than the best algorithms for SVP over all lattices of dimension $dr$.
 
-The conclusion is that, at the moment, it seems that there might be a gap in hardness between ideal-SVP and $r$-module-SVP for $r \geq 2$, and there do not seem to be a gap in hardness between $r$-module-SVP and standard SVP (in dimension $rd$). Note that the discussion here is only based on the currently known best algorithms, which only provide us with upper bounds on the hardness of the problems. This does not allow us to conclude that some problems are equivalent, nor that some problems are strictly harder than others. It only gives us some intuition on what might be happening, but this intuition may be proven false by future cryptanalysis development.
+The conclusion is that, at the moment, it seems that there might be a gap in hardness between ideal-SVP and $r$-module-SVP for $r \geq 2$, and there do not seem to be a gap in hardness between $r$-module-SVP and standard SVP in dimension $rd$. Note that the discussion here is only based on the currently known best algorithms, which only provide us with upper bounds on the hardness of the problems. This does not allow us to conclude that some problems are equivalent, nor that some problems are strictly harder than others. It only gives us some intuition on what might be happening, but this intuition may be proven false by future cryptanalysis development.
 
 
 %From now on, the results we review will be used only for the cryptanalysis part of the course (Section~\ref{sec:cryptanalysis}).
