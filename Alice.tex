@@ -824,8 +824,8 @@ where in the last inequality we used the fact that $q \geq 2$ so that $(q-1)^{-1
 \subsection{Cryptanalysis}
 \label{sec:cryptanalysis}
 
-In this part, we will review two attacks, one on some special instances of ideal-SVP, and the other one on NTRU when the modulus $q$ is very large and the trapdoor size $B$ is very small. Both attacks exploit the algebraic structure of the problems. More precisely, both attack make use of so-called subfields in the field $K$. The attack on NTRU could work even without the presence of these subfields, but the formulation with subfields is simpler and so we will stick to this one on these lecture notes.
-There exist also other attacks exploiting the algebraic structure of the problem, for instance so-called unit-attacks (or even S-unit attacks), but they require more background on number theory and we will not discuss them here.
+In this part, we will review two attacks, one on some special instances of ideal-SVP, and the other one on NTRU when the modulus $q$ is very large and the trapdoor size $B$ is very small. Both attacks exploit the algebraic structure of the problems. More precisely, both attack make use of so-called subfields in the field $K$. The attack on NTRU could work even without the presence of these subfields, but the formulation with subfields is simpler and so we will stick to this one here.
+There exist also other attacks exploiting the algebraic structure of the problems, for instance so-called unit attacks (or even S-unit attacks), but they require more background on number theory and we will not discuss them here.
 
 Before describing the two attacks of this section, let us start with some more background on subfields and Galois theory.
 
@@ -833,7 +833,7 @@ Before describing the two attacks of this section, let us start with some more b
 
 So far, we have seen number fields as polynomial rings of the form $K = \QQ(X)/P(X)$, where $P$ is an irreducible polynomial of degree $d$. When discussing subfields, it is sometimes convenient to adopt another vision of number fields, by fixing one complex embedding $\sigma_i: K \rightarrow \CC$ and seeing $K$ as a subset of $\CC$. Recall that $\sigma_i$ maps $X$ to a complex root $\alpha_i$ of $P$. Hence, the image of $K$ by $\sigma_i$ is equal to $\QQ(\alpha_i)$, the smallest subfield of $\CC$ containing both $\QQ$ and $\alpha_i$. Since $\sigma_i$ is an isomorphism, we have $K \sim \QQ(\alpha_i)$.
 
-This vision of number fields as subsets of $K$ can be convenient, but also misleading. It is important to keep in mind that this is the image of $K$ by one of the $d$ complex embeddings of $K$. In particular, it may give the impression that $K$ is an object of dimension $1$, since $\QQ(\alpha_i)$ lives in $\CC$, whereas for our applications it is usually more convenient to see $K$ as a dimension $d$ object, via the canonical embedding $\mink$. Note that both vision are not contradictory: $K$ has a dimension $d$ over $\QQ$, but lives inside a space of dimension $1$ over $\CC$ (but $\CC$'s dimension over $\QQ$ is infinite anyway).
+This vision of number fields as subsets of $K$ can be convenient, but also misleading. It is important to keep in mind that this is the image of $K$ by one of its $d$ complex embeddings. In particular, it may give the impression that $K$ is an object of dimension $1$, since $\QQ(\alpha_i)$ lives in $\CC$, whereas for our applications it is usually more convenient to see $K$ as a $d$-dimensional object, via the canonical embedding $\mink$. Note that both vision are not contradictory: $K$ has a dimension $d$ over $\QQ$, but lives inside a space of dimension $1$ over $\CC$ (but $\CC$'s dimension over $\QQ$ is infinite anyway).
 
 \begin{example}
 If $P = X^2+1$, then $K \sim \QQ(i) = \QQ(-i)$. Here, both complex embeddings of $K$ give the same subset $\QQ(i) = \QQ(-i)$ of $\CC$. This is not always the case. For instance if $P = X^3-2$, then the roots of $P$ are $\sqrt[3]{2}$, $j \cdot \sqrt[3]{2}$ and $j^2 \cdot \sqrt[3]{2}$, where $j$ is a primitive third root of unity in $\CC$. We have that $K = \QQ[X]/P(X) \sim \QQ(\sqrt[3]{2}) \sim \QQ(j \cdot \sqrt[3]{2})$, but both sets $\QQ(\sqrt[3]{2})$ and $\QQ(j \cdot \sqrt[3]{2})$ are not equal. Indeed, the first one is included in $\RR$ whereas the second one is not.
@@ -893,11 +893,11 @@ Finally, $L$ also contains the subfield $K_3 = \QQ(\zeta_8-\overline{\zeta_8})$,
 \end{center}
 \end{example}
 
-When considering subfields, it is sometimes convenient to add some subscript to disambiguate the notations introduced in Section~\ref{sec:number-theory}. For example, if $L/K$ is a relative extension of number fields and $x \in K$, then we will write $\mink_K(x) \in \CC^{[K:\QQ]}$ for the canonical embedding of $x$ when seen as an element of $K$, and $\mink_L(x) \in \CC^{[L:\QQ]}$ for the canonical embedding of $x$ when seen as an element of $L$. The two canonical embedding are related, as stated in the following lemma.
+When considering subfields, it is sometimes convenient to add some subscript to disambiguate the notations introduced in Section~\ref{sec:number-theory}. For example, if $L/K$ is a relative extension of number fields and $x \in K$, then we will write $\mink_K(x) \in \CC^{[K:\QQ]}$ for the canonical embedding of $x$ when seen as an element of $K$, and $\mink_L(x) \in \CC^{[L:\QQ]}$ for the canonical embedding of $x$ when seen as an element of $L$. The two canonical embeddings are related, as stated in the following lemma.
 
 \begin{lemma}
 \label{lemma:canonical-norm-subfield}
-Let $L/K$ be extensions of number fields. Any complex embedding of $K$ can be extended to $[L/K]$ complex embeddings of $L$, and this covers all the complex embeddings of $L$.
+Let $L/K$ be a relative extension of number fields. Any complex embedding of $K$ can be extended to $[L:K]$ complex embeddings of $L$, and this covers all the complex embeddings of $L$.
 As a consequence, for any $x \in K$, we have $\|\mink_L(x)\| = \sqrt{[L:K]} \cdot \|\mink_K(x)\|$.
 \end{lemma}
 
@@ -905,14 +905,14 @@ As a consequence, for any $x \in K$, we have $\|\mink_L(x)\| = \sqrt{[L:K]} \cdo
 The first part of the lemma is proven in \cite[Th. 50]{Marcus}. This implies that if $x \in K$, then the coordinates of $\mink_L(x)$ can be grouped by packs of size $[L:K]$, where they are all equal and equal to one of the coordinates of $\mink_K(x)$. The second part of the lemma follows from this observation.
 \end{proof}
 
-The behavior of ideals in field extensions is a well understood phenomena. In these lecture note, we will only need the simple observation below, whose proof should follow easily from the definition of integral and fractional ideals: make sure you believe it.
+The behavior of ideals in field extensions is a well understood phenomena. In these lecture notes, we will only need the simple observation below, whose proof should follow easily from the definition of integral and fractional ideals: make sure you believe it.
 \begin{lemma}
 \label{lemma:intersection-ideal-subfield}
 Let $L/K$ be an extension of number fields. If $I$ is a fractional ideal of $L$, then $I \cap K$ is a fractional ideal of $K$.
 \end{lemma}
 
 
-\paragraph{Automorphisms.} Let $K$ be a number field of degree $d$. An automorphism of $K$ is a field morphism sending $K$ to $K$ and fixing $\QQ$ point-wise. We write $\Aut(K)$ the set of automorphisms of $K$, which is a group for the composition ($\phi_1 \circ \phi_2 \in \Aut(K)$ for all $\phi_1, \phi_2 \in \Aut(K)$).
+\paragraph{Automorphisms.} Let $K$ be a number field of degree $d$. An automorphism of $K$ is a field morphism sending $K$ to $K$ and fixing $\QQ$ point-wise. We write $\Aut(K)$ the set of automorphisms of $K$, which is a group for the composition ($\varphi_1 \circ \varphi_2 \in \Aut(K)$ for all $\varphi_1, \varphi_2 \in \Aut(K)$).
 
 \begin{lemma}
 \label{lemma:upper-bound-automorphisms}
@@ -920,42 +920,47 @@ There are at most $d = [K:\QQ]$ automorphisms of $K$.
 \end{lemma}
 
 \begin{proof}
-Assume without loss of generality that $K = \QQ[X]/P(X)$ for some irreducible polynomial $P$ of degree $d$ (we have seen that any number field $K$ is isomorphic to a $\QQ[X]/P(X)$, and this preserves the number of automorphisms). Let $\phi$ be an automorphism of $K$, since $\phi(x) = x$ for all $x \in \QQ$ and since $\phi$ is a field morphism, then $\phi$ is uniquely determined by the value of $\phi(X) \in K$. We will show that $\phi(X)$ can take at most $d$ values in $K$, which will prove that there are at most $d$ distinct automorphisms of $K$.
-Since $\phi$ is a morphism, then $P(\phi(X)) = \phi(P(X)) = \phi(0) = 0$. So $\phi(X)$ must be a root of $P$. But $P$ is a non-zero polynomial of degree $d$, hence it has at most $d$ roots in $K$, which proves that there are at most $d$ possible choices for $\phi(X)$. This concludes the proof.
+Assume without loss of generality that $K = \QQ[X]/P(X)$ for some irreducible polynomial $P$ of degree $d$ (we have seen that any number field $K$ is isomorphic to a $\QQ[X]/P(X)$, and this preserves the number of automorphisms). Let $\varphi$ be an automorphism of $K$, since $\varphi(x) = x$ for all $x \in \QQ$ and since $\varphi$ is a field morphism, then $\varphi$ is uniquely determined by the value of $\varphi(X) \in K$. We will show that $\varphi(X)$ can take at most $d$ values in $K$, which will prove that there are at most $d$ distinct automorphisms of $K$.
+Since $\varphi$ is a morphism, then $P(\varphi(X)) = \varphi(P(X)) = \varphi(0) = 0$. So $\varphi(X)$ must be a root of $P$. But $P$ is a non-zero polynomial of degree $d$, hence it has at most $d$ roots in $K$, which proves that there are at most $d$ possible choices for $\varphi(X)$. This concludes the proof.
 \end{proof}
 
 Applying an automorphism of $K$ to an element $x \in K$ does not change its euclidean's norm via the canonical embedding.
 \begin{lemma}
 \label{lemma:automorphism-preserves-size}
-Let $x \in K$ and $\phi \in \Aut(K)$, then $\|\mink(x)\| = \|\mink(\phi(x))\|$.
+Let $x \in K$ and $\varphi \in \Aut(K)$, then $\|\mink(x)\| = \|\mink(\varphi(x))\|$.
 \end{lemma}
 \begin{proof}
-The proof follows from the observation that if $\sigma_i$ is a complex embedding of $K$, then $\sigma_i \circ \phi$ is still a complex embedding of $K$. Since $\phi$ is invertible, the map $\sigma \mapsto \sigma \circ \phi$ must induce a permutation on the set of the complex embeddings of $K$. Hence, the coordinates of $\mink(\phi(x))$ are exactly the same as the coordinates of $\mink(x)$, up to a permutation.
+The proof follows from the observation that if $\sigma_i$ is a complex embedding of $K$, then $\sigma_i \circ \varphi$ is still a complex embedding of $K$. Since $\varphi$ is invertible, the map $\sigma_i \mapsto \sigma_i \circ \varphi$ must induce a permutation on the set of the complex embeddings of $K$. Hence, the coordinates of $\mink(\varphi(x))$ are exactly the same as the coordinates of $\mink(x)$, up to a permutation.
 \end{proof}
 
 Automorphisms provide ways to construct subfields of a number field $K$, as explained in the following lemma.
 \begin{lemma}
-Let $K$ be a number field, and let $H$ be a subgroup of the automorphism group $\Aut(K)$ of $K$. Let $K_H$ be the subset of elements of $K$ that are fixed point by the automorphisms of $H$, i.e., $K_H := \{ x \in K \,|\, \phi(x) = x \, \forall \phi \in H\}$. Then $K_H$ is a subfield of $K$, called the fixed-field of $H$.
+Let $K$ be a number field, and let $H$ be a subgroup of the automorphism group $\Aut(K)$ of $K$. Let $K_H$ be the subset of elements of $K$ that are fixed by the automorphisms of~$H$, i.e., $K_H := \{ x \in K \,|\, \varphi(x) = x, \; \forall \varphi \in H\}$. Then $K_H$ is a subfield of $K$, called the fixed-field of~$H$.
 \end{lemma}
 
 \begin{proof}
-Since all automorphisms of $K$ fix $\QQ$ point-wise, then $K_H$ contains $\QQ$. Moreover, by definition $K_H \subseteq K$. So we only need to prove that $K_H$ is a field. The fact that the sum, multiplication and division of elements of $K_H$ are still in $K_H$ follows from the fact that all the $\phi$'s in $H$ are field morphisms.
+Since all automorphisms of $K$ fix $\QQ$ point-wise, then $K_H$ contains $\QQ$. Moreover, by definition $K_H \subseteq K$. So we only need to prove that $K_H$ is a field. The fact that the sum, multiplication and division of elements of $K_H$ are still in $K_H$ follows from the fact that all the $\varphi$'s in $H$ are field morphisms.
 \end{proof}
 
 This lemma can be straightened when the number field $K$ is Galois (see below), establishing a correspondence between subfields of $K$ and subgroups of $\Aut(K)$.
 
 \begin{example}
-Let $K = \QQ(\zeta_8)$ as above. Then $\phi_1: \zeta_8 \rightarrow -\zeta_8$ is an automorphism of $K$, whose order is $2$. The set $H = \{id, \phi_1\}$ is then a subgroup of $\Aut(K)$. Let $K_H$ be the fixed field of $H$. The field $K_H$ contains $K_1 = \QQ(i)$. Indeed, it suffices to check that $i = \zeta_8^2 \in K$ is fixed by all elements of $H$. The morphism properties then ensure that all elements of $\QQ(i)$ are fixed by $id$ and $\phi_1$. We have seen in the previous example that the only subfields of $K$ containing $\QQ(i)$ are either $K$ itself or $\QQ(i)$. We cannot have $K_H = K$, since the element $\zeta_8 \in K$ is not fixed by $\phi_1$. Hence, we conclude that $K_H = \QQ(i)$.
+Let $K = \QQ(\zeta_8)$ as above. Then $\varphi_1: \zeta_8 \rightarrow -\zeta_8$ is an automorphism of $K$, whose order is $2$. The set $H = \{id, \varphi_1\}$ is then a subgroup of $\Aut(K)$. Let $K_H$ be the fixed field of $H$. The field $K_H$ contains $K_1 = \QQ(i)$. Indeed, it suffices to check that $i = \zeta_8^2 \in K$ is fixed by all elements of $H$. The morphism properties then ensure that all elements of $\QQ(i)$ are fixed by $id$ and $\varphi_1$. We have seen in the previous example that the only subfields of $K$ containing $\QQ(i)$ are either $K$ itself or $\QQ(i)$. We cannot have $K_H = K$, since the element $\zeta_8 \in K$ is not fixed by $\varphi_1$. Hence, we conclude that $K_H = \QQ(i)$.
 
-A similar reasoning can be used to show that $\phi_2: \zeta_8 \rightarrow \overline{\zeta_8}$ is an automorphism of order $2$, and that $K_2 = \QQ(\zeta_8 + \overline{\zeta_8})$ is the fixed field of $H = \{id, \phi_2\}$.
+A similar reasoning can be used to show that $\varphi_2: \zeta_8 \rightarrow \overline{\zeta_8}$ is an automorphism of order $2$, and that $K_2 = \QQ(\zeta_8 + \overline{\zeta_8})$ is the fixed field of $H = \{id, \varphi_2\}$.
 \end{example}
+
 
 \paragraph{Galois number fields.} 
 
 \begin{definition}
 A number field $K$ is said to be Galois if and only if $|\Aut(K)| = [K:\QQ]$.
 \end{definition}
-Galois number fields are number fields with the maximum number of automorphisms. The proof of Lemma~\ref{lemma:upper-bound-automorphisms} shows that a number field $K = \QQ[X]/P(X)$ is Galois if and only if the polynomial $P$ is completely split in $K$ (this is another way to define Galois number fields). When $K$ is Galois, we write $\Gal(K/\QQ)$ the group $\Aut(K)$, and we call it the Galois group of $K$.
+Galois number fields are number fields with the maximum number of automorphisms. The proof of Lemma~\ref{lemma:upper-bound-automorphisms} shows that a number field $K = \QQ[X]/P(X)$ is Galois if and only if the polynomial $P$ is completely split in $K$ (this is another, more standard, way to define Galois number fields). When $K$ is Galois, we write $\Gal(K/\QQ)$ the group $\Aut(K)$, and we call it the Galois group of $K$.
+
+\begin{example}
+Any cyclotomic field $K$ is a Galois number field. Indeed, assume that $K = \QQ[X]/\Phi_m(X)$, where $\Phi_m(X)$ is the $m$-cyclotomic polynomial, i.e., the complex roots of $\Phi_m$ are the primitive $m$-th roots of unity in $\CC$. By construction, $X$ is a root of $\Phi_m$ in $K$, and since the group of $m$-th roots of unity is cyclic and generated by any primitive $m$-th root of unity, then all other roots of $\Phi_m$ must also be in $K$ (they will be of the form $X^k$ for $k$ co-prime to $m$). This proves that $K$ is Galois.
+\end{example}
 
 \begin{theorem}[{\cite[Th. 55]{Marcus}}]
 \label{thm:Galois-correspondance}
@@ -963,28 +968,28 @@ Let $K$ be a Galois number field. Then there is a one-to-one correspondence betw
 \end{theorem}
 
 \begin{example}
-The number field $K = \QQ(\zeta_8)$ from the previous example is a Galois number field. We already seen two example of subgroups of of $\Gal(K)$, and their corresponding fixed fields.
+The number field $K = \QQ(\zeta_8)$ from the previous example is a Galois number field. We have already seen two example of subgroups of $\Gal(K/\QQ)$, and their corresponding fixed fields.
 
-Let us prove using Galois theory that the number field $K$ has only $5$ subfields (the $3$ proper subfields of degree $2$, and the two subfields $K$ and $\QQ$). Using Theorem~\ref{thm:Galois-correspondance}, it suffices to prove that $\Gal(K/\QQ)$ has cardinality $5$. Let us describe this group. It contains $[K:\QQ] = 4$ elements, which can be fully described by the image of $\zeta_8$. The $4$ automorphisms of $K$ are then
+Let us prove using Galois theory that the number field $K$ has only $5$ subfields (the $3$ proper subfields of degree $2$, and the two subfields $K$ and $\QQ$). Using Theorem~\ref{thm:Galois-correspondance}, it suffices to prove that $\Gal(K/\QQ)$ has $5$ different subgroups. Let us describe this group. It contains $[K:\QQ] = 4$ elements, which can be fully described by the image of $\zeta_8$. The $4$ automorphisms of $K$ are then
 \begin{align*}
 id: \zeta_8 &\rightarrow \zeta_8 \\
-\phi_1: \zeta_8 &\rightarrow -\zeta_8 \\
-\phi_2: \zeta_8 &\rightarrow \overline{\zeta_8} \\
-\phi_3: \zeta_8 &\rightarrow -\overline{\zeta_8}.
+\varphi_1: \zeta_8 &\rightarrow -\zeta_8 \\
+\varphi_2: \zeta_8 &\rightarrow \overline{\zeta_8} \\
+\varphi_3: \zeta_8 &\rightarrow -\overline{\zeta_8}.
 \end{align*}
-One can check that $\Gal(K/\QQ)$ is isomorphic as a group to $(\ZZ/2\ZZ)^2$. This group has 1 subgroup of size 4, 3 subgroups of size 2 and 1 subgroup of size 1, corresponding to all the $5$ subfields we found in the previous example.
+One can check that $\Gal(K/\QQ)$ is isomorphic as a group to $(\ZZ/2\ZZ)^2$ (check it). This group has 1 subgroup of size 4, 3 subgroups of size 2 and 1 subgroup of size 1, corresponding to all the $5$ subfields we found in the previous example.
 \end{example}
 
-When $L$ is Galois and $K$ is a subfield of $L$, we can define the relative trace $\Tr_{L/K}$ and norm $\N_{K/L}$ of the extension $L/K$. These relative trace and norm exists even when $L$ is not Galois, but the definition is slightly less simple, so we will focus only on Galois number fields in these lecture notes. Let $H$ be the subgroup of $\Gal(L:\QQ)$ of all automorphisms fixing $K$ point-wise (so that $K$ is the fixed field of $H$). We define
+When $L$ is Galois and $K$ is a subfield of $L$, we can define the relative trace $\Tr_{L/K}$ and norm $\N_{K/L}$ of the extension $L/K$. These relative trace and norm exists even when $L$ is not Galois, but the definition is slightly less simple, so we will focus only on Galois number fields in these lecture notes. Let $H$ be the subgroup of $\Gal(L/\QQ)$ of all automorphisms fixing $K$ point-wise (so that $K$ is the fixed field of $H$). We define
 \begin{align*}
 \Tr_{L/K}: L &\rightarrow K  & \N_{L/K}: L &\rightarrow K\\
-x &\mapsto \sum_{\phi \in H} \phi(x)  & x &\mapsto \prod_{\phi \in H} \phi(x)\\
+x &\mapsto \sum_{\varphi \in H} \varphi(x)  & x &\mapsto \prod_{\varphi \in H} \varphi(x)\\
 \end{align*}
 
-Note that, for $x \in L$, the elements $\Tr_{L/K}(x)$ and $\N_{L/K}(x)$ are indeed in $K$. To see this, observe that, by definition, for any $\phi \in H$ it holds that $\phi(\Tr_{L/K}(x)) = \Tr_{L/K}(x)$ and $\phi(\N_{L/K}(x)) = \N_{L/K}(x)$ (here we use the fact that $H$ is a group for composition of maps). Since $K$ is exactly the subset of $L$ fixed by all automorphisms in $H$, we conclude that $\Tr_{L/K}(x)$ and $\N_{L/K}(x)$ are in $K$. Like the usual trace and norm, the relative trace is additive and the relative norm is multiplicative.
+Note that, for $x \in L$, the elements $\Tr_{L/K}(x)$ and $\N_{L/K}(x)$ are indeed in $K$. To see this, observe that, by definition, for any $\varphi \in H$ it holds that $\varphi(\Tr_{L/K}(x)) = \Tr_{L/K}(x)$ and $\varphi(\N_{L/K}(x)) = \N_{L/K}(x)$ (here we use the fact that $H$ is a group for composition of maps). Since $K$ is exactly the subset of $L$ fixed by all automorphisms in $H$, we conclude that $\Tr_{L/K}(x)$ and $\N_{L/K}(x)$ are in $K$. Like the usual trace and norm, the relative trace is additive and the relative norm is multiplicative.
 
 \begin{lemma}[{\cite[Theorem 5]{Marcus}}]
-Let $L$ be a Galois number field and $K$ be a subfield of $L$. To avoid ambiguity, let us write $\N_L$ and $\Tr_L$ (resp. $\N_K$ and $\Tr_K$) the algebraic norm and trace over $L$ (resp. over $K$). Then for all $x \in L$ we have
+Let $L$ be a Galois number field and $K$ be a subfield of~$L$. To avoid ambiguity, let us write $\N_L$ and $\Tr_L$ (resp. $\N_K$ and $\Tr_K$) the algebraic norm and trace over $L$ (resp. over $K$). Then for all $x \in L$ we have
 \begin{align}
 \label{eq:composing-relative-norm} \Tr_L(x) &= \Tr_K(\Tr_{L/K}(x)) \\
 \N_L(x) &= \N_K(\N_{L/K}(x)).
@@ -998,13 +1003,13 @@ In this section, we will describe an algorithm that uses subfields to find short
 
 \begin{definition}
 Let $I$ be a fractional ideal of a number field $K$. We call decomposition group of $I$ the group of automorphisms of $K$ fixing $I$ as a set. In other words, the decomposition group of $I$ is the set
-\[ \{ \phi \in \Aut(K) \,|\, \phi(I) = I \}\]
-where $\phi(I) = \{ \phi(x)\,|\, x \in I\}$.
+\[ \{ \varphi \in \Aut(K) \,|\, \varphi(I) = I \}\]
+where $\varphi(I) = \{ \varphi(x)\,|\, x \in I\}$.
 \end{definition}
 
-The algorithm we will describe in this section works for fractional ideals $I$ whose decomposition group is not trivial (i.e., for ideals $I$ that are fixed by at least one automorphism that is not the identity). The more automorphisms fix $I$, the more efficient our algorithm will be (if one wants a polynomial time algorithm, then the ideal $I$ must be fixed by $\alpha d$ automorphisms, for some constant $\alpha \in (0,1]$). Note that, in most cases (for a good definition of ``most''), the decomposition group of an ideal $I$ is trivial, and our algorithm does not work (or, at least, does not outperform standard lattice reduction algorithms). Hence, this algorithm does not threaten the hardness of ideal-SVP in general.
+The algorithm we will describe in this section works for fractional ideals $I$ whose decomposition group is not trivial (i.e., for ideals $I$ that are fixed by at least one automorphism that is not the identity). The more automorphisms fix $I$, the more efficient our algorithm will be (if one wants a polynomial time algorithm, then the ideal $I$ must be fixed by $c \cdot d$ automorphisms, for some constant $c \in (0,1]$). Note that, in most cases (for a good definition of ``most''), the decomposition group of an ideal $I$ is trivial, and our algorithm does not work (or, at least, does not outperform standard lattice reduction algorithms). Hence, this algorithm does not threaten the hardness of ideal-SVP in general.
 
-Let us explain the intuition behind the algorithm. Assume that $K$ is Galois. Recall that, for an element $x \in K$, if $x$ is fixed by a non-trivial subgroup $H$ of the automorphism group of $K$, then $x \in K_H$, where $K_H$ is a strict subfield of $K$. The same reasoning also applies (with slightly more care) to ideals: if the ideal $I$ is fixed as a set by $H$, then $I$ can somehow be seen as an ideal in $K_H$. The advantage of the algorithm comes from the fact that $K_H$ is a number field of smaller degree than $K$. Hence, when seen as lattices, ideals of $K_H$ have a smaller dimension than ideals of $K$, which makes the lattice reduction algorithms run faster.
+Let us explain the intuition behind the algorithm. Assume that $K$ is Galois. Recall that, for an element $x \in K$, if $x$ is fixed by a non-trivial subgroup $H$ of the automorphism group of~$K$, then $x \in K_H$, where $K_H$ is a strict subfield of $K$. The same reasoning also applies (with slightly more care) to ideals: if the ideal $I$ is fixed as a set by $H$, then $I$ can somehow be seen as an ideal in $K_H$. The advantage of the algorithm comes from the fact that $K_H$ is a number field of smaller degree than $K$. Hence, when seen as lattices, ideals of $K_H$ have a smaller dimension than ideals of $K$, which makes the lattice reduction algorithms run faster.
 Formalizing this intuition was done in~\cite{BGP22}, but we will not do it in these lecture notes. Instead, we will describe a simpler version of the algorithm, which computes slightly longer vectors, but requires much less technical material.
 
 \begin{theorem}
@@ -1013,9 +1018,9 @@ Let $K$ be a Galois number field and $I$ be a fractional ideal of $K$, with deco
 Except for the call to the SVP solver, the algorithm runs in polynomial time.
 \end{theorem}
 
-Recall that $\mink(I)$ is a lattice of dimension $d$. Hence, it is trivial to find a short vector in $\mink(I)$ with a call to an SVP solver in dimension $d$. The statement in the theorem becomes interesting when $d/|H| < d$, i.e., when $|H| > 1$. Again, let us stress that this is not the typical case: for most ideals $I$, the algorithm from Theorem~\ref{thm:attack-ideal-SVP} does not outperform existing algorithms.
+Recall that $\mink(I)$ is a lattice of dimension $d$. Hence, it is trivial to find a short vector in $\mink(I)$ with a call to an SVP solver in dimension $d$. The statement in the theorem becomes interesting when $d/|H| < d$, i.e., when $|H| > 1$. Again, let us stress that this is not the typical case: for most ideals $I$, the algorithm from Theorem~\ref{thm:attack-ideal-SVP} does not outperform existing lattice reduction algorithms.
 
-The algorithm from Theorem~\ref{thm:attack-ideal-SVP} is described in Algorithm~\ref{algo:attack-ideal-SVP} below. The main idea of the algorithm is to compute $K_H$, the fixed field of $H$, and then consider the ideal $J = I \cap K_H$. This is an ideal in a number field of smaller degree, and the SVP solver is called on this ideal. By definition, the short element of $J$ output by the SVP solver is also in $I$. The main point of the proof is to show that this element is short in $I$ too. This is where we use the fact that $I$ is stabilized by elements of $I$.
+The algorithm from Theorem~\ref{thm:attack-ideal-SVP} is described in Algorithm~\ref{algo:attack-ideal-SVP} below. The main idea of the algorithm is to compute $K_H$, the fixed field of $H$, and then consider the ideal $J = I \cap K_H$. This is an ideal in a number field of smaller degree, and the SVP solver is called on this ideal. By definition, the short element of $J$ output by the SVP solver is also in $I$. The main point of the proof is to show that this element is short in $I$ too. This is where we use the fact that $I$ is stabilized by elements of $H$.
 
 \begin{algorithm}
 \caption{Find short vectors in ideals}
@@ -1033,31 +1038,31 @@ The algorithm from Theorem~\ref{thm:attack-ideal-SVP} is described in Algorithm~
 \end{algorithm} 
 
 \begin{proof}[Proof of Theorem~\ref{thm:attack-ideal-SVP}]
-Let us prove that Algorithm~\ref{algo:attack-ideal-SVP} satisfies the conditions of Theorem~\ref{thm:attack-ideal-SVP}. First of all, one can check that all the computations performed by the algorithm can be done in polynomial time, except the call to the SVP solver in Step~\ref{step:SVP}. We will not detail here how the computation of $H$ and $K_H$ can be done in polynomial time, but trust me: with the good representation, this can be done by simple linear algebra, in polynomial time (more details are provided in~\cite{BGP22}).
+Let us prove that Algorithm~\ref{algo:attack-ideal-SVP} satisfies the conditions of Theorem~\ref{thm:attack-ideal-SVP}. First of all, one can check that all the computations performed by the algorithm can be done in polynomial time, except the call to the SVP solver in Step~\ref{step:SVP}. We will not detail here how the computation of $H$ and $K_H$ can be done in polynomial time, but trust me: with the good representation, this can be done by simple linear algebra (more details are provided in~\cite{BGP22}).
 
 Observe also that the number field $K_H$ has degree $d/|H|$ by Theorem~\ref{thm:Galois-correspondance}. So the lattice $\mink_{K_H}(J)$ has dimension $d/|H|$, and the call to the SVP solver is done for a lattice of the appropriate dimension.
 
-By definition of $J$, any non-zero vector $s \in J$ is also a non-zero vector in $I$. Hence, to prove the Theorem is only remains to upper bound the euclidean norm of $\mink_K(s)$.
+By definition of $J$, any non-zero vector $s \in J$ is also a non-zero vector in $I$. Hence, to prove the theorem is only remains to upper bound the euclidean norm of $\mink_K(s)$.
 
 Let $t_1, \dots, t_d \in I$ be $\ZZ$-linearly independent and such that $\|\mink_K(t_i)\| \leq \lambda_d(\mink_K(I))$ for all $i$'s.
 Let us fix some index $i \in \{1, \dots, d\}$.
-By definition of $H$, we know that for all $\phi \in H$, $\phi(I) = I$, and so $\phi(t_i) \in I$. Since $I$ is stable by addition, this means that 
-\[\Tr_{K/K_H}(t_i) = \sum_{\phi \in H} \phi(t_i) \in I.\]
+By definition of $H$, we know that for all $\varphi \in H$, $\varphi(I) = I$, and so $\varphi(t_i) \in I$. Since $I$ is stable by addition, this means that 
+\[\Tr_{K/K_H}(t_i) = \sum_{\varphi \in H} \varphi(t_i) \in I.\]
 Moreover, we have also seen above that for any $x \in K$, $\Tr_{K/K_H}(x) \in K_H$. We conclude that 
 \[\Tr_{K/K_H}(t_i) \in I \cap K_H = J.\]
-We would like to use this inclusion to deduce an upper bound on $\lambda_1(\sigma_{K_H}(J)$. To do so, we need that $\Tr_{K/K_H}(t_i)$ is non-zero for at least one of the $t_i$'s. Assume by contradiction that $\Tr_{K/K_H}(t_i) = 0$ for all $i$'s. Then, by Equation~\eqref{eq:composing-relative-norm}, it also holds that $\Tr_{K}(t_i) = 0$ for all $i$'s. Since the $t_i$'s are $\ZZ$-linearly independent vectors of $K$, they form a $\QQ$-basis of $K$. By linearity of the trace map, we finally conclude that $\Tr_K(x) = 0$ for all $x \in K$. This is a contradiction, since the trace map is not the zero function. Hence, we conclude that at least one of the elements $\Tr_{K/K_H}(t_i)$ is non-zero, which implies that
+We would like to use this inclusion to deduce an upper bound on $\lambda_1(\sigma_{K_H}(J))$. To do so, we need that $\Tr_{K/K_H}(t_i)$ is non-zero for at least one of the $t_i$'s. Assume by contradiction that $\Tr_{K/K_H}(t_i) = 0$ for all $i$'s. Then, by Equation~\eqref{eq:composing-relative-norm}, it also holds that $\Tr_{K}(t_i) = 0$ for all $i$'s. Since the $t_i$'s are $\ZZ$-linearly independent vectors of $K$, they form a $\QQ$-basis of $K$. By linearity of the trace map, we finally conclude that $\Tr_K(x) = 0$ for all $x \in K$. This is a contradiction, since the trace map is not the zero function. Hence, we conclude that at least one of the elements $\Tr_{K/K_H}(t_i)$ is non-zero (let's call $i_0$ its index), which implies that
 \begin{align*}
-\lambda_1(\mink_{K_H}(J)) &\leq \max_i \|\mink_{K_H}(\Tr_{K/K_H}(t_i))\| \\
-& = \sqrt{|H|}^{-1} \cdot \max_i \|\mink_{K}(\Tr_{K/K_H}(t_i))\| \\
-& = \sqrt{|H|}^{-1} \cdot \max_i \|\mink_{K}(\sum_{\phi \in H}\phi(t_i))\| \\
-& \leq \sqrt{|H|}^{-1} \cdot \max_i \sum_{\phi \in H}\|\mink_{K}(\phi(t_i))\| \\
-& = \sqrt{|H|}^{-1} \cdot \max_i |H| \cdot \mink_{K}(t_i)\| \\
+\lambda_1(\mink_{K_H}(J)) &\leq\|\mink_{K_H}(\Tr_{K/K_H}(t_{i_0}))\| \\
+& = \sqrt{|H|}^{-1} \cdot \|\mink_{K}(\Tr_{K/K_H}(t_{i_0}))\| \\
+& = \sqrt{|H|}^{-1} \cdot \|\mink_{K}(\sum_{\varphi \in H}\varphi(t_{i_0}))\| \\
+& \leq \sqrt{|H|}^{-1} \cdot \sum_{\varphi \in H}\|\mink_{K}(\varphi(t_{i_0}))\| \\
+& = \sqrt{|H|}^{-1} \cdot |H| \cdot \|\mink_{K}(t_{i_0})\| \\
 & \leq \sqrt{|H|} \cdot \lambda_d(\mink_K(I)).
 \end{align*}
 Here, we used Lemma~\ref{lemma:canonical-norm-subfield} for the equality on the second line, and Lemma~\ref{lemma:automorphism-preserves-size} for the equality on the fourth line. Recall from Lemma~\ref{lemma:lower-upper-bounds-ideal-lambda_i} that $\lambda_d(\mink_K(I)) \leq \Delta_K^{1/d} \cdot \lambda_1(\mink_K(I))$. Hence, we conclude that the shortest element of the ideal $J$ in not much larger than the shortest element of the ideal $I$:
 \[\lambda_1(\mink_{K_H}(J)) \leq \sqrt{H} \cdot \Delta_K^{1/d} \cdot \lambda_1(\mink_K(I)).\]
 
-The call to the SVP oracle then returns a vector $\vec v \in \mink_{K_H}(J)$ such that $\|\vec v\| \leq \gamma \lambda_1(\mink_{K_H}(J))$. Finally, using Lemma~\ref{lemma:canonical-norm-subfield} again, we obtain the desired upper bound
+The call to the SVP oracle then returns a non-zero vector $\vec v \in \mink_{K_H}(J)$ such that $\|\vec v\| \leq \gamma \lambda_1(\mink_{K_H}(J))$. Finally, using Lemma~\ref{lemma:canonical-norm-subfield} again, we obtain the desired upper bound
 \[ \|\mink_K(s)\| = \sqrt{|H|} \cdot \|\mink_{K_H}(s)\| = \sqrt{|H|} \cdot \|\vec v\| \leq |H| \cdot \Delta_K^{1/d} \cdot \gamma \cdot \lambda_1(\mink_K(I)).\]
 \end{proof}
 
@@ -1069,19 +1074,19 @@ In this section, we will describe an algorithm that takes as input an element $h
 The history of attacks on NTRU with a large modulus $q$ (called ``overstretched NTRU'') starts in 2016, with two concurrent works by Albrecht, Bai and Ducas~\cite{ABD16}, and Cheon, Jeong and Lee~\cite{CJL16}. Both attacks use subfields to reduce the dimension of the NTRU instance. The principle of the attacks is somewhat similar, except that~\cite{ABD16} uses the relative norm whereas~\cite{CJL16} use the relative trace, to map elements of $K$ to a subfield.
 %The algorithm we will describe in this section uses subfields and relative norms, and follows the framework described in. A similar framework, using the relative trace instead of the relative norm was proposed concurrently in~\cite{CJL16}. The proof using the relative norm is slightly simpler than the one using the relative trace, which is why we chose to present this one in these lecture notes.
 In 2017, Kirchner and Fouque generalized the previous two attacks to any number fields, even those without any subfields~\cite{KF17}. This new attack does not rely on the algebraic structure anymore, but only on the geometric properties of the NTRU lattices. Its analysis is significantly more involved than the two previous subfield attacks, and relies on heuristics. The asymptotic complexity of all three attacks is roughly the same.
-In this section, we will analyze the attack from~\cite{ABD16}, which is (to my opinion), the simplest of the three attacks.
+In this section, we will analyze a simplified version of the attack from~\cite{ABD16}, which is (in my opinion), the simplest of the three attacks.
 
 As for the attack on ideal-SVP in Section~\ref{sec:attack-ideal-SVP}, the attacks works by transforming the input NTRU instance $h$ in field $K$ into a new instance $h'$ is a subfield $K'$ of $K$, and then solve the problem in smaller dimension. The main idea here is to take $h' = \N_{K/K'}(h)$. If $(f,g)$ was a trapdoor for $h$, then $(f', g') = (\N_{K/K'}(f),\N_{K/K'}(g))$ will be a trapdoor for $h'$, and the size of $f'$ and $g'$ can be controlled from the size of $f$ and $g$, and the degree of $K'$. By choosing an appropriate subfield $K'$, we can then make sure that $h'$ is an NTRU instance in $K'$, and solve the problem in smaller dimension there.
 
-One can see from this high level overview that the attack will not solve the search variant of NTRU: it will not find a shortest possible trapdoor $(f,g)$ for $h$. Instead, the algorithm will find $(f', g')$, a trapdoor for $h'$. This trapdoor can then be lifted to a large trapdoor for $h$ (with $f$ and $g$ only slightly smaller than $\sqrt{q}$, instead of being $\leq B$). This is what is done in~\cite{ABD16}, but this is not what we will do here. Instead, we will choose a less technical road, and simply use $(f',g')$ to distinguish between NTRU instances and random instances. This is less powerful than the attack described originally in~\cite{ABD16}, and it requires some heuristic, but this will be sufficient to solve dec-NTRU.
+One can see from this high level overview that the attack will not solve the search variant of NTRU: it will not find a shortest possible trapdoor $(f,g)$ for $h$. Instead, the algorithm will find $(f', g')$, a trapdoor for $h'$. This trapdoor can then be lifted to a large trapdoor for $h$ (with $f$ and $g$ only slightly smaller than $\sqrt{q}$, instead of being $\leq B$). This is what is done in~\cite{ABD16}, but we won't do this here. Instead, we will choose a less technical road, and simply use $(f',g')$ to distinguish between NTRU instances and random instances. This is less powerful than the attack described originally in~\cite{ABD16}, and it requires some heuristic, but this will be sufficient to solve dec-NTRU.
 
-Our objective is then: given $h' = \N_{K/K'}(h)$, can we distinguish the cases where $h$ was an NTRU$_{q,B}$ instance, and the cases where $h$ was uniformly sampled. We have seen above that if we choose our parameters well, then $h'$ is an NTRU$_{q,B'}$ instance when $h$ was an NTRU$_{q,B}$ instance, with a $B'$ larger than $B$. We hope that, if $h$ was uniform modulo $q$, then $h'$ is still uniform modulo $q$, or, at least, that $h'$ does not become an NTRU instance if $h$ was not. This is a reasonable assumption, since we have seen that NTRU instances are quite rare as long as $B$ is small compared to $\sqrt{q}$. But we do not know how to prove it, so we will simply assume it.
+Our objective is then: given $h' = \N_{K/K'}(h)$, can we distinguish the cases where $h$ was an NTRU$_{q,B}$ instance, and the cases where $h$ was uniformly sampled? We have seen above that if we choose our parameters well, then $h'$ is an NTRU$_{q,B'}$ instance when $h$ was an NTRU$_{q,B}$ instance, with a $B'$ larger than $B$. We hope that, if $h$ was uniform modulo $q$, then $h'$ is still uniform modulo $q$, or, at least, that $h'$ does not become an NTRU instance if $h$ was not. This is a reasonable assumption, since we have seen that NTRU instances are quite rare as long as $B'$ is small compared to $\sqrt{q}$. But we do not know how to prove it, so we will simply assume it.
 
 \begin{heuristic}
 \label{heuristic:NTRU}
 Let $K/K'$ be an extension of number fields, with respective degrees $d$ and $d'$.
-Let $q > 1$ be an integer and $B' \in (0,\sqrt{q}/8]$. We assume that
-\[{\Pr}_{h \leftarrow \mathcal{U}(\O_K/(q\O_K))}\big( \N_{K/K'}(h) \text{is an NTRU$_{q,B'}$ instance in $K'$}\big) \leq 2^{-d'}.\]
+Let $q > 1$ be an integer and $B' \in (0,\sqrt{q}/8]$. We heuristically assume that
+\[{\Pr}_{h \leftarrow \mathcal{U}(\O_K/(q\O_K))}\big( \N_{K/K'}(h) \text{ is an NTRU$_{q,B'}$ instance in $K'$}\big) \leq 2^{-d'}.\]
 \end{heuristic}
 
 Note that, from Lemma~\ref{lemma:proportion-NTRU-instances}, we know that the proportion of NTRU$_{q,B'}$ instances in $K'$ is $\leq \left( \frac{2^5 \cdot (B')^2}{q}\right)^{d'} \leq 2^{-d'}$ since $B' \leq \sqrt{q}/8$. Hence, if $\N_{K/K'}(h)$ were uniformly distributed in $\O_{K'}/(q\O_{K'})$, then our heuristic would be provably true. Our main assumption is then to assume that $\N_{K/K'}(h)$ behaves like a uniformly distributed element modulo $q$.
@@ -1106,7 +1111,7 @@ Note that, from Lemma~\ref{lemma:proportion-NTRU-instances}, we know that the pr
 %\end{proof}
 
 We are now ready to describe the attack. As explained above, the algorithm works by transforming the NTRU instance into a new NTRU instance in a field of smaller degree, and solving the decisional NTRU problem in this smaller dimensional number field. In order to solve the decisional NTRU problem in the smaller dimensional number field, we use lattice reduction to find a short trapdoor, as explained in Section~\ref{sec:NTRU}. If we succeed in finding a trapdoor significantly smaller than $\sqrt{q}$, then we guess that $h$ was an NTRU instance, and if we do not succeed, then we guess that $h$ was uniformly chosen.
-In order to simplify the statement of the algorithm and the theorem, we will restrict ourselves to a power-of-two cyclotomic field $K$. This way, $K$ has many subfields and we know exactly their degrees (there is at least one for each power-of-two $\leq d$). There is no real restriction to extend the algorithm to other number fields with subfields, but the statement would be messier, depending on the available degrees for the subfields of $K$.
+In order to simplify the statement of the algorithm and the theorem, we will restrict ourselves to a power-of-two cyclotomic field $K$. This way, $K$ has many subfields and we know exactly their degrees (there is at least one for each power-of-two $\leq d$). There is no real restriction to extend the algorithm to other Galois number fields with subfields, but the statement would be messier, depending on the available degrees for the subfields of $K$.
 
 \begin{algorithm}
 \caption{Solving dec-NTRU in power-of-two cyclotomic fields}
@@ -1115,11 +1120,11 @@ In order to simplify the statement of the algorithm and the theorem, we will res
 \REQUIRE An integer $q$, a bound $B \in (0,q^{1/4}/16]$ and an NTRU$_{q,B}$ instance $h$ in a power-of-two cyclotomic field $K = \QQ[X]/(X^d+1)$.
 \ENSURE A guess ``NTRU instance'' or ``random instance'' \vspace{1mm}
 \STATE Let $m$ be the smaller power-of-two $\geq d \cdot \frac{\log B}{\log(q^{1/4}/16)}$ \vspace{1mm}
-\STATE Let $K' = \QQ[X]/(X^m+1)$ (this is a subfield of $K$)\vspace{1mm}
+\STATE Let $K' = \QQ[X]/(X^m+1)$ {\color{gray}(this is a subfield of $K$)}\vspace{1mm}
 %TODO add in an example the fact that power of two cyclotomic fields are subfields of one another
 \STATE Compute $h' = \N_{K/K'}(h) \in K'$\vspace{1mm}
 \STATE Compute $M_{h'} \in \O_{K'}^{2 \times 2}$ the NTRU-module associated to $h'$ in $K'$ (see Definition~\ref{def:NTRU-module})\vspace{1mm}
-\STATE Solve $\vec s \leftarrow \text{SVP}_\gamma(\mink_{K'}(M_h))$ with $\gamma = q^{1/4}$\vspace{1mm} \label{step:SVP-NTRU}
+\STATE Solve $\vec s \leftarrow \text{SVP}_\gamma(\mink_{K'}(M_{h'}))$ with $\gamma = q^{1/4}$\vspace{1mm} \label{step:SVP-NTRU}
 \IF{$\|\vec s\| \leq \sqrt{q}/8$\vspace{1mm}}\label{step:if-small-NTRU}
 	\RETURN ``NTRU instance''
 \ELSE
@@ -1131,10 +1136,10 @@ In order to simplify the statement of the algorithm and the theorem, we will res
 
 \begin{theorem}
 \label{thm:attack-NTRU}
-Let $K = \QQ[X]/(X^d+1)$ with $d$ a power-of-two. Let $q >2$ be an integer and $B > 0$ be a real number with $B \leq \frac{q^{1/4}}{16}$. Let $\psi$ be any distribution over NTRU$_{q,B}$ instances. Define $m := 2^{\left\lceil \log_2\left(\frac{d\log B}{\log(q^{1/4}/16)}\right)\right\rceil}$ and $\gamma := q^{1/4}$.
+Let $K = \QQ[X]/(X^d+1)$ with $d$ a power-of-two. Let $q >1$ be an integer and $B > 0$ be a real number with $B \leq \frac{q^{1/4}}{16}$. Let $\psi$ be any distribution over NTRU$_{q,B}$ instances. Define $m := 2^{\left\lceil \log_2\left(\frac{d\log B}{\log(q^{1/4}/16)}\right)\right\rceil}$ and $\gamma := q^{1/4}$.
 %Let $h \in R_q$ be an NTRU$_{q,B}$ instance. Assume that $h$ admits a trapdoor $(f_0,g_0)$ such that $\|\mink_K(f_0)\|, \|\mink_K(g_0)\| \leq B$ and $\|\mink_K(f_0^{-1})\| \leq B$ and $\N_K(f_0)$, $\N_K(g_0)$ are coprime.
 %On input $(q,B,h)$, 
-Under Heuristic~\ref{heuristic:NTRU}, Algorithm~\ref{algo:attack-NTRU} solves dec-NTRU$_{q,B,\psi}$ with probability $\geq 1-2^m$. The algorithm makes one call to an SVP$_\gamma$ solver in a lattice of dimension $2m$, and, except for this call, it runs in polynomial time.
+Under Heuristic~\ref{heuristic:NTRU}, Algorithm~\ref{algo:attack-NTRU} solves dec-NTRU$_{q,B,\psi}$ with probability $\geq 1-2^{-m}$. The algorithm makes one call to an SVP$_\gamma$ solver in a lattice of dimension $2m$, and, except for this call, it runs in polynomial time.
 \end{theorem}
 
 The choice of $m$ and $\gamma$ in the theorem's statement may be a bit hard to apprehend, so let's take two concrete examples. 
@@ -1148,17 +1153,18 @@ The choice of $m$ and $\gamma$ in the theorem's statement may be a bit hard to a
 Again, the assertion on the run time follows easily by inspection of the algorithm. One should note that since $B \leq q^{1/4}/16$, then $m \leq d$, and so there is indeed a subfield of $K$ of degree~$m$.
 
 Let us now prove that the algorithm is correct with good probability. 
-To do so, we distinguish the two cases: $h$ is an NTRU$_{q,B}$ instance, or $h$ is uniformly random. Let us start with the case $h \leftarrow \mathcal{U}(R_q)$. Recall from Section~\ref{sec:NTRU} that any vector $(g',f') \in M_{h'}$ satisfies $g' \cdot h' = f' \bmod q$. Hence, if there exists $\vec v \in \mink_{K'}(M_{h'})$ non-zero with $\|vec v\| \leq \sqrt{q}/8$, then the corresponding vector $(g',f') \in M_{h'}$ is non-zero and satisfies $\|\mink_{K'}(g')\|, \|\mink_{K'}(f')\| \leq \|vec v\| \leq \sqrt{q}/8$. In other words, $h'$ is an NTRU$_{q,\sqrt{q}/8}$ instance in $K'$. From Heuristic~\ref{heuristic:NTRU}, this happens with probability $\leq 2^{-m}$. Hence, the probability that the algorithm wrongly outputs ``NTRU instance'' when $h$ is actually uniformly chosen is $\leq 2^{-m}$.
+To do so, we distinguish the two cases: $h$ is an NTRU$_{q,B}$ instance, or $h$ is uniformly random. Let us start with the case $h \leftarrow \mathcal{U}(R_q)$. Recall from Section~\ref{sec:NTRU} that any vector $(g',f') \in M_{h'}$ satisfies $g' \cdot h' = f' \bmod q$. Hence, if there exists $\vec v \in \mink_{K'}(M_{h'})$ non-zero with $\|\vec v\| \leq \sqrt{q}/8$, then the corresponding vector $(g',f') \in M_{h'}$ is non-zero and satisfies $\|\mink_{K'}(g')\|, \|\mink_{K'}(f')\| \leq \|\vec v\| \leq \sqrt{q}/8$. In other words, $h'$ is an NTRU$_{q,\sqrt{q}/8}$ instance in $K'$. From Heuristic~\ref{heuristic:NTRU}, this happens with probability $\leq 2^{-m}$. Hence, the probability that the algorithm wrongly outputs ``NTRU instance'' when $h$ is actually uniformly chosen is $\leq 2^{-m}$.
 
 Let us now consider the case where $h$ is an NTRU$_{q,B}$ instance in $K$.
-Let $(f_0,g_0)$ be a trapdoor for $h$, that is $(f_0, g_0) \neq (0,0)$ and $g_0 \cdot h = f_0 \bmod q$ and $\|\mink_K(f_0)\|,\|\mink_K(g_0)\| \leq B$.
-Let $H$ be the subgroup of $\Aut(K)$ fixing $K'$. Recall that $K$ is Galois, so $H$ exists and has cardinality $|H| = d/m$. For any $\phi \in H$, it holds that $\phi(q) = q$ since $q \in \QQ$, and so $\phi(g_0) \cdot \phi(h) = \phi(f_0) \bmod q$. (Make sure you understand why $\phi(q) = q$ was needed here.) By definition of the relative norm, this implies that
+Let $(f_0,g_0)$ be a trapdoor for $h$, that is $(f_0, g_0) \neq (0,0)$, $g_0 \cdot h = f_0 \bmod q$ and $\|\mink_K(f_0)\|,\|\mink_K(g_0)\| \leq B$.
+Let $H$ be the subgroup of $\Aut(K)$ fixing $K'$. Recall that $K$ is Galois, so $H$ exists and has cardinality $|H| = d/m$. For any $\varphi \in H$, it holds that $\varphi(q) = q$ since $q \in \QQ$, and so $\varphi(g_0) \cdot \varphi(h) = \varphi(f_0) \bmod q$. (Make sure you understand why $\varphi(q) = q$ was needed here.) By definition of the relative norm, this implies that
 \[ \N_{K/K'}(g_0) \cdot \N_{K/K'}(h) = \N_{K/K'}(f_0) \bmod q.\]
-Let us write $g_0' = \N_{K/K'}(g_0)$ and $f_0' = \N_{K/K'}(f_0)$. Recall also the notation $h' = \N_{K/K'}(h)$ from the algorithm. By Lemmas~\ref{lemma:automorphism-preserves-size} and~\ref{lemma:canonical-norm-subfield}, we know that $\|\mink_{K'}(g_0')\| \leq \|\mink_{K}(g_0')\| \leq \|\mink_{K}(g_0)\|^{|H|} \leq B^{|H|}$. Similarly, $\|\mink_{K'}(f_0')\|\leq B^{|H|}$. Letting $B' = \cdot B^{|H|}$ we see that $h'$ is an NTRU$_{q,B'}$ instance in $K'$. Now, recall from the algorithm that $m \geq d \cdot \frac{\log B}{\log(q^{1/4}/16)}$, hence we have
+Let us write $g_0' = \N_{K/K'}(g_0)$ and $f_0' = \N_{K/K'}(f_0)$. Recall also the notation $h' = \N_{K/K'}(h)$ from the algorithm. By Lemmas~\ref{lemma:automorphism-preserves-size} and~\ref{lemma:canonical-norm-subfield}, we know that $\|\mink_{K'}(g_0')\| \leq \|\mink_{K}(g_0')\| \leq \|\mink_{K}(g_0)\|^{|H|} \leq B^{|H|}$. Similarly, $\|\mink_{K'}(f_0')\|\leq B^{|H|}$. Letting $B' = B^{|H|}$ we see that $h'$ is an NTRU$_{q,B'}$ instance in $K'$ (make sure you see why $(f_0', g_0') \neq (0,0)$). Now, recall from the algorithm that $m \geq d \cdot \frac{\log B}{\log(q^{1/4}/16)}$, hence we have
 \[B' = B^{d/m} \leq B^{\frac{\log(q^{1/4}/16)}{\log B}} = q^{1/4}/16.\]
-The rank-2 module $M_{h'} \subseteq \O_{K'}^2$ contains the short non-zero vector $(g_0',f_0')$, hence $\lambda_1(\mink_{K'}(M_{h'})) \leq 2B' \leq q^{1/4}/8$.
 
-Let $\gamma = q^{1/4}$ and $\vec v$ be a solution to SVP$_\gamma$ in $\mink_{K'}(M_{h'})$, as in the theorem statement. Then 
+The rank-2 module $M_{h'} \subseteq \O_{K'}^2$ contains the short non-zero vector $(g_0',f_0')$, hence $\lambda_1(\mink_{K'}(M_{h'})) \leq 2B' \leq q^{1/4}/8$.
+%
+Let $\gamma = q^{1/4}$ and $\vec v$ be a solution to SVP$_\gamma$ in $\mink_{K'}(M_{h'})$, as in the algorithm. Then 
 \[\|\vec v\| \leq \gamma \cdot \lambda_1(\mink_{K'}(M_{h'})) \leq \sqrt{q}/8.\]
 This means that, when $h$ is an NTRU instance, our algorithms always finds $\vec v$ with $\|\vec v\| \leq \sqrt{q}/8$ and outputs correctly ``NTRU instance''.
 This concludes the proof of correctness of the algorithm.
