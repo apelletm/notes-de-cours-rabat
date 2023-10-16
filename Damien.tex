@@ -249,8 +249,8 @@ Now, assume that~${\bf A}$ is sampled uniformly in~$\mZ_q^{m \times n}$. It is o
 Re-arranging terms allows to complete the proof.
 \end{proof}
 
-\textcolor{red}{Damien: Do we need the HNF? How to get a short basis from short vectors?}
-\textcolor{red}{Alice: I don't need it}
+%\textcolor{red}{Damien: Do we need the HNF? How to get a short basis from short vectors?}
+%\textcolor{red}{Alice: I don't need it}
 
 
 
@@ -301,15 +301,26 @@ of such approximate computations, it is typically more convenient to use the QR-
 The lattice determinant can be derived from the QR-factorization of any lattice basis. 
 
 \begin{lemma}
+\label{le:Rdet}
 Let~$L \subset \mR^m$ be an $n$-dimensional lattice. Let~${\bf B}$ be the matrix representation of a basis of~$L$, and~${\bf R}$ 
 be its R-factor. Then we have:
 \[\det(L) = \prod_{i \leq n} r_{ii}.\]
 \end{lemma} 
 
+We can also relate the lattice minimum to the diagonal coefficients of the R-factor. 
 
-\textcolor{red}{Damien: Do we need the R-factor of the dual?}\\
-\textcolor{red}{Alice: I don't.}
+\begin{lemma}
+\label{le:Rlambda}
+Let~$L \subset \mR^m$ be an $n$-dimensional lattice. Let~${\bf B}$ be the matrix representation of a basis of~$L$, and~${\bf R}$ 
+be its R-factor. Then we have:
+\[ \min_{i \leq n} r_{i,i} \leq \lambda_1(L) \leq r_{1,1}.\]
+\end{lemma} 
 
+\begin{proof}
+Consider the vector~$\vec{t} = {\bf Q}^T \vec{s}$, where~$\vec{s}$ is a shortest non-zero vector of~$L$. We have~$\|\vec{t}\| = \|\vec{s}\|=\lambda_1(L)$. As  $\vec{s}$ belongs to~$L$, there exists an integer vector~${\bf k}$  such that~$\vec{s} = \vec{B} \cdot  \vec{k}$. By left-multiplying by~${\bf Q}^T$, we obtain that $\|\vec{t}\| = \vec{R} \cdot  \vec{k}$. Let~$i$ be the last index for which~$k_i$ is non-zero. As~$\vec{R}$ is triangular, we have~$\|\vec{t}\| \geq r_{i,i} |k_i|$. The fact that $k_i$ is a non-zero integer implies that $r_{i,i} \leq \lambda_1(L)$.
+
+For the second inequality, note that~$r_{1,1} = \|\vec{b}_1\|$, and as~$\vec{b}_1$ is a non-zero lattice vector, we must have~$\|\vec{s}\|\leq \|\vec{b}_1\|$.
+\end{proof}
 
 
 
@@ -511,17 +522,17 @@ Let~$L \subset \mR^m$ be a lattice of dimension~$n$, and $\widehat{L}$ be its du
 \]
 \end{theorem}
 
-\subsection{Lattice Gaussians}
-
-\textcolor{red}{
-Damien: What do we need here? Only def and tail bound, and a statement for Klein/GPV? \\
-Which normalization? I tend to prefer Vadim's, for convenience \\
-A proof of Klein/GPV? The definition of the smoothing parameter?
-}
-
-\textcolor{red}{
-Alice: No discrete Gaussian needed for me
-}
+%\subsection{Lattice Gaussians}
+%
+%\textcolor{red}{
+%Damien: What do we need here? Only def and tail bound, and a statement for Klein/GPV? \\
+%Which normalization? I tend to prefer Vadim's, for convenience \\
+%A proof of Klein/GPV? The definition of the smoothing parameter?
+%}
+%
+%\textcolor{red}{
+%Alice: No discrete Gaussian needed for me
+%}
 
 \subsection{Selected hard lattice problems}
 

@@ -7,6 +7,88 @@ relevant for cryptanalysis of lattice-based cryptosystems.
 
 \subsection{The LLL algorithm} 
 
+The purpose of the LLL algorithm~\cite{LeLeLo82} is to efficiently compute a basis of good quality from an arbitrary basis of an integral lattice. Formally, the quality is measured by the norm of the first  basis vector relatively to the first minimum, and efficiency refers to polynomial complexity. 
+
+We first define the notion of LLL-reducedness and comment on its quality. We will later describe the LLL algorithm, which returns an LLL-reduced basis, and consider its run-time. 
+
+\begin{definition}
+\label{def:lll}
+Let~$\delta \in (1/4,1)$. 
+Let~${\bf B}$ be the matrix representation of a basis of an $n$-dimensional  lattice~$L$, and~${\bf R}$ be its R-factor. 
+The basis matrix~${\bf B}$ is said $\delta$-LLL-reduced if:
+\[
+\forall i<j: |r_{ij}| \leq \frac{1}{2}\cdot  r_{ii}, \ \text{ and } \ \forall i <n: \delta \cdot r_{i,i}^2 \leq  r_{i+1,i+1}^2+r_{i,i+1}^2.   
+\]
+The first condition is called size-reduction, while the second one is attributed to Lov\'asz. 
+\end{definition}
+
+The parameter~$\delta$ is often set to~$3/4$, for the unique purpose of making quality formulas prettier. It is important to set 
+it strictly less than~$1$ to allow the cost analysis to go through, but geometrically it can be thought as being equal to~$1$. In that 
+case,  the Lov\'asz condition states that orthogonally to the first~$i-1$ basis vectors, the $i$-th vector is no longer than the $(i+1)$-th.
+
+\begin{lemma}
+\label{def:lll}
+Let~$\delta \in (1/4,1)$ and~$\alpha = 1/\sqrt{\delta-1/4}$. 
+Let~${\bf B}$ be the matrix representation of a basis~$(\vec{b}_i)_i$ of an $n$-dimensional  lattice~$L$. If~${\bf B}$ is $\delta$-LLL-reduced, then: 
+\[
+\|\vec{b}_1\| \leq \alpha^{n-1} \cdot \lambda_1(L) \ \mbox{ and } \ \|\vec{b}_1\| \leq \alpha^{\frac{n-1}{2}} \cdot (\det L)^{\frac{1}{n}} .   
+\]
+\end{lemma}
+
+\begin{proof}
+Using the size-reduction condition for~$j=i+1$ and the Lov\'asz condition, we obtain that
+\[
+\forall i<n: r_{i,i} \leq \alpha r_{i+1,i+1}.
+\]
+As a result, the inequality~$r_{1,1} \leq \alpha^{i-1}\cdot r_{i,i}$ holds for all~$i \leq n$. Taking the product across all~$i$'s, we obtain that $r_{1,1}^n \leq \alpha^{n(n-1)/2} \cdot \prod_i r_{i,i}$. As~$\|\vec{b}_1\| = r_{1,1}$ and~$\det(L) = \prod_i r_{i,i}$ (see Lemma~\ref{le:Rdet}), we obtain the second claimed inequality. 
+
+As~$r_{1,1} \leq \alpha^{i-1} \cdot r_{i,i}$ holds for all~$i \leq n$, we obtain that  $\min_i r_{i,i} \geq \alpha^{-n+1}\cdot  r_{1,1}$. Using Lemma~\ref{le:Rlambda} gives the first claimed inequality. 
+\end{proof}
+
+Given as input the matrix representation~${\bf B}$ of the basis~$(\vec{b}_i)_i$ of a lattice~$L$, the LLL algorithm (with parameter~$\delta \in (1/4,1)$) proceeds 
+by iterating the following two steps: 
+\begin{itemize}
+\item[$\bullet$] \emph{Size-reduction} --- for all~$j$, for all~$i$ (in decreasing order), subtract~$\lceil r_{i,j}/r_{i,i} \rfloor \cdot \vec{b}_i$ from~$\vec{b}_j$; 
+\item[$\bullet$] \emph{Swap} --- for an~$i$ such that $\delta \cdot r_{i,i}^2 >  r_{i+1,i+1}^2+r_{i,i+1}^2$, swap $\vec{b}_i$ and~$\vec{b}_{i+1}$. 
+\end{itemize}
+The algorithm terminates when no swap can be performed, and the current basis matrix~${\bf B}$ is returned. 
+In the above, the matrix~${\bf R}$ refers to the R-factor of~${\bf B}$ and needs to be updated consistently with the updates performed on~${\bf B}$. 
+
+\begin{lemma}
+The number of loop iterations performed by the LLL algorithm is bounded from above by~$n^2 \cdot \max_i \log_{1/\delta} \|\vec{b}_i\|$,
+where the~$\vec{b}_i$'s refer to the input basis. 
+\end{lemma}
+
+\begin{proof}
+Let~$\Pi = \prod_i r_{i,i}^{2(n-i+1)}$. This quantity is often called the potential of the basis~$\bf{B}$. 
+By rearranging terms, we observe that
+\[
+\Pi = \prod_{i\leq n} \prod_{j \leq i} r_{j,j}^2 =  \prod_{i\leq n} \det (\vec{B}_i^T \vec{B}_i) \ ,
+\]
+where~$\vec{B}_i$ is the matrix consisting of the first~$i$ columns of~$\vec{B}$. This shows that~$\Pi$ is an integer. 
+Further, using the fact that the inequality~$r_{i,i} \leq \|\vec{b}_i\|$ holds for all~$i$, we obtain 
+that~$\Pi \leq (\max_i \|\vec{b}_i\|)^{n^2}$. 
+
+Now, consider a swap. Let~$\vec{R}$ and~$\vec{R}'$ respectively denote the~$R$-factor before and after the swap. 
+For all~$j \notin \{i,i+1\}$, we have~$r'_{j,j} = r_{j,j}$. Also, as the determinant of the lattice spanned by the first~$i+1$ vectors is unchanged (the spanned lattice does not change), we have that~$\prod_{j \leq i+1} r'_{j,j} =  \prod_{j \leq i+1} r_{j,j}$. 
+Finally, note that~$r'_{i,i} = \sqrt{r_{i,i}^2 + r_{i,i+1}^2}$. 
+Overall, 
+if~$\Pi$ and~$\Pi'$ respectively denote the potential before and after the swap, we obtain that:
+\[ 
+\frac{\Pi'}{\Pi} = \left( \frac{r'_{i,i}}{r_{i,i}}\right)^2  \leq \delta.  
+\]
+
+To sum up, at every swap, the potential decreases by a factor~$\delta$. The potential is below~$(\max_i \|\vec{b}_i\|)^{n^2}$ and always at least~1 (it is a non-zero integer). This provides the result. 
+\end{proof}
+
+The above is not sufficient to conclude that the running-time of the LLL algorithm is polynomial in the input bit-size. 
+ 
+
+All operations performed on the basis matrix are unimodular, implying that the output matrix is indeed 
+One may check that once the size-reduction step has been performed, the 
+
+
+
 \subsection{Algorithms for SVP (or just sieves?)} 
 
 \subsection{The BKZ algorithm} 
