@@ -223,42 +223,44 @@ Let $q >2$ and $\alpha \in (0,1)$ be function of $n$ such that $\alpha q \geq 2 
 \end{theorem}
 
 
-\paragraph{Principe de la preuve de Regev.}
-Regev définit un problème intermédiaire DGS (discrete Gaussian sampling problem):
+\paragraph{High level idea of Regev's proof.} We refer to~\cite{Reg05} for the full proof. 
+Regev defines an intermediate problem called DGS (discrete Gaussian sampling problem):
+
+
 \begin{itemize}
-\item DGS$_{\phi}$ : étant donné un réseau $\Lambda$ de dimension $n$ et un paramètre $r > \phi(\Lambda)$. Renvoyer un échantillon de $D_{\Lambda,r}$.
+\item DGS$_{\phi}$: given a lattice $\Lambda$ of dimension $n$ and a parameter $r > \phi(\Lambda)$. Output a sample of $D_{\Lambda,r}$.
 \end{itemize}
-Remarque: tout dépend de la base qu'on a de $\Lambda$.
-Plus on chercher à échantillonner avec un $r$ petit, plus c'est difficile... Suivent deux réductions :
+Remark: the hardness of this problem depends on the basis of $\Lambda$ that we have. Then the smaller is $r$, the harder it is to solve.
+Then Regev described two reductions:
 
 \medskip
 
 %\lecours{\textcolor{blue}{
 
 \begin{itemize}
-\item Une réduction de SIVP avec $\gamma=\tilde{O}(n / \alpha)$ à DGS avec $r=2 \sqrt{n} \eta_{\varepsilon}(\Lambda) / \alpha$.
+\item A reduction from SIVP with $\gamma=\tilde{O}(n / \alpha)$ to DGS with $r=2 \sqrt{n} \eta_{\varepsilon}(\Lambda) / \alpha$.
 \begin{itemize}
-\item Principe de la réduction de SIVP$_{2\sqrt{n} \phi(L)}$ à DGS$_{\phi(L)}$ si $\phi(L) \geq 2  \eta_{\varepsilon}(L)$:
+\item Principle of the reduction from SIVP$_{2\sqrt{n} \phi(L)}$ to DGS$_{\phi(L)}$ if $\phi(L) \geq 2  \eta_{\varepsilon}(L)$:
 \begin{itemize}
-\item Etant donné un réseau $L$, on commence par utiliser LLL pour obtenir $S$ = ensemble de $n$ vecteurs linéairement indépendants de longueur au plus $2^n \lambda_n(L)$. On note $\tilde{\lambda}_n$ la norme du plus grand: par construction $\lambda_n(L) \leq \tilde{\lambda}_n \leq 2^n \lambda_n(L) $.
-\item Pour $i \in \{0, \ldots, 2n \}$, appeler DGS $n^2$ fois sur la paire $(L,r_i = \tilde{\lambda}_n 2^{-i})$ pour former l'ensemble $S_i$. (vérifier que $r_i > \phi(L)$)
-\item Choisir les $n$ vecteurs linéairement indépendants dans chaque $S_i$ et renvoyer l'ensemble le plus court.
+\item Given a lattice $L$, we start by using LLL to obtain $S$ = set of $n$ vectors linearly independent of size at most $2^n \lambda_n(L)$. We denote by $\tilde{\lambda}_n$ the norm of the largest, by construction $\lambda_n(L) \leq \tilde{\lambda}_n \leq 2^n \lambda_n(L) $.
+\item For $i \in \{0, \ldots, 2n \}$, call DGS $n^2$ times on $(L,r_i = \tilde{\lambda}_n 2^{-i})$ to build the set $S_i$. (check if $r_i > \phi(L)$)
+\item Choose the $n$ vectors linéairement linearly independent in each $S_i$ and output the shortest set.
 \end{itemize}
-\item Pourquoi ca marche ?
+\item Why does it work?
 \begin{itemize}
-\item Si $\phi(L) \geq \tilde{\lambda}_n $, $S$ est déjà plus court que $2 \sqrt{n} \phi(L)$ $\Rightarrow$ c'est bon.
-\item Sinon, soit $i$ tel que $\phi(L) < r_i < 2 \phi (L)$ (existe car $\lambda_n(L) \leq \tilde{\lambda}_n \leq 2^n \lambda_n(L) $, $\phi(L) \geq 2  \eta_{\varepsilon}(L)$ et $\eta_{\varepsilon}(L) \geq \lambda_n(L)/n$). $S_i$ contient $n$ vecteurs linéairement indépendants avec très forte probabilité (calculée dans Corollary 3.16 Regev 09). Tous les vecteurs de $S_i$ ont pour norme au plus $\sqrt{n} r_i \leq 2 \sqrt{n} \phi (L)$ $\Rightarrow$ c'est bon.
+\item If $\phi(L) \geq \tilde{\lambda}_n $, $S$ is already smaller than $2 \sqrt{n} \phi(L)$.
+\item Else, let $i$ such that $\phi(L) < r_i < 2 \phi (L)$ (exists because $\lambda_n(L) \leq \tilde{\lambda}_n \leq 2^n \lambda_n(L) $, $\phi(L) \geq 2  \eta_{\varepsilon}(L)$ and $\eta_{\varepsilon}(L) \geq \lambda_n(L)/n$). There are  $n$ vectors linearly independent in $S_i$ with high probability (see Corollary 3.16 Regev 09). All the vectors of $S_i$ has norm at most $\sqrt{n} r_i \leq 2 \sqrt{n} \phi (L)$.
 \end{itemize}
 \end{itemize}
-\item Si $\alpha q > 2 \sqrt{n}$, une réduction de DGS pour $r= \sqrt{2n} \eta_{\varepsilon}(\Lambda) / \alpha$ à LWE$_{q,\alpha}$.
+\item If $\alpha q > 2 \sqrt{n}$, a quantum reduction from DGS for $r= \sqrt{2n} \eta_{\varepsilon}(\Lambda) / \alpha$ to LWE$_{q,\alpha}$.
 \begin{itemize}
-\item En entrée : un réseau $L$ et $r > 2 \sqrt{n} \eta_{\varepsilon}(\Lambda) / \alpha$. Objectif : un échantillon de $D_{L,r}$.
-\item Principe : deux itérations. Soit $r_i = r \cdot (\alpha q / \sqrt{n})^i$. L'algorithme commence par produire $n^c$ échantillons de $D_{L,r_{3n}} $ (ok car $r_{3n} > 2^{3n}r > 2^{2n} \lambda_n(L)$). Itération :
+\item Input : a lattice $L$ and $r > 2 \sqrt{n} \eta_{\varepsilon}(\Lambda) / \alpha$. Goal: a sample from $D_{L,r}$.
+\item Principle: two iterations. Let $r_i = r \cdot (\alpha q / \sqrt{n})^i$. The algorithm starts by producing $n^c$ samples of $D_{L,r_{3n}} $ (he can do it because $r_{3n} > 2^{3n}r > 2^{2n} \lambda_n(L)$). Iteration:
 \begin{itemize}
-\item Etape classique : étant donnés $n^c$ échantillons de $D_{L,r_i}$ et un oracle de LWE, résoudre CVP$_{L^*,\frac{\alpha q}{r}}$ (variante où la distance entre la cible et le réseau est $\frac{\alpha q}{r}$). 
-\item Etape quantique : utiliser l'oracle de CVP$_{L^*,\frac{\alpha q}{r}}$ pour trouver $n^c$ échantillons de $D_{L,r_{i-1}}$.
+\item Classical step: given $n^c$ samples of $D_{L,r_i}$ and an LWE oracle, solve CVP$_{L^*,\frac{\alpha q}{r}}$ (variant where the distance between the target and the lattice is $\frac{\alpha q}{r}$). 
+\item Quantum step: use the CVP$_{L^*,\frac{\alpha q}{r}}$ oracle to find $n^c$ samples of $D_{L,r_{i-1}}$.
 \end{itemize}
-\item A la fin, on a $n^c$ échantillons de $D_{L,r_0}$ avec $r_0=r$.
+\item At the end, we have $n^c$ samples of $D_{L,r_0}$ with $r_0=r$.
 %$r_ 1 =r \cdot \alpha q / \sqrt{n} > \sqrt{2} q \eta_{\varepsilon}(\Lambda) $
 \end{itemize}
 \end{itemize}
