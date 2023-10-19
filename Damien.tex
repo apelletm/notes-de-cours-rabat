@@ -15,7 +15,7 @@ We refer the reader to~\cite{Siegel89} for additional material, including missin
 
 
 A Euclidean lattice is the set of all integral linear combinations of a set if linearly independent vectors in a Euclidean space. 
-An illustration is provided in Figure~\ref{fig:lattice1}. The lattice is the set of intersection points in the grid. 
+%An illustration is provided in Figure~\ref{fig:lattice1}. The lattice is the set of intersection points in the grid. 
 The following is a more formal definition.
 
 \begin{definition}
@@ -34,7 +34,7 @@ of the canonical basis vectors~${\bf b}_i = (0^{i-1}, 1, 0^{n-i})^T$ for~$i \in 
 Definition~\ref{def:lattice1} implies that a lattice is a subgroup of~$(\mR^m,+)$, i.e., for any~${\bf c}$ and~${\bf c}'$ in the lattice, the difference~${\bf c} - {\bf c}'$ also belongs to the lattice. It also implies that a lattice must be discrete, i.e., every sequence of lattice points that converges must be ultimately constant. (This can be seen by proved by considering the $i$-th coordinates of 
 the vectors in the sequence, for any $i \leq n$, and using the discreteness of~$\mZ$.)  Graphically, this means that 
 a lattice cannot have points of accumulation, i.e., that there is always a minimal distance separating any two given points of a
-considered lattice. Figure~\ref{fig:lattice2} gives a subgroup of~$(\mR^2,+)$ that is not a lattice. 
+considered lattice. %Figure~\ref{fig:lattice2} gives a subgroup of~$(\mR^2,+)$ that is not a lattice. 
 
 In fact, being a discrete subgroup of~$(\mR^m,+)$ is an alternative definition of Euclidean lattices
 
@@ -59,19 +59,19 @@ Let~$m \geq n >0$ and~$q \geq 2$ be integers. Let~${\bf A} \in (\mZ/q\mZ)^{m \ti
 \[
 \Lambda({\bf A}) = {\bf A} \cdot (\mZ/q\mZ)^n + q \cdot \mZ^m = \{ {\bf y} \in \mZ^m: \exists {\bf s} \in (\mZ/q\mZ)^n, {\bf y} = {\bf A}\cdot {\bf s} \bmod q\};
 \]
-\item[$\bullet$] The image lattice associated to~${\bf A}$ is defined as
+\item[$\bullet$] The kernel lattice associated to~${\bf A}$ is defined as
 \[
 \Lambda^\perp({\bf A}) = \{ {\bf x} \in \mZ^m: {\bf x}^T \cdot {\bf A} = {\bf 0} \bmod q\}.
 \]
 \end{itemize}
 \end{definition}
-{\color{red} [Alice: you said "image lattice associated to $A$" for both $\Lambda$ and $\Lambda^\perp$, is that a typo?]}
+%{\color{red} [Alice: you said "image lattice associated to $A$" for both $\Lambda$ and $\Lambda^\perp$, is that a typo?]}
 
 In the following, for the sake of compactness, the notation~$\mZ_q$ will refer to $\mZ/q\mZ$ (note that this does not refer 
 to $q$-adic integers, which do not play any role in these lecture notes). 
 
-By using Lemma~\ref{def:lattice2}, it can be checked that the sets $\Lambda({\bf A})$ and~$\Lambda^\perp({\bf A})$ are indeed lattices. As they are defined modulo~$q$, they are sometimes called~$q$-ary lattices. Also, due to their relevance in lattice-based cryptography, the lattice $\Lambda({\bf A})$ is often called the LWE lattice related to~${\bf A}$ and the lattice $\Lambda^\perp({\bf A})$ is often called the SIS lattice related to~${\bf A}$. The LWE and SIS problems are defined in Section~\ref{se:LBC}. The $\Lambda({\bf A})$ lattice is also known as the construction~A lattice 
-applied to the linear code~${\bf A} \cdot \mZ_q^n$. The~``A'' in ``construction~A'' is unrelated to the choice of notation for matrix~${\bf A}$: construction~A refers to the first construction out of several, to obtain lattices from linear codes~\cite[Chapter~7]{CS99}. 
+By using Lemma~\ref{def:lattice2}, it can be checked that the sets $\Lambda({\bf A})$ and~$\Lambda^\perp({\bf A})$ are indeed lattices. As they are defined modulo~$q$, they are sometimes called~$q$-ary lattices. Also, due to their relevance in lattice-based cryptography, the lattice $\Lambda({\bf A})$ is often called the LWE lattice related to~${\bf A}$ and the lattice $\Lambda^\perp({\bf A})$ is often called the SIS lattice related to~${\bf A}$. The LWE and SIS problems are defined in Section~\ref{se:LBC}. The $\Lambda({\bf A})$ lattice is also known as the Construction~A lattice 
+applied to the linear code~${\bf A} \cdot \mZ_q^n$. The~``A'' in ``Construction~A'' is unrelated to the choice of notation for matrix~${\bf A}$: Construction~A refers to the first construction out of several, to obtain lattices from linear codes~\cite[Chapter~7]{CS99}. 
 The following result shows that the two constructions are equivalent. 
 
 
@@ -115,7 +115,7 @@ This can be seen as a generalization of the inverse over~$\mR \setminus \{0\}$, 
 Let~$L$ be a lattice. Then~$\widehat{L}$ is a lattice and~$\widehat{\widehat{L}} = L$.
 \end{lemma}
 
-We now come back to our running example of construction A lattices.
+We now come back to our running example of Construction~A lattices.
 
 \begin{lemma}
 \label{le:constA_dual}
@@ -186,7 +186,8 @@ Let~${\bf B}$ and~${\bf C}$ be two matrix bases of the same lattice~$L$. Then we
 \end{lemma}
 
 The proof follows by considering a unimodular matrix~${\bf U}$ such that ${\bf C} = {\bf B} \cdot {\bf U}$. 
-Geometrically, and as illustrated in Figure~\ref{fig:det}, the determinant is the volume of the parallelepiped~${\bf B} \cdot [0,1]^n$. 
+Geometrically, %and as illustrated in Figure~\ref{fig:det}, 
+the determinant is the volume of the parallelepiped~${\bf B} \cdot [0,1]^n$. 
 
 The following result focuses on dual lattices. 
 
@@ -213,7 +214,7 @@ rank is~$n$ with probability~$\geq 1 - q^{-m+n}$.
 \end{lemma}
 
 We stress that the dimension of these lattices is indeed~$m$ (even though in the rest of this section, the lattice dimension is denoted
-by~$n$).\footnote{DS: les notations sont sous-optimales ici} 
+by~$n$).%\footnote{DS: les notations sont sous-optimales ici} 
 
 
 \begin{proof}
