@@ -96,6 +96,135 @@ The algorithm terminates if no swap can be performed. This is equivalent to stat
 
 
 
-\subsection{Algorithms for SVP (or just sieves?)} 
+\subsection{Algorithms for SVP }
+The main computational task associated to lattices is finding a short vector in a lattice, see Definition~\ref{def:SVP}. Recall that on input, we are given a full-rank lattice $L$ described by a matrix $B \in \RR^{n \times n}$ (with polynomially-sized entries) and some constant  $\gamma\geq 1$. The task is to output a non-zero lattice vector is a solution to the approximate shortest vector problem. Since the solution is not unique (especially for large $\gamma$), we are fine with any vector that satisfies the length condition.  
+
+Algorithms solving SVP can be divided into two categories: provable and heuristic. The former one give guarantee that the shortest vector will be found for any input, while the latter can fail to produce the shortest vector and/or rely on assumptions that may not be satisfied by some lattices. Nevertheless, in practice we resort to heuristic algorithms. 
+
+Another complimentary way to categorize SVP algorithms is by their design, see Table~\ref{table:SVPAlgs}. There we have four different `styles' of algorithms: Enumeration, Voronoi Cell, Gaussian Sampling, and Sieving (the latter two might be arguably merge into one category). Enumeration is the only known approach that finds the short vector with only $\poly(n)$ memory, others require at exponential in the lattice dimension space. The family of so-called sieving (or AKS) algorithms, described in the pioneering work of Ajtai, Kumar, and Sivakumar~\cite{AKS01}, offers the best known to-date heuristic algorithm for SVP. The fact that this algorithm achieves a single-exponential running time and memory complexity was already stated in the original paper~\cite{AKS01}, but a more precise analysis of the constant in the exponent has a long history. The result of Nguyen and Vidick in~\cite{NV08}, stating the running time of order $2^{5.9n+o(n)}$, was later improved by Pujol and Stehl{\'e} to $2^{2.465n+o(n)}$ running time and $2^{1.42n+o(n)}$ space~\cite{PS09}. Under an assumption on the distribution of lattice-vectors, we are able to heuristically solve appSVP in $2^{0.415n+o(n)}$ time and $2^{0.208n+o(n)}$ space using \emph{heuristic sieving}~\cite{NV08}. Finally, the currently best known running time of $2^{0.292n+o(n)}$ in~\cite{BDGL16} comes from a line of works based on the techniques from Locality Sensitive Hashing. This is to be compared with the fastest provable appSVP solver by Aggarwal et al.~\cite{ADRS15}. Based on the so-called discrete Gaussian sampling, this algorithm achieves $2^{n+o(n)}$ time and space complexity.
+
+Both sieving and enumeration have heuristic variants  and have been implemented. Concretely,  enumeration algorithms are implemented in~\cite{fpylll}, and sieving algorithms are implemented in~\cite{g6k}. 
+
+{
+\renewcommand\arraystretch{1.4}
+\begin{table}[h]
+	\centering
+	\begin{tabular}{| l | c | c |}
+		\hline
+		\textbf{Algorithm} & \textbf{Running time} & \textbf{Memory complexity} \\ \hline
+		\multicolumn{3}{|c|}{\textsc{ Deterministic algorithms:} } \\ \hline
+		Enumeration \cite{Kan87,HanSte07} & $n^{ (1/2e) n + \smallo(n)}$ & $\poly(n)$ \\ \hline
+		Voronoi Cell \cite{MicVou10} & $2^{2n + \smallo(n)}$ & $2^{n+\smallo(n)}$ \\ \hline
+		\multicolumn{3}{|c|}{\textsc{ Probabilistic algorithms:} } \\ \hline
+		Gaussian Sampling \cite{ADRS15} & $2^{n+ \smallo(n)}$ & $2^{n+ \smallo(n)}$ \\ \hline
+		Sieving \cite{AKS01} & & \\ [-1ex]
+		\hspace{5pt} -- Provable \cite{PS09} & $2^{2.465n + \smallo(n)}$& $2^{1.325n + \smallo(n)}$ \\ [-1ex]
+		\hspace{5pt} -- Heuristic \cite{BDGL16}: & $2^{0.292n + \smallo(n)}$ & $2^{0.208n + \smallo(n)}$  \\  \hline
+	\end{tabular}
+	\caption[Algorithms for SVP]{Algorithms for SVP on an $n$-dimensional lattice} 
+	
+	\label{table:SVPAlgs}
+\end{table} 
+
+}
+\subsubsection{Enumeration}
+
+\subsubsection{Heuristic Sieving}
+
+Let us define some geometric objects that will be useful for the analysis of sieving algorithms.
+
+Denote by $S^{n-1}:=\{ \vec x \in \RR^n \; : \; \|\vec x \| = 1 \}$ the unit sphere and by $\mathcal{H}_{\vec v, \alpha}:=\{\vec x \in \RR^n \; : \; \langle\vec v, \vec x \rangle \geq \alpha\}$ a half-space defined for any $\vec v \in \RR^n$ and $0 \leq \alpha \leq 1$.
+
+\begin{definition}[Spherical cap]
+	For a $\vec v \in \RR^n$ and $0 \leq \alpha \leq 1$, the spherical cap $\mathcal{C}_{\vec v, \alpha}$ is
+	\[
+		\mathcal{C}_{\vec v, \alpha} := S^{n-1} \cap \mathcal{H}_{\vec v, \alpha}.
+	\]
+	
+\end{definition}
+
+A proof of the following lemma is elementary and can be found in~\cite[Lemma~A.3]{MV10}. 
+\begin{lemma}{[Volume of $\mathcal{C}_{\vec v, \alpha}$, \cite[Lemma~A.3]{MV10}]} \label{lem:cap_vol}
+	Let $\mathcal{V}()$ be the volume operator. Then for any $\vec v \in \RR^n$,
+	\[
+		\frac{\mathcal{V} (	\mathcal{C}_{\vec v, \alpha} ) }{\mathcal{V}(S^{n-1})} = \poly(n) \left( \sqrt{1-\alpha^2} \right)^n.
+	\]
+
+\end{lemma}
+
+\paragraph{The Nguyen-Vidick sieve.} Sieving algorithms have two flavors: the Nguyen-Vidick sieve \cite{NV08} and the Gauss sieve \cite{MicVou10}. Both make $\poly(n)$ number of calls to an oracle that given a list $\mathcal{L}$ of lattice vectors finds all pairs $\vec{x}_1, \vec{x}_2$ from  this list such that $\| \vec{x}_1 \pm \vec{x}_2 \| < \min{ \| \vec{x}_1, \vec{x}_2\| }$. 
+
+The Nguyen-Vidick sieve starts by sampling lattice-vectors $\vec x \in L(\mathbf{B}) \cap \mathcal{B}(\mathbf{0}, 2^{\mathcal{O}(n)} \cdot \lambda_1(B))$. This can be done using, for example, Klein's sampling procedure~\cite{Klein00} that outputs a lattice-vector of length not greater than $2^{\mathcal{O}(n)} \cdot \lambda_1(B)$.  In the $2$-List Nguyen-Vidick sieve, we sample many such lattice-vectors, put them in a list $L$, and search for \emph{pairs} $\vec x_1 \times \vec x_2 \in \mathcal{L} \times \mathcal{L}$ s.t. $\| \vec x_1 \pm \vec x_2 \| \leq (1-\varepsilon) \max\{\| \vec x_1 \|, \| \vec x_2 \|\}$ for some small $\varepsilon>0$. The sum is put into the output list $\mathcal{L}_{\mathtt{out}}$. The size of $L$ is chosen in a way to guarantee $|{\mathcal{L}}| \approx |\mathcal{L}_{\mathtt{out}}|$. The search for pairs is repeated over the list $\mathcal{L}_{\mathtt{out}}$ once it is large enough.  The process is formalized in Algorithm~\ref{algo:NVsieve}.
+
+
+\begin{algorithm}
+	\caption{Nguyen-Vidick sieve~\cite{NV08}}
+	\label{algo:NVsieve}
+	\begin{algorithmic}[1]
+		\REQUIRE A lattice $L$ given be an LLL-reduced basis $B$, $0 < \varepsilon < 1$;
+		\ENSURE $\vec v \in L$ such that $\|\vec v\| \approx  \lambda_1(L)$  \vspace{1mm}
+		\STATE $\mathcal{L} \gets$ \texttt{Sample}$(L(B)$)  \COMMENT{Use sampler from~\cite{Klein00} }
+		\WHILE {$ |\mathcal{L}[0]| < \lambda_1(L)$}
+		\STATE $\mathcal{L} \gets $ 	\texttt{$2$-Sieve} on $\mathcal{L}, \varepsilon$
+		\STATE Sort $\mathcal{L}$ in increasing length
+		\ENDWHILE
+	\end{algorithmic}
+
+	\vspace{5mm}
+
+	\texttt{$2$-Sieve}
+	\begin{algorithmic}[1]
+		\REQUIRE  a list of lattice vectors $\mathcal{L}$ , $0 < \varepsilon < 1$;
+		\ENSURE  a list of shorter lattice vectors $\mathcal{L}_{\mathtt{out}} $ \vspace{1mm}
+		\STATE $\mathcal{L}_{\mathtt{out}} \gets \emptyset$
+		\FOR{$\vec x_1, \vec x_2 \in L$}
+		\IF{$\| \vec x_1 \pm \vec x_2 \| \leq (1-\varepsilon) \max\{\| \vec x_1 \|, \| \vec x_2 \|\}$}
+		\STATE $\mathcal{L}_{\mathtt{out}} \gets \mathcal{L}_{\mathtt{out}}  \cup \{ \vec x_1 \pm \vec x_2  \}$ \COMMENT{choose the sign that gives the shorter vector}		
+		\ENDIF
+		\ENDFOR
+		\RETURN $\mathcal{L}_{\mathtt{out}}$
+	\end{algorithmic}
+
+	
+
+\end{algorithm} 
+
+The size of $\mathcal{L}$ determines the space complexity of the algorithm. To obtain an estimate of the required $|\mathcal{L}|$,~\cite{NV08} propose the following heuristic.
+
+\begin{heuristic} \label{heur:sieve_heuristic}
+	At any stage of~Algorithm~\ref{algo:NVsieve}, the vectors in the list $\mathcal{L}$
+	are uniformly distributed on the spherical  $S^{n-1}$.
+\end{heuristic}
+
+The assumption is that the sieving algorithm operates on list of vectors that  lie uniformly on the unit sphere. It may sound contradictory at first sight, but in high dimensions the length of vectors sampled under the Gaussian distribution are concentrated around the expectation and the heuristic makes this concentration statement stronger. The heuristic here is that it does not affect the behavior of the algorithm. Intuitively, the discreteness of a lattice should not be `visible’ to the algorithm (at least not in the search for the approximate shortest vector; as soon as we see the discreteness, the vectors are already short enough).
+
+\begin{theorem} \label{thm:NVsieve}
+	Under Heuristic~\ref{heur:sieve_heuristic}, Algorithm~\ref{algo:NVsieve} outputs in time $2^{0.415n + o(n)}$ a vector $\vec v$ of norm $\| \vec v \| \approx \lambda_1(L)$ using $2^{0.2075n + o(n)}$ memory.
+\end{theorem}
+
+\begin{proof}
+	Under Heuristic~\ref{heur:sieve_heuristic} the list $\mathcal{L}$ consists of uniform random elements from the sphere $S^{n-1}$. In the process of sampling uniform random vectors $\vec x_i$ on $S^{n-1}$, observe that any pair $\vec x_1, \vec x_2 \in S^{n-1}$ that satisfies $\langle \vec x_1, \vec x_2 \rangle <1/2$ gives raise to a shorter vector. Concretely, $\| \vec x_1 - \vec x_2 \|^2 = \| \vec x_1 \|^2 -2\langle \vec x_1, \vec x_2 \rangle +\| \vec x_1 \|^2 < 1 - 1 + 1 < 1$. Hence, each sampled vector $\vec x_1$ will give raise to a shorter vector whenever there is another vector landing in $\mathcal{C}_{\vec x_1, 1/2}$. Therefore, after sampling $\poly(n) \frac {\mathcal{V}(S^{n-1})} {\mathcal{V} (	\mathcal{C}_{\vec v, \alpha} ) }$ random vectors from $S^{n-1}$ we expect to cover all the sphere with the caps $\mathcal{C}_{\vec x_1, 1/2}$ and each next sample will result in a shorter vectors. Therefore, we need to start $| \mathcal{L}| = \poly(n) \cdot(\sqrt{1-1/4})^{-n} = \poly(n) \left(\sqrt{\frac{4}{3}}\right)^{n}\approx 2^{0.2075n + o(n)}$ vectors in order to expect the same number of shorter vectors to be constructed.
+	
+	As we start with $2^{\O(n)}$ approximation to the shortest vector (guaranteed by the Klein's sampler) and at each step we decrease the norm by a small constant $\varepsilon$, we expect after $\poly(n)$ iterations of the While-loop on line~2 of Algorithm~\ref{algo:NVsieve} to have a list of vectors that contains the shortest vector.
+	
+	The lists sizes determine the memory of the algorithm. The runtime is dominated by the For-loop in 	\texttt{$2$-Sieve} (line~2) that search for pairs from the list of size $2^{0.2075n + o(n)}$, which can be done in time the list size squared.
+	
+\end{proof}
+
+The search for pairs with certain angular distance (i.e., the inner product) is done naively in the Nguyen-Vidick sieve. The so-called near-neighbor techniques can significantly speed up this process reaching the currently best sieving algorithm~\cite{BDGL16}
+
+\paragraph{The Gauss sieve}
+ 
+In the Gauss Sieve~\cite{MV10}, we keep a set $\mathcal{S}$ of vectors and try to perform as many pair-reductions on $\mathcal{S}$ as possible. Again, we look for pairs $(\vec x_1, \vec x_2)\in \mathcal{S}$ that produce shorter sum.
+
+To avoid checking the same paimultiple times, we separate $\mathcal{S}=\mathcal{L} \cap \mathcal{Q}$ into a list $=\mathcal{L} $ and a queue $\mathcal{Q}$. The list $\mathcal{L}$ contains the lattice vectors that we already checked: we maintain that no pair from $\mathcal{Q}$ can produce a shorter sum. The queue $\mathcal{Q}$ contains vectors that might still produce a shorter sum.
+ 
+Due to our splitting of $\mathcal{S}$, we may assume that one of the vectors in the `good' pair is from $\mathcal{Q}$.Whenever we sample or modify a vector, we have to move it into $\mathcal{Q}$; if no more reduction is possible with $\vec x_1 \in \mathcal{S}$, we move $\vec x_1$ from $\mathcal{Q}$ into $\mathcal{L}$.  If $\mathcal{Q}$ is empty, this signals that we have to sample a new vector.
+Since the lengths of the vectors in $\mathcal{S}$ keeps decreasing, we hope to eventually find the shortest vector.We stop the search when the length of the shortest element of the list (i.e., the shortest lattice vector found) is equal to the first successive minimum, $\lambda_1(L)$.
+Since we usually do not know the value of $\lambda_1(L)$ exactly, we use some heuristics:  in practice, we stop once we either found a lot of pairs that would give a zero vector or we are sufficiently close to the Minkowski bound.
+
+The analysis of the Nguyen-Vidick sieve can be adapted to the Gauss sieve so that the statement of Theorem~\ref{thm:NVsieve} applied to the latter as well.
+ 
+ 
 
 \subsection{The BKZ algorithm} 

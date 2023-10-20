@@ -540,7 +540,7 @@ Let~$L \subset \mR^m$ be a lattice of dimension~$n$, and $\widehat{L}$ be its du
 Many computational problems on lattices can be defined and studied. We refer to~\cite{NSD15} for a partial landscape. 
 Here we will introduce just a few problems, which play a more direct role in lattice-based cryptography.
 
-\begin{definition}
+\begin{definition}\label{def:SVP}
 Let~$\gamma \geq 1$. 
 The bounded distance decoding problem (BDD) is as follows: given as input a lattice~$L$ and a vector~${\bf t} \in \mbox{span}_\mR(L)$ such that~$\mbox{dist}({\bf t}, L) \leq \lambda_1(L) / \gamma$, the goal is to find~${\bf b} \in L$ such that~$\|{\bf b} - {\bf t}\| \leq \lambda_1(L) / \gamma$. 
 \end{definition}
