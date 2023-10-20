@@ -27,7 +27,7 @@ it strictly less than~$1$ to allow the cost analysis to go through, but geometri
 case,  the Lov\'asz condition states that orthogonally to the first~$i-1$ basis vectors, the $i$-th vector is no longer than the $(i+1)$-th.
 
 \begin{lemma}
-\label{def:lll}
+\label{lem:lll}
 Let~$\delta \in (1/4,1)$ and~$\alpha = 1/\sqrt{\delta-1/4}$. 
 Let~${\bf B}$ be the matrix representation of a basis~$(\vec{b}_i)_i$ of an $n$-dimensional  lattice~$L$. If~${\bf B}$ is $\delta$-LLL-reduced, then: 
 \[
@@ -113,7 +113,7 @@ Both sieving and enumeration have heuristic variants  and have been implemented.
 		\hline
 		\textbf{Algorithm} & \textbf{Running time} & \textbf{Memory complexity} \\ \hline
 		\multicolumn{3}{|c|}{\textsc{ Deterministic algorithms:} } \\ \hline
-		Enumeration \cite{Kan87,HanSte07} & $n^{ (1/2e) n + \smallo(n)}$ & $\poly(n)$ \\ \hline
+		Enumeration \cite{Kan83,HanSte07} & $n^{ (1/2e) n + \smallo(n)}$ & $\poly(n)$ \\ \hline
 		Voronoi Cell \cite{MicVou10} & $2^{2n + \smallo(n)}$ & $2^{n+\smallo(n)}$ \\ \hline
 		\multicolumn{3}{|c|}{\textsc{ Probabilistic algorithms:} } \\ \hline
 		Gaussian Sampling \cite{ADRS15} & $2^{n+ \smallo(n)}$ & $2^{n+ \smallo(n)}$ \\ \hline
@@ -128,6 +128,40 @@ Both sieving and enumeration have heuristic variants  and have been implemented.
 
 }
 \subsubsection{Enumeration}
+
+The first known algorithms for SVP belong to what is now known as \emph{enumeration} algorithms. The name describes the main idea: it enumerates lattice points within a small convex body. The idea belongs to Fincke-Pohst~\cite{FP83} and in cryptography it is more often referred to as Kannan's enumeration~\cite{Kan83}. 
+
+The algorithm finds the shortest vector in the lattice given by a basis $B$ and we assume that we know $\lambda_1(L(B))$. It uses the $R$-factor of $B$ which can be obtained in $\poly(n)$ time. Let us fix the value $k \in \RR$, for example, $k = \| \vec b_1 \|$ -- the norm of the first basis vector. Enumeration will find all integral vectors $\vec x \in \ZZ^n$ such that $\|B\vec x \| < k$. Let us see what this condition means for the $R$-factor of $B$.
+
+\begin{align}\label{eq:enum_norm}
+	\| B\vec x\|^2  = \| R\vec x\|^2 = \| \left( \sum_{i=1}^n r_{1,i}x_i, \sum_{i=2}^n r_{2,i}x_i, \ldots, r_{n,n} x_n \right) \|^2 = \sum_{j=1}^n \left( \sum_{i \geq j} r_{j,i} x_i \right)^2.
+\end{align}
+
+Now if we aim for $\vec x \in \ZZ^n$ such that $\| B \vec x\|^2 < k^2$, then it should hold that $(r_{n,n} x_n)^2 < k^2$. Since $x_n$ should be integral, the only options we have are $|x_n| < \frac{k} {r_{n,n}}$. That is, there are $2 \frac{k}{r_{n,n}}+1$ possible values for $x_n$ in total.
+
+On the second step, we fix any legitimate value for $x_n$ and consider the last two addends in the sum from~(\ref{eq:enum_norm}):
+\[
+(r_{n-1, n-1}x_{n-1} + r_{n-1, n}x_n)^2 + (r_{n,n}x_n)^2 < k^2 \iff \left|{x_{n-1} + \frac{r_{n-1,n}}{r_{n-1,n-1}}x_n }\right| < \left( \frac{k^2-(r_{n,n}x_n )^2}{r_{n-1, n-1}}\right)^{1/2}.
+\]
+
+For fixed $x_{n}$, we have that possible values for $x_{n-1}$ that satisfy the above belong to an interval of length $< \frac{2k}{r_{n-1, n-1}}+1$.
+
+Continuing this way, we receive a tree-like algorithm, where the nodes of the tree are the possible coefficients $x_{i}$ whose parent is a fixed coefficient $x_{i+1}$ (the tree is of depth $n$ having values for $x_n$ on the top). Traversing such a tree can be done in the depth-first manner: from $x_n$ down to $x_1$ -- a path that gives a candidate for the shortest vector $B\vec x$. We do not have to store all the tree, but only keep the path that leads to the currently shortest vector.
+
+\begin{lemma} The size of the enumeration tree of the above algorithm that receives on input an LLL-reduced basis $B$	is $2^{\O(n^2)}$. 
+\end{lemma}
+
+\begin{proof}
+	Since the input basis in LLL-reduced, it holds that $r_{1,1}/r_{i,i} \leq \alpha^{i-1}$, where $\alpha$ is a parameter of LLL (see~Lemma~\ref{lem:lll}). For $k = r_{1,1} = \| \vec b_1 \| < \alpha^{\frac{n-1}{2}} (\det L)^{1/n}$, we have
+	
+	\begin{align*}
+		|\texttt{Enum.tree}| = \sum_{j=1}^n \prod_{i \leq j} \left( \frac{2k}{r_{j,j}} +1 \right) \stackrel{\alpha=2}{=} \sum_{j=1}^n \prod_{i \leq j} (2^i+1)\leq \sum_{j=1}^n \prod_{i \leq j} 3^i \leq n \cdot  \prod_{i \leq j} 3^i = n \cdot 3^{n^2}.
+	\end{align*}
+
+On each node the algorithm spends at most $\poly(n)$ time, hence the overall complexity (dominated by the size of the tree) is as in the statement.
+\end{proof}
+
+The smaller the $r_{i,i}$'s are, the `wider' the tree is and the slower the algorithm is. It turns out that there exists a preprocessing of the input basis (much stronger than LLL) that makes the last (the smallest) $r_{i,i}$'s large~\cite{Kan83,HanSte07}. Such preprocessing allows to shrink the enumeration tree to the size $n^{\frac{n}{2e}+o(n)}$, while the memory is kept polynomial in $n$.
 
 \subsubsection{Heuristic Sieving}
 
@@ -185,8 +219,6 @@ The Nguyen-Vidick sieve starts by sampling lattice-vectors $\vec x \in L(\mathbf
 		\RETURN $\mathcal{L}_{\mathtt{out}}$
 	\end{algorithmic}
 
-	
-
 \end{algorithm} 
 
 The size of $\mathcal{L}$ determines the space complexity of the algorithm. To obtain an estimate of the required $|\mathcal{L}|$,~\cite{NV08} propose the following heuristic.
@@ -228,3 +260,68 @@ The analysis of the Nguyen-Vidick sieve can be adapted to the Gauss sieve so tha
  
 
 \subsection{The BKZ algorithm} 
+
+The acronym BKZ stands for `Blockwise-Korkine-Zolotarev'. It is an algorithm proposed by  Schnorr and Euchner in~\cite{SchE94}, but prior to that Schnorr~\cite{S87} introduced the concept of BKZ reduction as a generalization of LLL.
+
+Block reduction allows you to find somewhat short vectors in a lattice. We just saw that finding the shortest vector in a lattice (i.e. solving SVP) is  hard (known algorithms take at least $2^{\Omega(n)}$ time). On the other hand, finding somewhat short vectors that are longer than the shortest vector by an exponential factor takes only $\poly(n)$ time (LLL). In cryptanalysis, we are actually interested in the problem `in-between' as the security of all known lattice-based primitives relies on the hardness of approximate SVP with $\poly(n)$ approximation factor. This is what BKZ algorithm is for: parameterized by a block-size $2 \leq \beta \leq n$ it solves several instances of SVP on projected sublattices of the input lattice $L$.
+The main intuition behind BKZ is that the larger the block-size $\beta$ is, the more expensive the algorithm is in terms of running-time, but the `better' the quality of the output basis.
+
+
+Block reduction gives us more than just short vectors. It gives us guarantees on the “quality” of the basis, namely the size of $r_{i,i}$'s -- the main diagonal of the $R$-factor. Recall from the analysis of the enumeration algorithm for SVP that we need these $r_{i,i}$'s to not  not drop off too quickly. Since the product of all $r_{i,i}$'s is fixed  (and is equal to the determinant of the lattice), it is easy to see that if the $r_{i,i}$'s do not drop off too quickly, the first vector can be shown to be relatively short.
+
+\paragraph{How BKZ works.} In order to ensure that the $r_{i,i}$'s do not drop off to quickly, we are going to reduce them locally. For that, we will work on projected lattice blocks. Concretely, for given a basis $B$, denote by $B_{[i,j]}$ for $i<j$ the basis formed by the basis vectors $\vec b_i, \ldots \vec b_j$ projected orthogonally to the first $i-1$ basis vectors. That is $B_{[i,j]}$  is a basis for the lattice given by the sublattice formed by $\vec b_1, \vec b_2, \ldots ,\vec b_j$ projected onto the orthogonal subspace of the vectors $\vec b_1,\vec b_2, \ldots ,\vec{b}_{i-1}$. Notice that $\tilde{\vec{b}}_i$ the first vector of $B_{[i,j]}$. 
+
+Alternatively, we can look at projective sublattice using the $R$-factor, which is an upper triangular matrix.  The projection of a basis vector orthogonal to the previous basis vectors  corresponds to  dropping the first entries from the vector. So considering a projected block $R_{[i,j]}$ is the same as to consider the square submatrix of $R$ consisting of the rows and columns with indices between $i$ and $j$ (inclusive).
+
+To control the sizes of $r_{i,i}$'s,  we call an SVP solver (either enumeration or sieving) on the block $B_{[i,j]}$ of dimension $\beta = j-i+1$. The idea is that once this oracle finds the shortest vector in $B_{[i,j]}$ it inserts in into the basis $B$ on the $i$-th position and removed potential linear dependencies using LLL. Algorithm~\ref{algo:BKZ} formulates this idea.
+
+\begin{algorithm}
+	\caption{BKZ}
+	\label{algo:BKZ}
+	\begin{algorithmic}[1]
+		\REQUIRE An LLL-reduced lattice basis $B$, block parameter $\beta$, and an access to SVP oracle
+		\REPEAT
+		\FOR{$i\gets 1$ to $n$}
+ 		\STATE Run LLL on $B_{[i,\max\{i+\beta-1, n\}]}$
+ 		\STATE $\vec v \gets$ the shortest vector in $B_{[i,\max\{i+\beta-1, n\}]}$
+ 		\STATE insert $\vec v$ into $B$
+ 		\ENDFOR
+		\STATE \UNTIL{no change occurs}
+	\end{algorithmic}
+\end{algorithm} 
+
+Algorithm~\ref{algo:BKZ} starts by calling the SVP oracle on the first block $B_{[1,\beta]}$. Once this block is SVP reduced, we move to the next block $B_{[2,\beta+1]}$ and call the oracle on that. Notice that SVP reduction of $B_{[2,\beta+1]}$ together with insertion of the new vector and LLL may change the projected lattice $B_{[1,\beta]}$ and $\vec b_1$ may not be the shortest vector in the first block anymore, that is it can potentially be reduced even further. We deal with it later and continue in this fashion until we reach the end of the basis, i.e. until we called the oracle on $B_{[1,\beta]}$.  Once we have reached the end of the basis, i.e., we are finished with $B_{[n-\beta+1,n]}$, we start reducing the window size, i.e. we call the oracle on $B_{[{n-\beta},n]}$, $B_{[n-\beta+1,n]}$, etc., and we stop after we are finished with $B_{[n-1,n]}$. This whole process is called a BKZ tour.
+
+Once we have finished a tour, we go back and fix the blocks that are not SVP reduced anymore (the Repeat-Until in Algorithm~\ref{algo:BKZ}).  Again, if the second tour modified the basis, there is no guarantee that all the blocks are SVP reduced and we go for the third tour. In principal, this process can be unbounded, but~\cite{HPS11} show that terminating BKZ after $\poly(n)$-many tours will not  impact the quality of the output basis.
+
+\paragraph{Quality of BKZ-reduced basis.} Let us recall statement of Minkowski's theorem (Theorem~\ref{th:Minko}): for any $n$-dimensional lattice $L$, we have $\lambda_1(L) \leq \sqrt{n}\det(L)^{1/n}$. Applying this theorem to the SVP reduced projected block $B_{[i, i+\beta-1]}$, obtain for all $i$
+	\[
+		\| \tilde{\vec{b}}_i \| \leq \sqrt{\beta} \left( \prod_{j=1}^{i+\beta-1} \| \tilde{\vec{b}}_j \|  \right)^{1/\beta}.
+	\]
+Alternatively, write $\| \tilde{\vec{b}}_i \|^\beta \leq \beta^{\beta/2}  \prod_{j=1}^{i+\beta-1} \| \tilde{\vec{b}}_j \|  $. If we multiply all these inequalities together, we obtain 
+\[
+	\| \tilde{\vec{b}}_1 \|^{\beta-1} \cdot \| \tilde{\vec{b}}_2 \|^{\beta-2} \cdot \ldots \cdot \| \tilde{\vec{b}}_{\beta-1} \| \leq 
+	\beta^{\frac{\beta(n-\beta+1)}{2}} \| \tilde{\vec{b}}_{n-\beta+2} \|^{\beta-1} \| \tilde{\vec{b}}_{n-\beta+3} \|^{\beta-2} \cdot \ldots \cdot  \|  \tilde{\vec{b}}_n\|.
+\]
+
+Using the fact that not only $B_{[i, i+\beta-1]}$ are SVP-reduced, but also its sublattices $B_{[i, j]}$  for $j<i+\beta-1$, it holds that
+\[
+	\|  \tilde{\vec{b}}_1   \|^j \leq j^{j/2} \prod_{\ell = 1}^{j} \| \tilde{\vec{b}}_j  \|.
+\]
+
+Combining the above with $\|  \tilde{\vec{b}}_1  \| \leq \|  \tilde{\vec{b}}_1  \| $, obtain
+\[
+	\|  \tilde{\vec{b}}_1   \|^{\beta(\beta-1)/2} \leq \left( \prod_{i=2}^{\beta-1} i^{i/2} \right) \prod_{i=1}^{\beta-1} \|  \tilde{\vec{b}}_i  \|^{\beta-1}.
+\]
+
+Since $\beta^\beta \geq i^i$ for $i \leq \beta$, we finally have
+\[
+	\|  \tilde{\vec{b}}_1   \|^{\beta(\beta-1)/2} \leq \beta^{\beta(n-1)/2}  	\|  \tilde{\vec{b}}_{n-\beta+2}   \|^{\beta-1} \|  \tilde{\vec{b}}_{n-\beta+2}   \|^{\beta-2} \cdot \ldots \cdot  \|  \tilde{\vec{b}}_n\|.
+\]
+
+Assuming that for the shortest vector $\vec v$ its projection orthogonal to the first $n-1$ basis vectors is non-zero, we have that $\lambda_1(L) = \| \vec v \| \geq \| \tilde{\vec{b}}_i\|$ for $n-\beta+2\leq i\leq n$. From here is follows that $\lambda_1(L) \geq \max_{n-\beta+2\leq i\leq n}\{ \| \tilde{\vec{b}}_i\|\}$. The approximation factor achieved by BKZ now follows:
+\[
+	\|  \tilde{\vec{b}}_1   \| \leq \beta^{\frac{n-1}{\beta-1}}\lambda_1(L).
+\]
+
+\paragraph{Runtime} The running time of the algorithm is dominated by the SVP calls (if we bound the number of tours by $\poly(n)$). That is, the complexity of BKZ is driven my the complexity of SVP on lattices of dimension $\beta$, which is at least $2^{\O(\beta)}$.
