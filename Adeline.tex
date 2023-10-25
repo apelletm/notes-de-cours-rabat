@@ -23,7 +23,7 @@ The Short Integer Solution problem and the Learning With Errors problem are two 
 
 The Short Integer Solution problem (SIS) was introduced by Ajtai in 1996. Intuitively, it asks to find a short vector in the lattice $\Lambda^\perp({\bf A}) = \{ {\bf x} \in \mZ^m: {\bf x}^T \cdot {\bf A} = {\bf 0} \bmod q\}$ previously defined in Definition~\ref{def:qary} for an uniformly random matrix ${\bf A} \in \mZ_q^{n \times m}$, where $q$, $n$ and $m$ are integers such that $m \geq n$.
 In 1996, Ajtai also showed that finding a short vector in this particular lattice for an uniform $\bf A$ is at least as hard as solving the GapSVP$_{\gamma}$ problem for an approximation factor $\gamma$ polynomial in the dimension $n$ of the lattice.
-This reduction is an worst-case to average-case reduction, meaning that solving a problem for an uniform instance (the average case) is at least as hard as solving a problem for all its instances (including the worst one).
+This reduction is a worst-case to average-case reduction, meaning that solving a problem for an uniform instance (the average case) is at least as hard as solving a problem for all its instances (including the worst one).
 
 
 \subsubsection{Gaussian on lattices}
@@ -55,7 +55,7 @@ $$ \Delta(D_{\Lambda,s,\vec{c}} \bmod \Lambda', \Lambda \bmod \Lambda') \leq 2 \
 
 \begin{definition}
 \label{def:SIS}
-The short integer solution problem (SIS$_{q,m,\beta}$) is as follows: given as input a matrix $\bf A$ uniformly chosen in $\mZ_q^{m \times n}$, the goal is to find~${\bf x} \in \mZ^{m}$ such that ${\bf x}^T {\bf A} =  = 0 \bmod q$ and~$0 < \|{\bf x}\| \leq \beta $. 
+The short integer solution problem (SIS$_{q,m,\beta}$) is as follows: given as input a matrix $\bf A$ uniformly chosen in $\mZ_q^{m \times n}$, the goal is to find~${\bf x} \in \mZ^{m}$ such that ${\bf x}^T {\bf A} =  0 \bmod q$ and~$0 < \|{\bf x}\| \leq \beta $. 
 \end{definition}
 
 The choice of the parameters $n$, $m$, $q$ and $\beta$ is important to be sure the problem is well defined and difficult to solve. Without the condition on the norm of the vector $\bf x$, this problem is easy to solve, it is equivalent to solve an homogeneous system of linear equation.
@@ -90,8 +90,8 @@ It admits a solution for any $q$, ${\bf A} \in \mathbb{Z}_q^{m \times n}$ and $\
 \end{center}
 \end{figure}
 
-\paragraph{ISIS.} The ISIS problem is a variant of the SIS problem called the \emph{Inhomogeneous Small Integer Solution} problem. Instead of 
- Au lieu de chercher une solution d'un système homogène, on en cherche une maintenant pour un système d'équations non-homogène.
+\paragraph{ISIS.} The ISIS problem is a variant of the SIS problem called the \emph{Inhomogeneous Small Integer Solution} problem. Instead of looking for a short solution of an homogeneous system, we now have an inhomogeneous system.
+% Au lieu de chercher une solution d'un système homogène, on en cherche une maintenant pour un système d'équations non-homogène.
  
 \begin{definition}\label{def:ISIS}
 The Inhomogeneous short integer solution problem (SIS$_{q,m,\beta}$) is as follows: given as input a matrix $\bf A$  in $\mZ_q^{m \times n}$, and a vector $\bf{u} \in \mZ_q^n$ both uniformly chosen, the goal is to find~${\bf x} \in \mZ^{m}$ such that~ ${\bf x}^T {\bf A} = {\bf u}^T \bmod q$ and $\|{\bf x}\| \leq \beta $. 
