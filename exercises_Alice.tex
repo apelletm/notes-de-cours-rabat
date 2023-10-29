@@ -87,14 +87,14 @@
 \begin{document}
 
 {\noindent
-   \textsc{Lattice-based crypto}
-   \hfill {\textsc{Budapest Summer School -- August 2022}}\\
+   \textsc{Algebraic lattices in cryptography}
+   \hfill {\textsc{CIMPA school in Rabat -- October 2023}}\\
   }
   \hrule
 % Titre de la feuille
   \begin{center}
     {\Large\textbf{
-   \textsc{Tutorial 2}
+   \textsc{Exercises}
     } } 
   \end{center}
   \hrule \vspace{5mm}
@@ -123,6 +123,7 @@
 \end{questions}
 
 \section{Ideal lattices}
+\label{exo:id-lat}
 
 %Let $R$ be the ring $\ZZ[X]/(X^d+1)$ where $d$ is a power-of-two.
 
@@ -142,6 +143,92 @@
 
 \question Prove that the reciprocal is also true: if one knows a solution to SIVP$_\gamma$ in $\mathfrak{a}$, then one can construct in polynomial time a solution to SVP$_\gamma$ in $\mathfrak{a}$.
 
+\end{questions}
+
+\section{Albrecht-Deo's reduction}
+
+We will admit in this exercise that if $q$ is a prime integer and if the $a_i$ are sampled uniformly in $R_q^n$ for some $n > 1$, then with overwhelming probability, it suffices to sample a polynomial number of $a_i$'s to be able to extract $n$ of them $a'_1, \dots, a'_n$ such that the matrix whose rows are the $a'_i$'s is invertible in $R_q$.
+
+\begin{questions}
+
+\question Assume that we have access to an oracle computing samples from the distribution $D^{\textrm{MLWE}}_{n,q,\chi}(s)$ (for some $s \in R_q^n$), and assume that we have $n$ samples $(a_i, b_i)$ from $D^{\textrm{MLWE}}_{n,q,\chi}(s)$ such that
+the matrix $\overline{A}$ whose rows are the $a_i$ is invertible in $R_q$. Let $b_i = a_i s + e_i$ with $e_i \leftarrow \chi$ and let us write $\overline{e} = (e_1, \dots, e_n)^T$ and $\overline{b} = (b_1, \dots, b_n)^T$.
+
+Let $(a,b) \leftarrow D^{\textrm{MLWE}}_{n,q,\chi}(s)$. Define $a' = a \cdot \overline{A}^{-1}$ and $b' = \langle a', \overline{b} \rangle - b$. Show that $(a', b')$ is a sample from $D^{\textrm{MLWE}}_{n,q,\chi}(\overline{e})$.
+
+\question Conclude that there is a polynomial time reduction from MLWE$_{n,q,\chi}$ to HNF-MLWE$_{n,q,\chi}$, which is a variant of MLWE where the secret is sampled from the distribution $\chi^n$ instead of being chosen uniformly in $R_q^n$.
+
+\question Let $e \in R$ be such that $\|\tau(e) \| \leq \beta$ for some $\beta > 0$. Let $X = \{x \in R\,|\, \|\Sigma(x)\|_\infty \leq \beta'\}$ and $Y = \{x \in R\,|\, \|\Sigma(x-e)\|_\infty \leq \beta'\}$ for some $\beta' > 0$ not in $\ZZ$. Show that $|X| \leq (2\beta')^d$ and that $|X \cap Y| \geq (2(\beta'-\beta))^d$.
+
+\question Let $\chi'$ be the uniform distribution over $\{x \in R\,|\, \|\Sigma(x)\|_\infty \leq \beta'\}$ where $\beta' = \beta \cdot 2^{d+1}d$. Assume that $\beta' \not \in \ZZ$, using the previous question, show that the statistical distance between $\chi'$ and $e+\chi'$ is $\leq 2^{-d}$.
+
+\question Conclude the proof of Albrecht-Deo's reduction from the course.
+\end{questions}
+
+\section{Subfields and automorphisms}
+
+In this exercise, we take $P = X^4+1$, $K = \QQ[X]/P(X)$ and $R = \ZZ[X]/P(X)$.
+\begin{questions}
+\question What are the automorphisms of $K$? Show that $\mathrm{Gal}(K)$ is isomorphic as a group to $(\ZZ/2\ZZ \times \ZZ/2\ZZ,+)$.
+\question Deduce from the previous question that $K$ admits one subfield of degree $1$, three subfields of degree $2$ and one subfield of degree $4$.
+\question Exhibit a basis for all the subfields from the previous question.
+
+\end{questions}
+
+\section{Canonical embedding and automorphisms}
+
+Let $\zeta$ be a primitive $(2d)$-th root of unity in $\CC$, and define, for $i = 1$ to $d$ the maps
+\begin{align*}
+\sigma_i: \ \ \ K &\rightarrow \CC \\
+a(X) & \mapsto a(\zeta^{2i-1})
+\end{align*}
+These maps $\sigma_i$ are called the complex embeddings of $K$.
+Recall that the canonical embedding $\tau$ of an element $a \in K$ is defined as $\tau(a) := (\sigma_1(a), \dots, \sigma_d(a)) \in \CC^d$.
+%
+Let $\varphi$ be some automorphism of $K$.
+
+\begin{questions}
+\question Show that for all $i \in \{1, \dots, d\}$, there exists $k \in \{1, \dots, d\}$ such that $\sigma_i \circ \varphi = \sigma_k$.
+\question Show that the map $\sigma \mapsto \sigma \circ \varphi$ is actually a permutation over the set of complex embeddings $(\sigma_i)_{1 \leq i \leq d}$.
+\question Conclude that for all $a \in K$, it holds that $\|\tau(\varphi(a))\| = \|\tau(a)\|$.
+\end{questions}
+
+\section{Short vectors in special ideals}
+
+Let $\mathfrak{a}$ be an ideal of $K = \QQ[X]/(X^d+1)$. Let $H$ be its decomposition group (i.e., $H = \{\varphi \in \mathrm{Gal}(K)\,|\, \varphi(\mathfrak{a}) = \mathfrak{a}\}$), and let $K_H$ be the fixed field of $H$ (i.e., $K_H = \{x \in K \,|\, \varphi(x) = x, \, \forall \varphi \in H\}$).
+
+\begin{questions}
+\question Let $x \in \mathfrak{a}$ be non-zero. Define $w_i = \mathrm{Tr}_{K/K_H}(x \cdot X^{i-1})$ for $i \in \{1, \dots, d\}$. Show that there exists an index $i_0$ for which $w_{i_0}$ is non-zero.\\
+\textit{\color{gray}(Hint: recall from Exercise~\ref{exo:id-lat} that the vectors $x \cdot X^{i-1}$ are linearly independent, hence they form a $\QQ$-basis of $K$.)}
+
+\question Prove that, for all $i$, it holds that $\|\tau(w_i)\| \leq |H| \cdot \|\tau(x)\|$.\\
+\textit{\color{gray}(Hint: recall that $\|\tau(y \cdot X)\| = \|\tau(y)\|$ for all $y \in K$.)}
+
+\question Show that $w_i \in \mathfrak{b} := \mathfrak{a} \cap K_H$ for all $i$'s.\\
+\textit{\color{gray}(Hint: this is where we use that $H$ is the decomposition group of $\mathfrak{a}$.)}
+
+\question Conclude that $\lambda_1(\tau(\mathfrak{b})) \leq |H| \cdot \lambda_1(\tau(\mathfrak{a}))$.
+\end{questions}
+
+\section{NTRU}
+
+For the first 3 questions, assume that $K = \QQ$, and that $q$ is a prime integer.
+
+\begin{questions}
+\question Let $(f,g) \in \ZZ^2$ with $(f,g) \neq (0,0)$ and $|f|, |g| < q$. Let $h, h' \in \ZZ$ such that $gh = f \bmod q$ and $g h' = f \bmod q$. Show that $h = h' \bmod q$.\\
+\textit{\color{gray}(Hint: it may be useful to prove that $q$ is invertible modulo $q$.)}
+
+\question Show that for any $B > 0$, the number of pairs $(f,g) \in \ZZ^2$ with $|f|,|g| \leq B$ is at most $(2B+1)^2$.
+
+\question Deduce from the previous two questions that for $B < q$, the proportion of NTRU$_{q,B}$ instances in $\ZZ$ is $\leq \frac{(2B+1)^2}{q}$.\\
+\textit{\color{gray}(Hint: observe that if $h$ is an NTRU$_{q,B}$ instance, then any $h' = h \bmod q$ is also an NTRU$_{q,B}$ instance, so it suffices to consider the $h$ in $\{0,\dots, q-1\}$.)}
+\end{questions}
+
+From now on, $K = \QQ[X]/(X^d+1)$ as usual, and let $q \geq 5$. Let $\chi$ be the uniform distribution over polynomials of $\ZZ[X]/(X^d+1)$ with coefficients in $\{-1,0,1\}$, and let $\psi$ be the distribution obtained by sampling $f,g \leftarrow \chi$ until $g$ is invertible mod $q$, and returning $h = f/g \bmod q$. Note that $\psi$ is a distribution over NTRU$_{q,B}$ instances for $B = d$ (because $\|\tau(f)\| = \sqrt{d} \cdot \|\Sigma(f)\| \leq d$ if $f \leftarrow \chi$).
+Recall that the dec-NTRU$_{q,B,\psi}$ problem asks to distinguish $h \leftarrow \psi$ from $h \leftarrow \mathcal{U}(R_q)$.
+\begin{questions}
+\question Show that dec-NTRU$_{q,B,\psi}$ would be easy to solve if we had taken $h = f \bmod q$ instead of $h = f/g \bmod q$.
+\question Show that dec-NTRU$_{q,B,\psi}$ would be easy to solve if we had taken $h = 1/g \bmod q$ instead of $h = f/g \bmod q$.
 \end{questions}
 
 \end{document}
