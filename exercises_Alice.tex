@@ -1,7 +1,7 @@
 \documentclass[11pt]{exam}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\noprintanswers % pour enlever les réponses
-%\printanswers
+%\noprintanswers % pour enlever les réponses
+\printanswers
 
 \unframedsolutions
 \SolutionEmphasis{\small\color{blue}}
@@ -87,14 +87,14 @@
 \begin{document}
 
 {\noindent
-   \textsc{Lattice-based crypto}
-   \hfill {\textsc{Budapest Summer School -- August 2022}}\\
+   \textsc{Algebraic lattices in cryptography}
+   \hfill {\textsc{CIMPA school in Rabat -- October 2023}}\\
   }
   \hrule
 % Titre de la feuille
   \begin{center}
     {\Large\textbf{
-   \textsc{Tutorial 2}
+   \textsc{Exercises}
     } } 
   \end{center}
   \hrule \vspace{5mm}
@@ -105,43 +105,195 @@
 
 %\Large
 
+In all the exercises, unless specified otherwise, we take $P = X^d+1$ for $d$ a power-of-two, $K = \QQ[X]/P(X)$ and $R = \ZZ[X]/P(X)$.
+
 \section{Canonical and coefficient embeddings}
+In this exercise, we take $P = X^d+1$ for $d$ a power-of-two, $K = \QQ[X]/P(X)$ and $R = \ZZ[X]/P(X)$.
 
 \begin{questions}
-\question Show that the map from $\QQ^d$ to $\CC^d$ sending $\Sigma(a)$ to $\tau(a)$ (for $a \in K$) is a $\QQ$-linear morphism. Exhibit the matrix $M \in \mathrm{GL}_d(\CC)$ such that $\tau(a) = M \Sigma(a)$ for all $a \in K$.
+\question Show that the map from $\QQ^d$ to $\CC^d$ sending $\Sigma(a)$ to $\tau(a)$ (for $a \in K$) is a $\QQ$-linear morphism. Exhibit the matrix $M \in \mathrm{GL}_d(\CC)$ such that $\tau(a) = M \cdot \Sigma(a)$ for all $a \in K$.
+
+\begin{solution}
+If $\Sigma(a) = (a_0, \dots, a_{d-1})^T$, then $a = \sum_{i=0}^{d-1} a_i X^i$ and $\tau(a) = (a(\zeta_1), \dots, a(\zeta_d))^T$, where $\zeta_1, \dots, \zeta_d$ are the complex roots of $X^d+1$.
+Define $M := (\zeta_i^{j-1})_{1\leq i,j\leq d}$. Then, we have $\tau(a) = M \cdot \Sigma(a)$. This shows that the map sending $\Sigma(a)$ to $\tau(a)$ is $\QQ$-linear.
+Also, the matrix $M$ is a Vandermonde matrix, and we know that the determinant of this matrix is $\pm1 \cdot \prod_{i<j} (\zeta_i-\zeta_j)$. Since the $\zeta_i$'s are all distinct (because $P$ is irreducible over $\QQ$, so its complex roots are all distinct), we conclude that $\det(M) \neq 0$ and so $M$ is invertible.
+\end{solution}
 
 \question How can we compute $\Sigma(a)$ in polynomial time from $\tau(a)$? (this is equivalent to inverting the map $\tau$, since recovering $a$ from $\Sigma(a)$ is immediate).
 
-\question Show that $M \cdot M^* = \sqrt{d} \cdot I_d$, where $M^* = \overline{M}^T$.\\
+\begin{solution}
+We have seen that $\tau(a) = M \cdot \Sigma(a)$, and $M$ is invertible. Hence, to recover $\Sigma(a)$ from $\tau(a)$, it suffices to compute $M^{-1} $ (this can be done in polynomial time using Gaussian pivoting) and then $M^{-1} \cdot \tau(a)$.
+\end{solution}
+
+\question Show that $M \cdot M^* = d \cdot I_d$, where $M^* = \overline{M}^T$.\\
 \textit{\color{gray}(Hint 1: you may want to prove first that if $\zeta \in \CC$ is a $m$-th root of unity different from $1$, then $\sum_{i = 0}^{m-1} \zeta^i = 0$)} \\
 \textit{\color{gray}(Hint 2: to prove Hint 1, you can consider the equality $(\sum_{i = 0}^{m-1} X^i) \cdot (X-1) = X^m-1$}
 
-\question Deduce from the previous question that we also have $M^* \cdot M = \sqrt{d} \cdot I_d$.
+\begin{solution}
+Using the hint, observe that $(\sum_{i = 0}^{m-1} X^i) \cdot (X-1) = X^m-1$ for all $m > 0$. If $\zeta$ is a $m$-th root of unity, we then have $(\sum_{i = 0}^{m-1} \zeta^i) \cdot (\zeta-1) = \zeta^m-1 = 1-1 = 0$. If $\zeta \neq 1$, then $\zeta-1 \neq 0$ and so it must be that $\sum_{i = 0}^{m-1} \zeta^i = 0$. On the other hand, if $\zeta = 1$, then $\sum_{i = 0}^{m-1} \zeta^i = m$.
+
+Let us now consider two rows $i$ and $j$ of $M$. The $(i,j)$-th coefficient of $M \cdot M^*$ is equal to the hermitian inner product between these two rows, i.e., it is $\sum_{k = 0}^{d-1} \zeta_i^k \overline{\zeta_j^k} = \sum_{k = 0}^{d-1} \zeta_i^k \cdot \zeta_j^{-k}$. Let us write $\zeta = \zeta_i \cdot \zeta_j^{-1}$. We have that $\zeta$ is a $d$-th root of unity. Indeed, $\zeta^d = \zeta_i^d / \zeta_j^d = -1/(-1) = 1$ (because $\zeta_i$ and $\zeta_j$ are roots of $X^d+1$). Moreover, $\zeta = 1$ if and only if $\zeta_i = \zeta_j$, which is the case if and only if $i = j$.
+
+Hence, using the first part, we conclude that the $(i,j)$-th coefficient of $M \cdot M^*$ is equal to $\sum_{k = 0}^{d_1} \zeta^k = 0$ if $i \neq j$, and is equal to $d$ if $i = j$. Hence, $M \cdot M^* = d \cdot I_d$.
+\end{solution}
+
+\question Deduce from the previous question that we also have $M^* \cdot M = d \cdot I_d$.
+
+\begin{solution}
+We have proven that $M \cdot M^* = d \cdot I_d$. Hence, $M^* = d \cdot M^{-1}$, and so it commutes with $M$. Another way to prove this is to observe that $(M^* \cdot M) \cdot M^* = M^* \cdot (M \cdot M^*) = M^* \cdot d \cdot I_d = d M^*$. Since $M^*$ is invertible, we can divide by $M^*$ on the right and we obtain $M^* \cdot M = d \cdot I_d$.
+\end{solution}
 
 \question Conclude that $\|\tau(a)\| = \sqrt{d} \cdot \|\Sigma(a)\|$ for all $a \in K$.
+
+\begin{solution}
+For any $a \in K$, we have proven in the first question that $\tau(a) = M \cdot \Sigma(a)$. Hence, $\|\tau(a)\|^2 = \tau(a)^* \cdot \tau(a) = \Sigma(a)^* \cdot M^* \cdot M \cdot \Sigma(a) = d \cdot \Sigma(a)^* \cdot \Sigma(a) = d \cdot \|\Sigma(a)\|^2$. Taking the square root gives the desired result.
+This equation shows that the geometry induced by the canonical embedding is the same as the geometry induced by the coefficient embedding (up to a scaling by a factor $\sqrt{d}$). Note that we crucially used here the fact that $P = X^d+1$ for $d$ a power-of-two. In general, the Vandermonde matrix $M$ is not orthogonal (even up to scaling), this is true here because the roots $\zeta_i$ are very special roots (they are power-of-two primitive roots of unity).
+\end{solution}
 
 \end{questions}
 
 \section{Ideal lattices}
+\label{exo:id-lat}
 
-%Let $R$ be the ring $\ZZ[X]/(X^d+1)$ where $d$ is a power-of-two.
+In this exercise again, we take $P = X^d+1$ for $d$ a power-of-two, $K = \QQ[X]/P(X)$ and $R = \ZZ[X]/P(X)$.
 
 \begin{questions}
-\question Show that if $a \in K$ is non-zero, then the $d$ vectors $\tau(a \cdot X^i)$ for $i = 0$ to ${d-1}$ are linearly independent. \\
-\textit{\color{gray}(Hint: you may want to use exercise $1$)}
+\question Show that if $a \in K$ is non-zero, then the $d$ vectors $\tau(a \cdot X^i)$ for $i = 0$ to ${d-1}$ are $\QQ$-linearly independent. \\
+\textit{\color{gray}(Hint: you may want to use the fact that $\sigma: K \rightarrow \CC^d$ is injective)}
+
+\begin{solution}
+Let $z_0, \dots, z_{d-1} \in \QQ$ be such that $\sum_{i = 0}^{d-1} z_i \cdot \tau(a \cdot X^i) = 0$. We want to prove that $z_0 = \dots = z_{d-1}$ (which will prove that the $\tau(a X^i)$ are linearly independent).
+We have 
+\begin{align*}
+0 = \sum_{i = 0}^{d-1} z_i \cdot \tau(a \cdot X^i) = \tau(\sum_{i = 0}^{d-1} z_i \cdot a \cdot X^i).
+\end{align*}
+Writing $z := \sum_{i = 0}^{d-1} z_i\cdot X^i$ and $y := \sum_{i = 0}^{d-1} z_i \cdot a \cdot X^i = a \cdot z$, we have that $\tau(y) = 0$, and so $y = 0$ by injectivity of $\tau$. Since $K$ is a field and $a \neq 0$ by assumption, this implies that $z = 0$, i.e., $z_0 = \dots = z_{d-1} = 0$ as desired.
+\end{solution}
 
 \question Show that for any $a,b \in R$ with $a \neq b$, then $\|\tau(a) - \tau(b)\| \geq \sqrt{d}$. \\
 \textit{\color{gray}(Hint: you may want to use the fact that $\|\tau(x)\| = \sqrt{d} \cdot \|\Sigma(x)\|$)}
 
-\question Conclude that for any non-zero ideal $\mathfrak{a}$, the set $\Sigma(\mathfrak{a})$ is a lattice of rank $d$ in $\CC^d$.
+\begin{solution}
+Let $c = a-b$ Since $a \neq b$, then $c \neq 0$, and we have $\|\tau(a) - \tau(b)\| = \|\tau(c)\|$. Hence, it suffices to prove that for all non zero $c \in R$, we have $\|\tau(c)\| \geq \sqrt{d}$. We know that $\|\tau(c)\| = \sqrt{d} \cdot \|\Sigma(c)\|$. Also, $\Sigma(c) \in \ZZ^d$ (because $R = \ZZ[X]/(X^d+1)$) and $\Sigma(c) \neq 0$ (because $c \neq 0$). Hence, $\|\Sigma(c)\| \geq 1$ (it has one coordinate which is non-zero and is an integer, so is $\geq 1$ in absolute value). And we conclude that $\|\tau(c)\| = \sqrt{d} \|\Sigma(c)\| \geq \sqrt{d}$ as desired.
+\end{solution}
 
-\question Show that in any non-zero ideal $\mathfrak{a}$, it holds that $\lambda_1(\tau(\mathfrak{a})) = \cdots = \lambda_d(\tau(\mathfrak{a}))$.
+\question Conclude that for any non-zero ideal $\mathfrak{a}$, the set $\tau(\mathfrak{a})$ is a lattice of rank $d$ in $\CC^d$.
+
+\begin{solution}
+The set $\tau(\mathfrak{a})$ is stable by addition and subtraction since $\mathfrak{a}$ is (and $\tau$ is linear). Moreover, we have just proven that $\tau(\mathfrak{a})$ is discrete. It is then a discrete subgroup of $\CC^d \sim \RR^{2d}$, hence a lattice. To obtain the rank of this lattice, we use question $1$. We know that $\tau(\mathfrak{a}) \subseteq \tau(R)$, which is a lattice of rank $d$. So the rank of $\tau(\mathfrak{a})$ is at most $d$.
+Let $a \in \mathfrak{a}$ be non-zero (such $a$ exists because $\mathfrak{a}$ is non-zero). Let $t_i = a \cdot X^{i-1}$ for $i = 1, \dots, d$. Since $X^{i-1} \in R$ and $\mathfrak{a}$ is an ideal, we know that $t_i \in \mathfrak{a}$ for all $i$'s. Moreover, we know from question $1$ that the vectors $\tau(t_i)$ are linearly independent. Hence, the rank of $\tau(\mathfrak{a})$ is $\geq d$, and we conclude that it is exactly $d$.
+\end{solution}
+
+\question Show that in any non-zero ideal $\mathfrak{a}$, it holds that $\lambda_1(\tau(\mathfrak{a})) = \cdots = \lambda_d(\tau(\mathfrak{a}))$. \\
+\textit{\color{gray}(Hint: you may want to use question $1$ again.)}
+
+\begin{solution}
+Let $s \in \mathfrak{a}$ be an element reaching the first minimum, i.e., $\|\tau(s)\| = \lambda_1(\tau(\mathfrak{a}))$. Define $s_i = s \cdot X^{i-1}$ for $i = 1$ to $d$. From question $1$, we know that the $s_i$'s are linearly independent, so $\lambda_d(\tau(\mathfrak{a})) \leq \max_i \|\tau(s_i)\|$.
+Recall that $\tau(s_i)$ is the product coordinate-wise of the vectors $\tau(s)$ and $\tau(X^{i-1})$. Hence, $\|\tau(s_i)\| \leq \|\tau(s)\| \cdot \|\tau(X^{i-1})\|_\infty$ (write it). By definition $\tau(X^{i-1}) = (\zeta_1^{i-1}, \dots, \zeta_d^{i-1})$ with $\zeta_j$ roots of unity (they are roots of $P = X^d+1$). Hence, $|\zeta_j^{i-1}| = 1$ and so $\|\tau(X^{i-1})\|_\infty \leq 1$. We conclude that $\lambda_d(\tau(\mathfrak{a})) \leq \|\tau(s)\| = \lambda_1(\tau(\mathfrak{a}))$. Since $\lambda_1(L) \leq \lambda_2(L) \leq \dots \leq \lambda_d(L)$ for any lattice $L$, we conclude that $\lambda_1(\tau(\mathfrak{a})) = \cdots = \lambda_d(\tau(\mathfrak{a}))$ as desired.
+\end{solution}
 
 \question Prove that if one knows a solution to SVP$_\gamma$ in $\mathfrak{a}$, then one can construct in polynomial time a solution to SIVP$_\gamma$ in $\mathfrak{a}$.
+
+\begin{solution}
+Let $s \in \mathfrak{a}$ be a solution to SVP$_\gamma$ in $\mathfrak{a}$. Construct $s_i = s \cdot X^{i-1}$ as in the previous question. We have seen in the previous question that these vectors $\tau(s_i)$ are linearly independent and $\|\tau(s_i)\| = \|\tau(s)\| \leq \gamma \cdot \lambda_1(\mathfrak{a}) = \gamma \cdot \lambda_d(\mathfrak{a})$ for all $i$'s. Hence, they form a solution to SIVP$_\gamma$ in $\mathfrak{a}$, and they are efficiently computable from $s$.
+\end{solution}
 
 
 \question Prove that the reciprocal is also true: if one knows a solution to SIVP$_\gamma$ in $\mathfrak{a}$, then one can construct in polynomial time a solution to SVP$_\gamma$ in $\mathfrak{a}$.
 
+\begin{solution}
+Let $s_1, \dots, s_d$ be a solution to SIVP$_\gamma$ in $\mathfrak{a}$. The $s_i$'s are non-zero and satisfy $\|\tau(s_i)\| \leq \gamma \lambda_d(\tau(\mathfrak{a})) = \gamma \lambda_1(\tau(\mathfrak{a}))$. Hence, any $s_i$ is a solution to SVP$_\gamma$ in $\tau(\mathfrak{a})$.
+\end{solution}
+
+\end{questions}
+
+\section{Albrecht-Deo's reduction}
+In this exercise again, we take $P = X^d+1$ for $d$ a power-of-two, $K = \QQ[X]/P(X)$ and $R = \ZZ[X]/P(X)$.
+
+We will admit in this exercise that if $q$ is a prime integer and if the $a_i$ are sampled uniformly in $R_q^n$ for some $n > 1$, then with overwhelming probability, it suffices to sample a polynomial number of $a_i$'s to be able to extract $n$ of them $a'_1, \dots, a'_n$ such that the matrix whose rows are the $a'_i$'s is invertible in $R_q$.
+
+\begin{questions}
+
+\question Assume that we have access to an oracle computing samples from the distribution $D^{\textrm{MLWE}}_{n,q,\chi}(s)$ (for some $s \in R_q^n$), and assume that we have $n$ samples $(a_i, b_i)$ from $D^{\textrm{MLWE}}_{n,q,\chi}(s)$ such that
+the matrix $\overline{A}$ whose rows are the $a_i$ is invertible in $R_q$. Let $b_i = a_i s + e_i$ with $e_i \leftarrow \chi$ and let us write $\overline{e} = (e_1, \dots, e_n)^T$ and $\overline{b} = (b_1, \dots, b_n)^T$.
+
+Let $(a,b) \leftarrow D^{\textrm{MLWE}}_{n,q,\chi}(s)$. Define $a' = a \cdot \overline{A}^{-1}$ and $b' = \langle a', \overline{b} \rangle - b$. Show that $(a', b')$ is a sample from $D^{\textrm{MLWE}}_{n,q,\chi}(\overline{e})$.
+
+\question Conclude that there is a polynomial time reduction from MLWE$_{n,q,\chi}$ to HNF-MLWE$_{n,q,\chi}$, which is a variant of MLWE where the secret is sampled from the distribution $\chi^n$ instead of being chosen uniformly in $R_q^n$.
+
+\question Let $e \in R$ be such that $\|\tau(e) \| \leq \beta$ for some $\beta > 0$. Let $X = \{x \in R\,|\, \|\Sigma(x)\|_\infty \leq \beta'\}$ and $Y = \{x \in R\,|\, \|\Sigma(x-e)\|_\infty \leq \beta'\}$ for some $\beta' > 0$ not in $\ZZ$. Show that $|X| \leq (2\beta')^d$ and that $|X \cap Y| \geq (2(\beta'-\beta))^d$.
+
+\question Let $\chi'$ be the uniform distribution over $\{x \in R\,|\, \|\Sigma(x)\|_\infty \leq \beta'\}$ where $\beta' = \beta \cdot 2^{d+1}d$. Assume that $\beta' \not \in \ZZ$, using the previous question, show that the statistical distance between $\chi'$ and $e+\chi'$ is $\leq 2^{-d}$.
+
+\question Conclude the proof of Albrecht-Deo's reduction from the course.
+\end{questions}
+
+\section{Subfields and automorphisms}
+
+In this exercise, we take $P = X^4+1$, $K = \QQ[X]/P(X)$ and $R = \ZZ[X]/P(X)$.
+\begin{questions}
+\question What are the automorphisms of $K$? Show that $\mathrm{Gal}(K)$ is isomorphic as a group to $(\ZZ/2\ZZ \times \ZZ/2\ZZ,+)$.
+\question Deduce from the previous question that $K$ admits one subfield of degree $1$, three subfields of degree $2$ and one subfield of degree $4$.
+\question Exhibit a basis for all the subfields from the previous question.
+
+\end{questions}
+
+\section{Canonical embedding and automorphisms}
+
+In this exercise, we take $P = X^d+1$ for $d$ a power-of-two, $K = \QQ[X]/P(X)$ and $R = \ZZ[X]/P(X)$.
+
+Let $\zeta$ be a primitive $(2d)$-th root of unity in $\CC$, and define, for $i = 1$ to $d$ the maps
+\begin{align*}
+\sigma_i: \ \ \ K &\rightarrow \CC \\
+a(X) & \mapsto a(\zeta^{2i-1})
+\end{align*}
+These maps $\sigma_i$ are called the complex embeddings of $K$.
+Recall that the canonical embedding $\tau$ of an element $a \in K$ is defined as $\tau(a) := (\sigma_1(a), \dots, \sigma_d(a)) \in \CC^d$.
+%
+Let $\varphi$ be some automorphism of $K$.
+
+\begin{questions}
+\question Show that for all $i \in \{1, \dots, d\}$, there exists $k \in \{1, \dots, d\}$ such that $\sigma_i \circ \varphi = \sigma_k$.
+\question Show that the map $\sigma \mapsto \sigma \circ \varphi$ is actually a permutation over the set of complex embeddings $(\sigma_i)_{1 \leq i \leq d}$.
+\question Conclude that for all $a \in K$, it holds that $\|\tau(\varphi(a))\| = \|\tau(a)\|$.
+\end{questions}
+
+\section{Short vectors in special ideals}
+
+Let $\mathfrak{a}$ be an ideal of $K = \QQ[X]/(X^d+1)$. Let $H$ be its decomposition group (i.e., $H = \{\varphi \in \mathrm{Gal}(K)\,|\, \varphi(\mathfrak{a}) = \mathfrak{a}\}$), and let $K_H$ be the fixed field of $H$ (i.e., $K_H = \{x \in K \,|\, \varphi(x) = x, \, \forall \varphi \in H\}$).
+
+\begin{questions}
+\question Let $x \in \mathfrak{a}$ be non-zero. Define $w_i = \mathrm{Tr}_{K/K_H}(x \cdot X^{i-1})$ for $i \in \{1, \dots, d\}$. Show that there exists an index $i_0$ for which $w_{i_0}$ is non-zero.\\
+\textit{\color{gray}(Hint: recall from Exercise~\ref{exo:id-lat} that the vectors $x \cdot X^{i-1}$ are linearly independent, hence they form a $\QQ$-basis of $K$.)}
+
+\question Prove that, for all $i$, it holds that $\|\tau(w_i)\| \leq |H| \cdot \|\tau(x)\|$.\\
+\textit{\color{gray}(Hint: recall that $\|\tau(y \cdot X)\| = \|\tau(y)\|$ for all $y \in K$.)}
+
+\question Show that $w_i \in \mathfrak{b} := \mathfrak{a} \cap K_H$ for all $i$'s.\\
+\textit{\color{gray}(Hint: this is where we use that $H$ is the decomposition group of $\mathfrak{a}$.)}
+
+\question Conclude that $\lambda_1(\tau(\mathfrak{b})) \leq |H| \cdot \lambda_1(\tau(\mathfrak{a}))$.
+\end{questions}
+
+\section{NTRU}
+
+For the first 3 questions, assume that $K = \QQ$, and that $q$ is a prime integer.
+
+\begin{questions}
+\question Let $(f,g) \in \ZZ^2$ with $(f,g) \neq (0,0)$ and $|f|, |g| < q$. Let $h, h' \in \ZZ$ such that $gh = f \bmod q$ and $g h' = f \bmod q$. Show that $h = h' \bmod q$.\\
+\textit{\color{gray}(Hint: it may be useful to prove that $q$ is invertible modulo $q$.)}
+
+\question Show that for any $B > 0$, the number of pairs $(f,g) \in \ZZ^2$ with $|f|,|g| \leq B$ is at most $(2B+1)^2$.
+
+\question Deduce from the previous two questions that for $B < q$, the proportion of NTRU$_{q,B}$ instances in $\ZZ$ is $\leq \frac{(2B+1)^2}{q}$.\\
+\textit{\color{gray}(Hint: observe that if $h$ is an NTRU$_{q,B}$ instance, then any $h' = h \bmod q$ is also an NTRU$_{q,B}$ instance, so it suffices to consider the $h$ in $\{0,\dots, q-1\}$.)}
+\end{questions}
+
+From now on, $K = \QQ[X]/(X^d+1)$ as usual, and let $q \geq 5$. Let $\chi$ be the uniform distribution over polynomials of $\ZZ[X]/(X^d+1)$ with coefficients in $\{-1,0,1\}$, and let $\psi$ be the distribution obtained by sampling $f,g \leftarrow \chi$ until $g$ is invertible mod $q$, and returning $h = f/g \bmod q$. Note that $\psi$ is a distribution over NTRU$_{q,B}$ instances for $B = d$ (because $\|\tau(f)\| = \sqrt{d} \cdot \|\Sigma(f)\| \leq d$ if $f \leftarrow \chi$).
+Recall that the dec-NTRU$_{q,B,\psi}$ problem asks to distinguish $h \leftarrow \psi$ from $h \leftarrow \mathcal{U}(R_q)$.
+\begin{questions}
+\question Show that dec-NTRU$_{q,B,\psi}$ would be easy to solve if we had taken $h = f \bmod q$ instead of $h = f/g \bmod q$.
+\question Show that dec-NTRU$_{q,B,\psi}$ would be easy to solve if we had taken $h = 1/g \bmod q$ instead of $h = f/g \bmod q$.
 \end{questions}
 
 \end{document}

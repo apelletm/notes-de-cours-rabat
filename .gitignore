@@ -6,3 +6,6 @@
 *.bbl
 *.blg
 *.toc
+*.nav
+*.snm
+*.vrb
