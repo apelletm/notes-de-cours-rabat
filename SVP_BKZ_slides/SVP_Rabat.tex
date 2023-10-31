@@ -126,14 +126,14 @@
 }
 
 
-%\institute{ENS Lyon}
+\institute{\Large Technology Innovation Institute, Abu Dhabi, UAE}
 \author{Elena Kirshanova \\ [10pt]
-	%based on joint works with G.Herold, T.Laarhoven
+%	Technology Innovation Institute, Abu Dhabi, UAE
 }
 
 \title{SVP algorithms. BKZ}
 
-\date{CIMPA Summer School, Rabat \\ \today}
+\date{CIMPA Summer School, Rabat}
 
 
 \setbeamertemplate{navigation symbols}{} %removes navigation
@@ -156,23 +156,78 @@
 	\titlepage
 \end{frame}
 
-\begin{frame}{Agenda}
-	\LARGE
-	\begin{enumerate}
-		\setlength\itemsep{10pt}
-		\item The shortest vector problem
-		\item Kannan-Finke-Pohst Enumeration algorithm
-		\item Sieving algorithm \\[5pt]
-		\item Block Korkine-Zolotarev reduction
-		
-	\end{enumerate}
+
+
+\begin{frame}{Links}
+	\Large 
+	\centering
+	These slides are available here: 
+	\vspace{7pt}
 	
+	\includegraphics[width=0.4\textwidth]{qrcodeSlides}
+	
+	\vspace{5pt}
+	\url{https://crypto-kantiana.com/elena.kirshanova/teaching/ssRabat/SVP_Rabat.pdf}
 \end{frame}
 
+\begin{frame}{Links II}
+\centering
+	\Large Exercises, labs are available on the webpage:
+	\vspace{7pt}
+	
+	\includegraphics[width=0.4\textwidth]{qrcodeWebpage}
+	
+	\vspace{5pt}
+	\url{https://crypto-kantiana.com/elena.kirshanova/teaching/summerschoolRabat2023.html}
+\end{frame}
 
+\begin{frame}{Agenda}
+\LARGE
+\begin{itemize}
+	\itemsep 10pt
+	\item {\color{Orange} Today:} Lectures
+	\item {\color{Orange} Tomorrow:} Exercises
+	\item {\color{Orange} Friday:} Labs
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Labs}
+\LARGE 
+\begin{itemize}
+	\itemsep 8pt
+	\item For Lab1 you need to install FPyLLL \url{https://github.com/fplll/fpylll}
+	\item It is available via SageMathCell and CoCalc (select a Jupyter notebook with a Sage kernel)
+	%\item I will also show the G6K library \url{https://github.com/fplll/g6k} but you're not required to install it
+	\item For Lab2 and Lab3 you need Sage on your machine (Lab2 is checked via automated tests)
+	\item Labs can be solved in teams of {\color{Orange} max 3} people
+	\item Try to install FPyLLL or play with it in CoCalc
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Prize}
+\Huge 
+\centering
+The fastest team to obtain correct$^\star$ solutions/implementations gets an unforgettable prize!
+
+\vfill
+\Large  The correctness will be judged by the lecturer
+\end{frame}
 
 %\section{Definitions}
 
+\begin{frame}{Content of the lectures}
+\LARGE
+\begin{enumerate}
+	\setlength\itemsep{10pt}
+	\item The shortest vector problem
+	\item Kannan-Finke-Pohst Enumeration algorithm
+	\item Sieving algorithm \\[5pt]
+	\item Block Korkine-Zolotarev reduction
+	\item Solving LWE with BKZ
+	
+\end{enumerate}
+
+\end{frame}
 
 \begin{frame}
 Part I \\ [10pt]
@@ -211,7 +266,7 @@ Part I \\ [10pt]
 
 
 \begin{frame}{Short vectors in $\L$}
-	\vspace{-32pt}
+	\vspace{-32pt}\centering
 	\begin{tikzpicture}%[show background grid]
 	\begin{scope}
 	\foreach \y in {-2,...,4}
@@ -225,13 +280,13 @@ Part I \\ [10pt]
 		
 		\draw[-stealth, Orange, thick] (0, 0) -- (10pt, 20pt) node[font=\LARGE, left]{$\vvec$};
 		
-		\draw[fill=CharCoalDark, opacity=0.5] (-3.7,-3.5) rectangle (6.5,-2.0) node[pos=.5, color=white, opacity=1,align=left] {
-			\large The {\color{Orange}{Shortest Vector Problem} (SVP) } asks to find non-zero $\vvec$  \\ of minimal length. 
+		\draw[fill=CharCoalDark, draw=CharCoalDark, opacity=0.5] (-3.7,-3.5) rectangle (6.5,-2.0) node[pos=.5, color=white, opacity=1,align=left] {
+			\large The {\color{Orange}{Shortest Vector Problem} (SVP) } asks to find non-zero $\vvec$ of minimal Euclidean length. 
 		}; 
 	\end{scope}
-	
 	\end{tikzpicture}
 	
+	\vspace{-5pt}
 	\large We do not know $||\vvec||$ in general, but for any $n$-rank $\L$:
 	\[||\vvec_{\text{shortest}}|| \leq \sqrt{n} \cdot \det(\L)^{1/n}  \quad \text{(Minkowski's bound)}
 	\]
@@ -272,11 +327,10 @@ Part I \\ [10pt]
 	%2 main families of algorithms for SVP
 	
 	\begin{itemize}
-		\setlength\itemsep{12pt}
+		\setlength\itemsep{5pt}
 		\item {\LARGE{Enumeration}} 
 		\onslide<2->{
-			
-			\Large
+			\Huge
 			\begin{align*}
 			\text{Time} = 2^{ ( (1/2e)+\smallo(1) )n \log n}
 			\quad \quad \text{Memory} = \poly(n)	
@@ -289,9 +343,9 @@ Part I \\ [10pt]
 			\end{itemize}
 		}
 		
-		\item {\LARGE{Sieving}} \onslide<3->{(Provable/Heuristic)}
+		\item {\LARGE{Sieving} (Provable/Heuristic)}
 		\onslide<3->{
-			\Large
+			\Huge
 			\begin{align*}
 			&\text{Time} = 2^{(2.465+\smallo(1))n}
 			\quad \quad \text{Memory} = 2^{(1.325+\smallo(1))n} \\
@@ -329,15 +383,15 @@ Part II \\ [10pt]
 {\color{Orange} Idea:} enumerate all lattice vector within a ball of certain radius $k$.
 
 \begin{enumerate}
-	\item INPUT: basis $B = QR$, $R \in \R^{n \times n}$ -- R-factor
-	\item Set $k = \| \bvec_1 \|$
+	\item INPUT: basis $B = QR$, $R \in \R^{n \times n}$ -- R-factor \pause
+	\item Set $k = \| \bvec_1 \|$ -- a bound 
 	\item Let $\xvec \in \Z^n$ be the coefficient vector of $\bvec = B\xvec$. Then
 \end{enumerate}
 \begin{align*}\label{eq:enum_norm}
 \| B\xvec \|^2   = \| R\xvec \|^2 = \| \left( \sum_{i=1}^n r_{1,i}x_i, \sum_{i=2}^n r_{2,i}x_i, \ldots, r_{n,n} x_n \right) \|^2 
  = \sum_{j=1}^n \left( \sum_{i \geq j} r_{j,i} x_i \right)^2.
 \end{align*}
-
+\pause
 We are going to enumerate $x_i$'s for $i = n, \ldots, 1$, keeping the value $\sum_{j=1}^n \left( \sum_{i \geq j} r_{j,i} x_i \right)^2$ bounded.
 
 \end{frame}
@@ -347,16 +401,38 @@ We are going to enumerate $x_i$'s for $i = n, \ldots, 1$, keeping the value $\su
 	\begin{column}{0.3\textwidth}
 		\vspace{10pt}
 		\begin{tikzpicture}[
-		state/.style={circle, fill=white, inner sep=1.5pt},
+		state/.style={circle, fill=white, inner sep=1.8pt},
 		]
 		%\centering
-		\onslide<1->{
-			\node [state, ] (x11) at (0,0) {};
+		\onslide<1>{
+			\node [circle, fill=Orange, inner sep=1.8pt] (x11) at (0,0) {};
+			\node [circle, fill=Orange, inner sep=1.8pt] (x12) at (1.5,0) {};
+			\node [circle, fill=Orange, inner sep=1.8pt] (x13) at (3,0) {};
+			\node at (-1.3, 0) {$x_n$};
+		}
+
+		\onslide<2>{
+			\node [state] (x11) at (0,0) {};
 			\node [state] (x12) at (1.5,0) {};
 			\node [state] (x13) at (3,0) {};
 			\node at (-1.3, 0) {$x_n$};
+			
+			\node [circle, fill=Orange, inner sep=1.8pt] (x21) at (-0.5,-1.0) {};
+			\node [circle, fill=Orange, inner sep=1.8pt] (x22) at (0.9,-1.0) {};
+			\node [circle, fill=Orange, inner sep=1.8pt] (x23) at (2.1,-1.0) {};
+			\node [circle, fill=Orange, inner sep=1.8pt] (x24) at (3.5,-1.0) {};
+			\node at (-1.3, -1.0) {$x_{n-1}$};
+			\draw[] (x11) -- (x21);
+			\draw[] (x12) -- (x22);
+			\draw[] (x12) -- (x23);
+			\draw[] (x13) -- (x24);
 		}
-		\onslide<2->{
+		\onslide<3>{
+			\node [state] (x11) at (0,0) {};
+			\node [state] (x12) at (1.5,0) {};
+			\node [state] (x13) at (3,0) {};
+			\node at (-1.3, 0) {$x_n$};
+			
 			\node [state] (x21) at (-0.5,-1.0) {};
 			\node [state] (x22) at (0.9,-1.0) {};
 			\node [state] (x23) at (2.1,-1.0) {};
@@ -366,8 +442,41 @@ We are going to enumerate $x_i$'s for $i = n, \ldots, 1$, keeping the value $\su
 			\draw[] (x12) -- (x22);
 			\draw[] (x12) -- (x23);
 			\draw[] (x13) -- (x24);
+			
+			\node [circle, fill=Orange, inner sep=1.8pt] (x31) at (-0.8,-2.5) {};
+			\node [circle, fill=Orange, inner sep=1.8pt] (x32) at (-0.2,-2.5) {};
+			\node [circle, fill=Orange, inner sep=1.8pt] (x33) at (0.6,-2.5) {};
+			\node [circle, fill=Orange, inner sep=1.8pt] (x34) at (1.2,-2.5) {};
+			\node [circle, fill=Orange, inner sep=1.8pt] (x35) at (1.8,-2.5) {};
+			\node [circle, fill=Orange, inner sep=1.8pt] (x36) at (2.4,-2.5) {};
+			\node [circle, fill=Orange, inner sep=1.8pt] (x37) at (3.5,-2.5) {};	
+			\node at (-1.3, -2.5) {$x_{n-2}$};
+			
+			\draw[] (x21) -- (x31);
+			\draw[] (x21) -- (x32);
+			\draw[] (x22) -- (x33);
+			\draw[] (x22) -- (x34);
+			\draw[] (x23) -- (x35);
+			\draw[] (x23) -- (x36);
+			\draw[] (x24) -- (x37);
+			
 		}
-		\onslide<3->{
+		\onslide<4>
+			\node [state] (x11) at (0,0) {};
+			\node [state] (x12) at (1.5,0) {};
+			\node [state] (x13) at (3,0) {};
+			\node at (-1.3, 0) {$x_n$};
+			
+			\node [state] (x21) at (-0.5,-1.0) {};
+			\node [state] (x22) at (0.9,-1.0) {};
+			\node [state] (x23) at (2.1,-1.0) {};
+			\node [state] (x24) at (3.5,-1.0) {};
+			\node at (-1.3, -1.0) {$x_{n-1}$};
+			\draw[] (x11) -- (x21);
+			\draw[] (x12) -- (x22);
+			\draw[] (x12) -- (x23);
+			\draw[] (x13) -- (x24);
+			
 			\node [state] (x31) at (-0.8,-2.5) {};
 			\node [state] (x32) at (-0.2,-2.5) {};
 			\node [state] (x33) at (0.6,-2.5) {};
@@ -384,9 +493,6 @@ We are going to enumerate $x_i$'s for $i = n, \ldots, 1$, keeping the value $\su
 			\draw[] (x23) -- (x35);
 			\draw[] (x23) -- (x36);
 			\draw[] (x24) -- (x37);
-			
-		}
-		\onslide<4->
 			\node at (0, -3.0) {$\vdots$};
 			\node at (1.5, -3.0) {$\vdots$};
 			\node at (3.0, -3.0) {$\vdots$};
@@ -418,7 +524,8 @@ We are going to enumerate $x_i$'s for $i = n, \ldots, 1$, keeping the value $\su
 		\vspace{-5pt} 
 		\begin{enumerate}[<+->]
 		\itemsep 8pt
-		\item Take all {\color{Orange}$x_n$}  $\in \Z$ s.t.\ $|{\color{Orange} x_n}| < \frac{k} {r_{n,n}}$. 
+		\item Take all 
+		$x_n$  $\in \Z$ s.t.\ $| x_n| < \frac{k} {r_{n,n}}$. 
 		\item Fix $x_n$. Take all $x_{n-1} \in \Z$ s.t.\ \\  $\left|{x_{n-1} + \frac{r_{n-1,n}}{r_{n-1,n-1}}x_n }\right| < \left( \frac{k^2-(r_{n,n}x_n )^2}{r_{n-1, n-1}}\right)^{1/2}$ 
 		\item For fixed $x_n, x_{n-1}$, take all `legitimate' $x_{n-2} \in \Z$ 
 		\item Continue all the way to $x_1$'s.
@@ -654,6 +761,23 @@ Assumption: vectors (normalized) in $|L|$ are uniform iid on $S^{n-1}$. \\
 	%\end{scope}
 	\end{tikzpicture}
 \end{tabular}
+\end{frame}
+
+\begin{frame}{SVP: conclusions}
+	\Large
+	\begin{itemize}
+		\itemsep 8pt
+		\item Best known SVP algorithm require at least exponential (in lattice dimension) time
+		\item We do not know how to use the additional structure to significantly speed up SVP algorithms for algebraic lattices
+	\end{itemize}
+	\vspace{10pt}
+	
+	\centering {\color{Orange} Open questions}
+	\begin{itemize}
+		\item SVP in $\ell_\infty$ norm, algebraic SVP
+		\item Precise complexity of SVP taking into account memory costs
+		\item Quantum speed ups for SVP/LWE/SIS?
+	\end{itemize}
 \end{frame}
 
 \begin{frame}
@@ -931,10 +1055,12 @@ Part IV \\ [10pt]
 
 \pause
 \large 
+
 \begin{itemize}
 	\item BKZ runs this FOR-loop while there has been a change in the basis
 	\item one run of this FOR-loop is called {\color{Orange} a tour}
 \end{itemize}
+
 \end{frame}
 
 \begin{frame}{BKZ: Output Quality and Runtime}
@@ -950,17 +1076,195 @@ Part IV \\ [10pt]
 	\end{itemize}
 \end{frame}
 
+\begin{frame}{Time to show the demo...}
+\url{TODO}
+\end{frame}
+
+\begin{frame}
+Part V \\ [10pt]
+\begin{center}
+	\color{Orange} \Huge{Solving LWE with BKZ}
+	
+\end{center}
+\end{frame}
+
+
+
+
+
+\begin{frame}{LWE is BDD}
+\vspace{-8pt}
+\centering
+\begin{tikzpicture}
+\draw[fill=CharCoalDark, draw=white, opacity=0.5] (-6.0,4.0) rectangle (-4.5,7.0) node[color=white, opacity=1,align=center, pos=0.5] {
+	\Huge  $A$
+}; 
+\draw[stealth-stealth] (-6.2,4.0) -- (-6.2,7.0) node[midway, xshift=-6pt] {\LARGE $m$};
+\draw[stealth-stealth] (-6.0,3.9) -- (-4.5,3.9) node[midway, yshift=-6pt] {\LARGE $n$};
+
+\draw(-4.3, 5.5)node{\Huge ,};
+
+\draw[fill=CharCoalDark, draw=white, opacity=0.5] (-4.0,4.0) rectangle (-2.5,7.0) node[color=white, opacity=1,align=center, pos=0.5] {
+	\Huge  $A$
+}; 
+
+\draw[|-|, draw=Orange, very thick] (-2.3, 5.5) -- (-2.3, 7.0) node[above]{\LARGE $\svec$};
+
+\draw(-1.8, 5.5)node{\Huge $+$};
+
+\draw[|-|, draw=Orange, very thick] (-1.3, 4.0) -- (-1.3, 7.0) node[above]{\LARGE $\evec$};
+
+\draw(-0.5, 5.5)node{\Large $\bmod~q$};
+\draw[-latex, very thick] (0.3, 5.5) -- (1.5, 5.5) node[above, xshift=-20pt]{\Large find};
+
+\draw[|-|, draw=Orange, very thick] (2.0, 5.5) -- (2.0, 7.0) node[above]{\LARGE $\svec$};
+\draw(2.5, 5.5)node{\Large or};
+\draw[|-|, draw=Orange, very thick] (3.0, 4.0) -- (3.0, 7.0) node[above]{\LARGE $\evec$};
+\end{tikzpicture}
+\Large
+\vspace{-10pt}
+\begin{itemize}
+	\setlength\itemsep{9pt}
+	\item $A$ defines the Construction-A lattice
+	\[
+	\Lat_q(A) = A\Z_q^n + q\Z^m
+	\]
+	\item W.h.p., $\Lat_q(A)$ is of dim. $m$ and $\det(\Lat_q(A)) = q^{m-n}$.
+	\item $As +e \bmod~q$ is a point near $\Lat_q(A)$ at distance $\Theta(\sqrt{m} \alpha q)$
+	\item $(A,As+e)$ is a {\color{Orange} BDD} instance on $\Lat_q(A)$ with $\gamma = \frac{q^{1-n/m}}{\alpha q} $
+	
+\end{itemize}
+\end{frame}
+
+\begin{frame}{How do we solve BDD? Use an approxSVP algorithm! Kannan's Embedding }
+\LARGE
+For a  {\color{Orange} BDD} instance $(\Lat, \tvec)$, where $B$ is a basis of $\Lat$, and $\const$ is a constant, let
+\[
+B' = 
+\begin{bmatrix}
+B & \tvec \\
+\zerovec & \const
+\end{bmatrix}
+\]
+\begin{itemize}
+	\item Columns of $B'$ are linearly independent
+	\item Let $B\xvec$ be the solution 
+	\item For  ``properly'' chosen $\const$ and $\tvec$ - sufficiently close to  $\Lat$, 
+	\[
+	\begin{bmatrix}
+	B & \tvec \\
+	\zerovec & \const
+	\end{bmatrix} \cdot
+	\begin{bmatrix}
+	\xvec  \\
+	-1
+	\end{bmatrix} = 
+	\begin{bmatrix}
+	B\xvec - \tvec  \\
+	-\const
+	\end{bmatrix}
+	\]
+\end{itemize}
+-- is the shortest vector in $\Lat(B')$ (much shorter than any other $\vvec \in \Lat(B')$ non-parallel to it). 
+\end{frame}
+
+
+\begin{frame}{Kannan's embedding in pictures}
+
+
+\begin{tikzpicture}%[show background grid]
+\hspace{-70pt}
+\vspace{-70pt}
+
+\def\shiftx{-8pt}
+\def\shifty{3pt}
+\begin{scope}[scale=1.5]
+\foreach \y in {-2,...,3}
+{
+	\foreach \x in {-1,...,3}
+	{
+		\filldraw(\x*40pt+\y*10pt, 10pt*\x+20pt*\y) circle (1.0pt);
+		%\draw[fill=none, draw=gray] (\x*40pt+\y*10pt-15pt ,10pt*\x+20pt*\y-10pt) rectangle (\x*40pt+\y*10pt+15pt, 10pt*\x+20pt*\y+10pt);
+	}
+	
+}
+\foreach \x in {-1,...,4}
+\draw[draw=CharCoalDark!80, shift={(-15pt,0pt)}] (\x*40pt-30pt, 10pt*\x-60pt) --  (\x*40pt+40pt, 10pt*\x+80pt);
+\foreach \y in {-2,...,4}
+\draw[draw=CharCoalDark!80, shift={(0pt,-10pt)}] (-80pt+\y*10pt, -20pt+20pt*\y) --  (160pt+\y*10pt, 40pt+20pt*\y);
+
+\filldraw(0pt,0pt) circle (1.0pt) node[below]{ $0$};
+
+\pause
+
+\foreach \y in {-2,...,3}
+{
+	\foreach \x in {-1,...,3}
+	{
+		\filldraw[fill=white, draw=gray!30](\x*40pt+\y*10pt+\shiftx, 10pt*\x+20pt*\y+\shifty) circle (1.2pt);
+	}
+	
+}
+\foreach \x in {-1,...,4}
+\draw[draw=CharCoalDark!80, shift={(-15pt,0pt)}] (\x*40pt-30pt+\shiftx, 10pt*\x-60pt+\shifty) --  (\x*40pt+40pt+\shiftx, 10pt*\x+80pt+\shifty);
+\foreach \y in {-2,...,4}
+\draw[draw=CharCoalDark!80, shift={(0pt,-10pt)}] (-80pt+\y*10pt+\shiftx, -20pt+20pt*\y+\shifty) --  (160pt+\y*10pt+\shiftx, 40pt+20pt*\y+\shifty);
+
+\filldraw[color=Orange, draw=Orange](\shiftx,\shifty) circle (1.0pt) node[below]{ $\tvec$};
+
+
+
+
+\end{scope}
+
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Hardness of LWE}
+\begin{tikzpicture}
+\draw[-stealth, white, thick] (0,0) -- (10.5, 0) node[font=\Large, below, yshift=-5pt]{\huge \color{Orange} $\mathbf{\gamma}$} node[above, yshift=4pt]{Time};
+
+\draw[-] (2.0,-0.3) -- (2.0,0.3) node[above, xshift=10pt, align=center] {\LARGE $2^{\const  \cdot n}$ } node[below, yshift=-20pt, align=center, xshift=7pt] {\Large $\poly(n)$ };
+
+\draw[-] (5.5,-0.3) -- (5.5,0.3) node[above] {\LARGE $ 2^{\const \cdot \beta}$, \texttt{BKZ}} node[below, yshift=-20pt, align=left, xshift=4pt] {\huge $2^{\tfrac{n}{\beta} \log \beta} $};
+
+\draw[-] (8.5,-0.3) -- (8.5,0.3) node[above] {$\poly(n)$, \texttt{LLL}} node[below, yshift=-20pt, align=left, xshift=4pt] {\huge $2^{n}$};
+
+\end{tikzpicture}
+	\LARGE
+	For LWE parameters $(n, m, q, \alpha)$, $\gamma = \frac{q^{1-n/m}}{\alpha q}$
+	{
+		
+		%\begin{tcolorbox}[standard jigsaw, colback=CharCoalDark,
+		%	opacityback=0.5,  colframe=Orange]
+		{\color{Orange}
+			\[
+			T(\text{LWE}) = \exp\left(\const \cdot  \frac{\lg q}{\lg^2 \alpha} \lg\Big( \frac{n \lg q}{\lg^2 \alpha} \Big)  \cdot n\right),
+			\]
+		}
+		%\end{tcolorbox}
+	}
+
+	where $\const$ is the constant in the exponent of SVP complexity, i.e., $T(\text{(SVP)})^{2^{\const \beta}}$.
+	
+	This complexity is obtained by solving for $\beta$
+	\[
+	2^{ \tfrac{m}{\beta} \log \beta} = \frac{q^{1-n/m}}{\alpha q}
+	\]
+	and choosing $m = \Omega(n)$ that minimizes the solution.
+\end{frame}
+
 \begin{frame}{References}
 	\begin{itemize}
 		\setlength\itemsep{6pt}
 		\item {\color{Orange} [BDGL16]}  A. Becker, L. Ducas, N. Gama, T. Laarhoven. New directions in nearest neighbor searching with applications to lattice sieving.
-		\item {\color{Orange} [BGJ15]}  A. Becker,N. Gama, A. Joux.
-		Speeding-up lattice sieving without increasing the memory, using sub-quadratic nearest neighbor search.
-		\item {\color{Orange} [BLS16]} S. Bai, T. Laarhoven, D. Stehl{\' e}. Tuple lattice sieving.
-		\item {\color{Orange} [HK17]} G. Herold, E. Kirshanova. Improved algorithms for the approximate k-list problem in Euclidean norm.
-		\item {\color{Orange} [HKL18]} G. Herold, E. Kirshanova, T. Laarhoven. Speed-ups and time-memory trade-offs for tuple lattice sieving.
+		\item {\color{Orange} [FP83]} U. Fincke and M. Pohst. A procedure for determining algebraic integers of given norm.
+		\item {\color{Orange} [HS07]} Guillaume Hanrot and Damien Stehl{\'e}. Improved analysis of Kannan’s shortest lattice vector algorithm.
+		\item {\color{Orange} [Kan83]} Ravi Kannan. Improved algorithms for integer programming and related lattice problems.
+		\item {\color{Orange}[Kan87]} Ravi Kannan. Minkowski’s convex body theorem and integer programming. 
 		\item {\color{Orange} [NV08]} P. Nguyen, T. Vidick. Sieve algorithms for the shortest vector problem are practical. 
-		\item {\color{Orange}[TKH18]} T. Teruya, K. Kashiwabara,  G. Hanaoka. Fast lattice basis reduction suitable for massive parallelization and its application to the shortest vector problem.
+		\item {\color{Orange}[S87]} Claus-Peter Schnorr. A hierarchy of polynomial time lattice basis reduction algorithms.
+
 	\end{itemize}
 	
 \end{frame}
