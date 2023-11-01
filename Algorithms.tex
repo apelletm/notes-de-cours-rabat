@@ -155,7 +155,7 @@ Continuing this way, we receive a tree-like algorithm, where the nodes of the tr
 	Since the input basis in LLL-reduced, it holds that $r_{1,1}/r_{i,i} \leq \alpha^{i-1}$, where $\alpha$ is a parameter of LLL (see~Lemma~\ref{lem:lll}). For $k = r_{1,1} = \| \vec b_1 \| < \alpha^{\frac{n-1}{2}} (\det L)^{1/n}$, we have
 	
 	\begin{align*}
-		|\texttt{Enum.tree}| = \sum_{j=1}^n \prod_{i \leq j} \left( \frac{2k}{r_{j,j}} +1 \right) \stackrel{\alpha=2}{=} \sum_{j=1}^n \prod_{i \leq j} (2^i+1)\leq \sum_{j=1}^n \prod_{i \leq j} 3^i \leq n \cdot  \prod_{i \leq j} 3^i = n \cdot 3^{n^2}.
+		|\texttt{Enum.tree}| = \sum_{j=1}^n \prod_{i \leq j} \left( \frac{2k}{r_{i,i}} +1 \right) \stackrel{\alpha=2}{=} \sum_{j=1}^n \prod_{i \leq j} (2^i+1)\leq \sum_{j=1}^n \prod_{i \leq j} 3^i \leq n \cdot  \prod_{i \leq j} 3^i = n \cdot 3^{n^2}.
 	\end{align*}
 
 On each node the algorithm spends at most $\poly(n)$ time, hence the overall complexity (dominated by the size of the tree) is as in the statement.
