@@ -24,7 +24,7 @@ colours = ["#4D4D4D", "#5DA5DA", "#FAA43A", "#60BD68", "#F17CB0", "#B2912F", "#B
 norms = [[log(M.get_r(i,i)) for i in range(d)]]
 plt.plot(norms[0],label="lll", color=colours[0])
 
-beta = 40
+beta = 46
 tours = 8
 par = BKZ.Param(block_size=beta,strategies=BKZ.DEFAULT_STRATEGY)
 bkz = BKZ2(M)
