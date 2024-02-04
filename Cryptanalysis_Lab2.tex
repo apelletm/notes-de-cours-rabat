@@ -141,7 +141,7 @@ find $\vec b$. Such $\vec b$ can be found via the following algorithm
 		\For{$i$ from $n$ to $1$}
 			\If{$S>r_i$}
 				\State $b_i = 1$
-				\State $S = S-r_1$
+				\State $S = S-r_i$
 			\EndIf
 		\EndFor \\
 		\Return $\vec b$
@@ -157,7 +157,7 @@ Let $n$ be a public parameter. Key generation function $\mathsf{KeyGen}$, encryp
 $\mathsf{KeyGen}(n)$.
 \begin{enumerate}
 	\item Generate a random superincreasing sequence $\vec r$ (the precise method of `random' is irrelevant for this discussion).
-	\item Choose $A, q$ such that $q>r_n$ and $\gcd(A,g) = 1$.
+	\item Choose $A, q$ such that $q>r_n$ and $\gcd(A,q) = 1$.
 	\item Compute the sequence $M_i = Ar_i~\bmod q$
 	\item Set $\mathrm{pk} = M, \mathrm{sk} = (A^{-1}\bmod~q, q, \vec r)$.
 \end{enumerate}
@@ -188,7 +188,7 @@ You can convince yourself in the correctness of the scheme. There is no need to 
 		0 & 2 & 0 & \ldots & 0 & M_2 \\
 		0 & 0 & 2 & \ldots & 0 & M_3 \\
 		\vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
-		1 & 1 & 1 & \ldots & 1 & c 
+		-1 & -1 & -1 & \ldots & -1 & -c 
 	\end{pmatrix}
 \]
 
@@ -199,7 +199,7 @@ Note that if $\vec m$ is the message for the ciphertext $c$, i.e., $c =\sum_{i=1
 
 \begin{enumerate}
 	\item Download script $\mathsf{merkle-hellman.sage}$. There you'll find implementations of $\mathsf{KeyGen}$,   $\mathsf{Enc}$, $ \mathsf{Dec}$. You do not need to modify them.
-	\item Implement the function $\mathsf{attack()}$.
+	\item Implement Shamir's attack in the function $\mathsf{attack()}$.
 	\item Check the correctness of your implementation by running
 	\[
 		\textsf{sage -t merkle\_hellman.sage}
